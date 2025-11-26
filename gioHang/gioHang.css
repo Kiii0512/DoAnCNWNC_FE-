@@ -1,0 +1,334 @@
+ /* =========================
+       Biến màu chủ đạo
+       ========================= */
+ :root {
+   --bg: #f6f7f9;
+   --card: #fff;
+   --muted: #6b7280;
+   --accent: #111827;
+   --primary: #0b5cff;
+   --success: #34c759;
+   --danger: #ef4444;
+   --radius: 12px;
+   --glass: rgba(255, 255, 255, 0.85);
+ }
+
+ * {
+   box-sizing: border-box
+ }
+
+ body {
+   font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+   margin: 0;
+   background: var(--bg);
+   color: #111
+ }
+
+ /* =========================
+       Header chính
+       ========================= */
+ header {
+   background: #fff;
+   color: #111;
+   padding: 12px 18px;
+   border-bottom: 1px solid #e6e7eb;
+   position: sticky;
+   top: 0;
+   z-index: 50
+ }
+
+ .thanh-tren {
+   max-width: 1200px;
+   margin: 0 auto;
+   display: flex;
+   gap: 18px;
+   align-items: center
+ }
+
+ .logo {
+   display: flex;
+   align-items: center;
+   gap: 12px ;
+   text-decoration:none;
+   color: inherit;
+   cursor: pointer;
+ }
+
+ .vuong {
+   width: 42px;
+   height: 42px;
+   border-radius: 8px;
+   background: linear-gradient(135deg, #ff8a65, #ffb563);
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   font-weight: 700;
+   color: #fff;
+   text-decoration:none;
+ }
+
+ .tenshop {
+   font-weight: 700;
+   color: inherit;
+   text-decoration:none;
+ }
+
+ /* ô tìm kiếm */
+ .tim-kiem {
+   flex: 1;
+   display: flex;
+   align-items: center
+ }
+
+ .tim-kiem input {
+   flex: 1;
+   padding: 10px 14px;
+   border-radius: 999px;
+   border: 1px solid #e6e7eb
+ }
+
+ /* Nút giỏ hàng và Tài khoản cạnh thanh tìm kiếm */
+ .nut-gio,
+ .nut-tk {
+   margin-left: 12px;
+   padding: 8px 12px;
+   border-radius: 8px;
+   text-decoration: none;
+   color: var(--accent);
+   font-weight: 600;
+   border: 1px solid transparent;
+   display: inline-flex;
+   align-items: center;
+   gap: 8px
+ }
+
+ .nut-gio svg,
+ .nut-tk svg {
+   width: 18px;
+   height: 18px;
+   flex-shrink: 0;
+   transition: stroke .22s ease, fill .22s ease
+ }
+
+ .nut-gio {
+   background: transparent
+ }
+
+ .nut-tk {
+   background: transparent;
+   color: var(--accent);
+   transition: background-color .22s ease, color .22s ease, transform .22s ease
+ }
+
+ /* hiệu ứng hover cho nút tài khoản */
+ .nut-tk:hover {
+   background: #111827;
+   color: #fff;
+   transform: translateY(-2px)
+ }
+
+ /* =========================
+       Menu dưới header 
+       ========================= */
+ .menu {
+   max-width: 1200px;
+   margin: 6px auto 0;
+   background: #fff;
+   border-bottom: 1px solid #f1f3f5
+ }
+
+ .menu-inner {
+   display: flex;
+   gap: 18px;
+   padding: 10px 18px
+ }
+
+ .menu-inner a {
+   color: var(--accent);
+   text-decoration: none;
+   padding: 10px 12px;
+   border-radius: 8px;
+   transition: background-color .18s ease, color .18s ease
+ }
+
+ .menu-inner a:hover {
+   background: #f3f4f6
+ }
+
+ main {
+   max-width: 1200px;
+   margin: 28px auto;
+   padding: 0 18px
+ }
+
+ /* Trạng thái giỏ rỗng  */
+ .gio-rong {
+   background: var(--card);
+   border-radius: 16px;
+   padding: 72px 40px;
+   text-align: center;
+   box-shadow: 0 6px 22px rgba(15, 23, 42, 0.06)
+ }
+
+ .gio-rong .ikon {
+   width: 120px;
+   height: 120px;
+   border-radius: 50%;
+   background: linear-gradient(180deg, #fff, #f6f7f9);
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+   margin: 0 auto 12px;
+   box-shadow: 0 6px 18px rgba(2, 6, 23, 0.06)
+ }
+
+ .gio-rong .ikon svg {
+   width: 72px;
+   height: 72px;
+   opacity: 0.95;
+ }
+
+ .gio-rong h2 {
+   font-size: 20px;
+   margin: 8px 0
+ }
+
+ .gio-rong p {
+   color: var(--muted)
+ }
+
+ /* Danh sách giỏ hàng */
+ .luoi-gio {
+   display: grid;
+   grid-template-columns: 1fr 360px;
+   gap: 28px
+ }
+
+ .danh-sach-gio {
+   background: var(--card);
+   padding: 18px;
+   border-radius: 12px;
+   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04)
+ }
+
+ .hang-gio {
+   display: flex;
+   gap: 16px;
+   padding: 14px;
+   border-bottom: 1px solid #f1f3f5;
+   align-items: center
+ }
+
+ .hang-gio:last-child {
+   border-bottom: 0
+ }
+
+ .anh {
+   width: 100px;
+   height: 80px;
+   border-radius: 8px;
+   background: #f3f4f6;
+   display: flex;
+   align-items: center;
+   justify-content: center
+ }
+
+ .thong-tin {
+   flex: 1
+ }
+
+ .tieu-de-item {
+   font-weight: 600
+ }
+
+ .meta-item {
+   color: var(--muted);
+   font-size: 13px;
+   margin-top: 6px
+ }
+
+ .dieu-khien-sl {
+   display: flex;
+   align-items: center;
+   gap: 8px
+ }
+
+ .dieu-khien-sl button {
+   width: 32px;
+   height: 32px;
+   border-radius: 8px;
+   border: 1px solid #e6e7eb;
+   background: #fff
+ }
+
+ .dieu-khien-sl input {
+   width: 48px;
+   text-align: center;
+   border-radius: 8px;
+   border: 1px solid #e6e7eb;
+   padding: 6px
+ }
+
+ .gia {
+   font-weight: 700
+ }
+
+ .xoa {
+   background: transparent;
+   border: 0;
+   color: var(--danger);
+   cursor: pointer
+ }
+
+ /* Tóm tắt */
+ .tom-tat {
+   background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.95));
+   padding: 18px;
+   border-radius: 12px;
+   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06)
+ }
+
+ .tom-tat h3 {
+   margin: 0 0 8px
+ }
+
+ .tom-tat .dong {
+   display: flex;
+   justify-content: space-between;
+   padding: 10px 0;
+   border-bottom: 1px dashed #eef2f7
+ }
+
+ .tom-tat .dong:last-child {
+   border-bottom: 0
+ }
+
+ .thanh-toan {
+   margin-top: 14px;
+   display: flex;
+   gap: 10px
+ }
+
+ .nut {
+   padding: 10px 14px;
+   border-radius: 10px;
+   border: 0;
+   cursor: pointer
+ }
+
+ .nut-chinh {
+   background: var(--accent);
+   color: #fff
+ }
+
+ .nut-ghost {
+   background: transparent;
+   border: 1px solid #e6e7eb
+ }
+
+ /* Responsive */
+ @media (max-width:900px) {
+   .luoi-gio {
+     grid-template-columns: 1fr
+   }
+ }
