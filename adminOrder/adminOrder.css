@@ -1,0 +1,198 @@
+  :root{
+      --bg:#f6f7f9; --card:#fff; --muted:#6b7280; --accent:#111827;
+      --primary:#0b5cff; --success:#10b981; --danger:#ef4444; --radius:12px;
+      --badge-dot-size:14px; /* tăng akích thước dot để rõ hơn */
+      --shadow-soft: 0 6px 18px rgba(15,23,42,0.04);
+    }
+    *{box-sizing:border-box}
+    body{font-family:Inter,system-ui,-apple-system,'Segoe UI',Roboto,Arial;margin:0;background:var(--bg);color:#111}
+
+    /* ----- Header & Menu ----- */
+    header{background:#fff;color:#111;padding:12px 18px;border-bottom:1px solid #e6e7eb;position:sticky;top:0;z-index:60}
+    .thanh-tren{max-width:1200px;margin:0 auto;display:flex;gap:18px;align-items:center}
+    .logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+    .vuong{width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,#ff8a65,#ffb563);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+    .tim-kiem{flex:1;display:flex;align-items:center}
+    .tim-kiem input{flex:1;padding:10px 14px;border-radius:999px;border:1px solid #e6e7eb}
+    .nut-gio, .nut-tk{margin-left:12px;padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--accent);font-weight:600;border:1px solid transparent;display:inline-flex;align-items:center;gap:8px}
+    .nut-gio svg, .nut-tk svg{width:18px;height:18px;flex-shrink:0;transition:stroke .22s ease, fill .22s ease}
+    .nut-gio{background:transparent;transition:transform .12s ease,box-shadow .12s ease,background-color .12s ease,color .12s ease}
+    .nut-gio:hover{background:linear-gradient(180deg,rgba(11,92,255,0.06),rgba(11,92,255,0.03));color:var(--primary);transform:translateY(-3px);box-shadow:0 6px 18px rgba(11,92,255,0.06)}
+    .nut-gio:active{transform:translateY(-1px) scale(.995);box-shadow:0 4px 12px rgba(11,92,255,0.06)}
+    .nut-gio:focus{outline:3px solid rgba(11,92,255,0.12);outline-offset:2px}
+    .nut-tk{transition:background-color .22s ease,color .22s ease,transform .22s ease}
+    .nut-tk:hover{background:#111827;color:#fff;transform:translateY(-2px)}
+
+    /* New: horizontal scroll menu like W3Schools */
+    /* --- UPDATED: menu background & active styling to better match UI --- */
+    .menu{max-width:1200px;margin:6px auto 0;border-radius:8px;overflow:visible;position:relative;padding:8px 12px;background:#fff;border:1px solid #e6e7eb;box-shadow:0 1px 6px rgba(2,6,23,0.04);} 
+    .menu-nav{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:8px;position:relative}
+    .scroll-wrap{flex:1; overflow:hidden}
+    .scroll-inner{display:flex;gap:10px;align-items:center;white-space:nowrap;transition:transform .22s ease}
+    .menu-item{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;text-decoration:none;color:var(--accent);font-weight:700;background:transparent;cursor:pointer;border:1px solid transparent;flex:0 0 auto;position:relative;transition:transform .14s ease, box-shadow .14s ease, background-color .14s ease;} 
+    .menu-item:hover{background:linear-gradient(90deg, rgba(11,92,255,0.06), rgba(11,92,255,0.02)); color:var(--primary); transform:translateY(-3px); box-shadow:0 8px 24px rgba(11,92,255,0.06);} 
+
+    /* stronger visual for active item + small left accent bar */
+    .menu-item.active{background:linear-gradient(90deg, rgba(11,92,255,0.10), rgba(11,92,255,0.04)); color:var(--primary); box-shadow:0 12px 30px rgba(2,6,23,0.08);} 
+    .menu-item.active::after{ content:''; position:absolute; left:6px; top:8%; bottom:8%; width:4px; border-radius:6px; background:var(--primary); box-shadow:0 6px 16px rgba(11,92,255,0.12); }
+    /* accessible indicator (aria-current) */
+    .menu-item[aria-current="page"]{ outline: 3px solid rgba(11,92,255,0.08); outline-offset:2px }
+
+    /* small arrow button */
+    .nav-arrow{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:36px;
+      height:36px;
+      border-radius:8px;
+      background:#fff; /* nền trắng để tương phản */
+      border:1px solid rgba(2,6,23,0.08);
+      color:var(--accent);
+      cursor:pointer;
+      margin-left:8px;
+      flex:0 0 auto;
+      box-shadow:0 6px 12px rgba(2,6,23,0.06);
+      transition:transform .14s ease, box-shadow .14s ease, background-color .14s ease, color .14s ease;
+    }
+    .nav-arrow:hover{ transform:translateY(-2px); background:var(--primary); color:#fff; box-shadow:0 12px 30px rgba(11,92,255,0.12); }
+    .nav-arrow[hidden]{ display:none !important; }
+    .nav-arrow:focus{ outline:3px solid rgba(11,92,255,0.12); outline-offset:2px; }
+    .nav-arrow[hidden]{ display:none !important; }
+    .nav-arrow:focus{ outline:3px solid rgba(255,255,255,0.06); outline-offset:2px; }
+
+    /* mimic w3school dark bar style */
+    .menu .menu-item .tag { font-size:12px; color:var(--muted); font-weight:600; margin-left:6px; } 
+
+    /* Admin layout - rest unchanged */
+    main{max-width:1200px;margin:24px auto;padding:0 18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--shadow-soft)}
+    .page-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .page-title{display:flex;gap:12px;align-items:center}
+    .controls{display:flex;gap:8px;align-items:center}
+    .btn{padding:8px 12px;border-radius:10px;border:0;cursor:pointer}
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-ghost{background:transparent;border:1px solid #e6e7eb}
+
+    .filters{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+    .filters input[type=text], .filters select{padding:8px 10px;border-radius:8px;border:1px solid #e6e7eb}
+
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    thead th{background:#fbfcfd;padding:10px;text-align:left;border-bottom:1px solid #eef2f7}
+    tbody td{padding:12px;border-bottom:1px solid #f3f4f6}
+    .small{font-size:13px;color:var(--muted)}
+
+    /* ========== STATUS BADGE (with dot) ========== */
+    .status-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 12px;
+      border-radius:999px;
+      font-weight:700;
+      font-size:13px;
+      box-shadow:inset 0 -6px 12px rgba(255,255,255,0.02);
+      transition:transform .12s ease,box-shadow .12s ease,opacity .12s ease;
+      position:relative; /* for the pseudo element */
+      background-clip:padding-box;
+    }
+    /* dot element before text */
+    .status-badge::before{
+      content:'';
+      width:var(--badge-dot-size);
+      height:var(--badge-dot-size);
+      border-radius:50%;
+      display:inline-block;
+      flex:0 0 auto;
+      margin-right:6px;
+      /* subtle 3D effect like image */
+      box-shadow: 0 3px 8px rgba(2,6,23,0.10), inset 0 2px 4px rgba(255,255,255,0.6);
+      border: 3px solid rgba(255,255,255,0.88); /* light border to emulate the 'knob' look */
+    }
+
+    /* specific status color patches (color the dot and the badge background/text) */
+    .s-dang-cho{background:#fff7ea;color:#b45309;border:1px solid rgba(180,83,9,0.06)}
+    .s-dang-cho::before{background:#f97316}
+
+    .s-da-xac-nhan{background:#ecfff6;color:#065f46;border:1px solid rgba(6,95,70,0.06)}
+    .s-da-xac-nhan::before{background:#10b981}
+
+    .s-dang-chuan-bi{background:#f3f5ff;color:#3730a3;border:1px solid rgba(55,48,163,0.06)}
+    .s-dang-chuan-bi::before{background:#6366f1}
+
+    .s-da-gui{background:#eef6ff;color:#0b5cff;border:1px solid rgba(11,92,255,0.06)}
+    .s-da-gui::before{background:#0b5cff}
+
+    .s-da-hoan-thanh{background:#f1fdf5;color:#065f46;border:1px solid rgba(6,95,70,0.06)}
+    .s-da-hoan-thanh::before{background:#16a34a}
+
+    .s-da-huy{background:#fff6f6;color:#991b1b;border:1px solid rgba(153,27,27,0.06)}
+    .s-da-huy::before{background:#ef4444}
+
+    /* actions, status-action etc */
+    .actions button{margin-left:8px}
+
+    .status-action {
+      position: relative;
+      display: inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid #e6e7eb;
+      cursor:pointer;
+      box-shadow:var(--shadow-soft);
+      transition:transform .12s ease,box-shadow .12s ease;
+      font-weight:700;
+    }
+    .status-action:focus { outline: 3px solid rgba(11,92,255,0.12); outline-offset:2px; }
+    .status-action .chev{font-size:12px;color:var(--muted); margin-left:4px; }
+
+    .status-menu {
+      position:absolute;
+      right:0;
+      top:calc(100% + 8px);
+      background:var(--card);
+      border-radius:10px;
+      box-shadow:0 10px 30px rgba(2,6,23,0.12);
+      padding:8px;
+      min-width:180px;
+      display:none;
+      z-index:120;
+    }
+    .status-menu.open{ display:block; }
+    .status-menu .opt{
+      display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;cursor:pointer;font-weight:700;
+    }
+    .status-menu .opt:hover{ background:#f3f4f6; }
+    .status-menu .dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto;box-shadow:0 2px 6px rgba(2,6,23,0.06);}
+
+    /* drawer tweaks */
+    .drawer{position:fixed;right:20px;top:80px;width:420px;max-width:calc(100% - 40px);height:calc(100% - 120px);background:var(--card);border-radius:12px;box-shadow:0 30px 60px rgba(2,6,23,0.2);transform:translateX(110%);transition:transform .28s cubic-bezier(.2,.9,.3,1);overflow:auto;padding:16px;z-index:80}
+    .drawer.open{transform:translateX(0)}
+    .drawer h3{margin:0 0 8px}
+    .row{display:flex;justify-content:space-between;gap:12px}
+    .muted{color:var(--muted)}
+    .product-list{margin-top:12px}
+    .product-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed #eef2f7}
+    .product-item img{width:64px;height:44px;object-fit:cover;border-radius:6px}
+
+    .inline{display:inline-flex;gap:8px;align-items:center}
+
+    /* toast */
+    .toast {
+      position:fixed;
+      right:20px;
+      bottom:20px;
+      background:#111827;color:#fff;padding:10px 14px;border-radius:10px;box-shadow:0 10px 30px rgba(2,6,23,0.18);
+      opacity:0; transform:translateY(8px); transition:opacity .22s ease, transform .22s ease; z-index:200;
+    }
+    .toast.show{ opacity:1; transform:none; }
+
+    @media (max-width:880px){
+      .drawer{left:10px;right:10px;top:70px;width:auto;height:calc(100% - 140px)} table thead{display:none} table, tbody, tr, td{display:block;width:100%} td{padding:10px 0;border-bottom:1px dashed #eef2f7}
+      .status-menu{right:8px;left:8px}
+      .menu{padding:6px}
+      .nav-arrow{ width:34px; height:34px; }
+    }

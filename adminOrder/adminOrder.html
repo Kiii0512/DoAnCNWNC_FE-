@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Quản lý đơn hàng</title>
+ <link rel="stylesheet" href="./adminOrder.css" />
+</head>
+<body>
+  <!-- Header + Menu -->
+  <header>
+    <div class="thanh-tren">
+      <a class="logo" href="../index.html" aria-label="Về trang chủ">
+        <div class="vuong">68</div>
+        <div style="font-weight:700">Shop68IT1</div>
+      </a>
+
+      <div class="tim-kiem">
+        <input id="timKiemChung" placeholder="Tìm sản phẩm, đơn, khách..." aria-label="Tìm kiếm" />
+
+        <a id="nutGio" class="nut-gio" href="gioHang.html" title="Xem giỏ hàng" aria-label="Giỏ hàng">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 6h15l-1.2 6.3A2 2 0 0 1 17.9 14H9.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="19" r="1.4" fill="currentColor"/><circle cx="18" cy="19" r="1.4" fill="currentColor"/></svg>
+          <span>Giỏ hàng</span>
+        </a>
+
+        <button id="nutTaiKhoan" class="nut-tk" title="Tài khoản" aria-label="Tài khoản">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Tài khoản</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Replaced menu: horizontal, scrollable with arrows -->
+  <div class="menu" role="navigation" aria-label="Main menu">
+    <div class="menu-nav" id="menuNav">
+      <div class="scroll-wrap" id="scrollWrap" tabindex="0" aria-label="Danh mục">
+        <div class="scroll-inner" id="scrollInner">
+          <!-- menu items (hrefs use hashes so active can match current location) -->
+          <a class="menu-item" href="#admin" data-route="admin">Admin Dashboard<span class="tag">ADMIN</span></a>
+          <a class="menu-item" href="#products" data-route="products">Quản lý sản phẩm <span class="tag">PRODUCTS</span></a>
+          <a class="menu-item" href="#categories" data-route="categories">Quản lý danh mục &amp; thương hiệu <span class="tag">CATEGORIES</span></a>
+          <a class="menu-item" href="#orders" data-route="orders">Quản lý đơn hàng <span class="tag">ORDERS</span></a>
+          <a class="menu-item" href="#accounts" data-route="accounts">Quản lý khách hàng / tài khoản <span class="tag">ACCOUNTS</span></a>
+          <a class="menu-item" href="#discounts" data-route="discounts">Quản lý khuyến mãi / coupon <span class="tag">DISCOUNTS</span></a>
+          <a class="menu-item" href="#payments" data-route="payments">Cấu hình thanh toán <span class="tag">PAYMENTS</span></a>
+          <a class="menu-item" href="#feedbacks" data-route="feedbacks">Duyệt đánh giá / phản hồi <span class="tag">FEEDBACKS</span></a>
+          <a class="menu-item" href="#reports" data-route="reports">Báo cáo / Export <span class="tag">REPORTS</span></a>
+        </div>
+      </div>
+
+      <button class="nav-arrow" id="leftArrow" aria-hidden="true" hidden aria-label="Trượt sang trái">◀</button>
+      <button class="nav-arrow" id="rightArrow" aria-label="Trượt sang phải">▶</button>
+    </div>
+  </div>
+
+  <main>
+    <div class="card">
+      <div class="page-head">
+        <div class="page-title">
+          <h2 style="margin:0">Admin — Quản lý đơn hàng</h2>
+          <div class="small muted">Danh sách, xem, cập nhật trạng thái, in & export</div>
+        </div>
+        <div class="controls">
+          <button class="btn btn-ghost" id="btnLamMoi">Làm mới</button>
+          <button class="btn btn-ghost" id="btnXuat">Xuất CSV</button>
+        </div>
+      </div>
+
+      <div class="filters">
+        <input type="text" id="timKiem" placeholder="Tìm theo tên, mã, số điện thoại..." style="min-width:280px" />
+        <select id="locTrangThai" aria-label="Lọc trạng thái">
+          <option value="">Tất cả trạng thái</option>
+          <option value="dang-cho">Đang chờ</option>
+          <option value="da-xac-nhan">Đã xác nhận</option>
+          <option value="dang-chuan-bi">Đang chuẩn bị</option>
+          <option value="da-gui">Đã gửi</option>
+          <option value="da-hoan-thanh">Hoàn thành</option>
+          <option value="da-huy">Đã hủy</option>
+        </select>
+        <select id="soLuongTrang" aria-label="Số dòng">
+          <option>10</option>
+          <option>25</option>
+          <option>50</option>
+        </select>
+        <div style="margin-left:auto" class="inline">
+          <label class="small muted">Chọn:</label>
+          <button class="btn btn-ghost" id="inChon">In</button>
+          <button class="btn btn-ghost" id="xuatChon">Xuất chọn</button>
+        </div>
+      </div>
+
+      <div style="overflow:auto">
+        <table id="bangDon" aria-describedby="Danh sách đơn hàng">
+          <thead>
+            <tr>
+              <th style="width:36px"><input type="checkbox" id="chkTatCa" aria-label="Chọn tất cả"/></th>
+              <th>Mã đơn</th>
+              <th>Khách</th>
+              <th>Thanh toán</th>
+              <th>Trạng thái</th>
+              <th>Ngày</th>
+              <th style="width:190px">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Khung chi tiết -->
+  <aside class="drawer" id="khungChiTiet" aria-hidden="true">
+    <button id="dongKhung" class="btn btn-ghost" style="float:right">Đóng</button>
+    <h3>Chi tiết đơn <span id="chiTietMa" class="small muted"></span></h3>
+    <div id="chiTietKhach" class="khung-thong-tin"></div>
+    <div style="margin-top:10px">
+      <label class="small muted">Trạng thái</label>
+      <div style="display:flex;gap:8px;margin-top:6px;align-items:center">
+        <select id="chiTietTrangThai" style="padding:8px 10px;border-radius:8px;border:1px solid #e6e7eb">
+          <option value="dang-cho">Đang chờ</option>
+          <option value="da-xac-nhan">Đã xác nhận</option>
+          <option value="dang-chuan-bi">Đang chuẩn bị</option>
+          <option value="da-gui">Đã gửi</option>
+          <option value="da-hoan-thanh">Hoàn thành</option>
+          <option value="da-huy">Đã hủy</option>
+        </select>
+        <button id="luuTrangThai" class="btn btn-primary">Lưu trạng thái</button>
+        <button id="inDon" class="btn btn-ghost">In đơn</button>
+      </div>
+    </div>
+
+    <div class="product-list" id="chiTietSanPham"></div>
+    <div style="margin-top:12px" id="chiTietTong"></div>
+  </aside>
+
+  <!-- toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+      <script src="./adminOrder.js"></script>
+</body>
+</html>
