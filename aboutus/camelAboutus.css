@@ -1,0 +1,62 @@
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+        }
+        header {
+            background: #ffffff;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        header .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        header nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #1d1d1f;
+            font-weight: 500;
+        }
+        header nav a:hover { color: #0066cc; }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(90deg, #0000009d, #051017);
+            height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .hero h1 { font-size: 42px; }
+
+        /* CONTENT */
+        .content-section {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            line-height: 1.7;
+        }
+        h2 { color: #0066cc; }
+
+        /* FOOTER */
+        footer {
+            margin-top: 60px;
+            background: #111;
+            color: #ccc;
+            padding: 40px;
+            text-align: center;
+        }
