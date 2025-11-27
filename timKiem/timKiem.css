@@ -71,9 +71,9 @@
   align-items: center;
   gap: 10px;
   padding: 10px 0;
-  background: none;      /* bỏ nền card */
-  border: none;          /* bỏ viền */
-  box-shadow: none;      /* bỏ shadow */
+  background: none;      
+  border: none;          
+  box-shadow: none;      
 }
 
 .sort-bar span {
@@ -86,7 +86,7 @@
   padding: 8px 12px;
   border-radius: 10px;
   border: 1px solid #cfd5e3;
-  background: #f8f9fc;
+  background: rgb(248, 249, 252);
   font-size: 14px;
   cursor: pointer;
   transition: 0.2s ease;
@@ -125,3 +125,21 @@
     align-items: flex-start;
   }
 }
+
+/* ==== Filter bar ==== */
+
+.filter-bar select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: rgb(248, 249, 252);
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 140px;
+}
+
+.filter-bar span {
+  font-weight: 500;
+  color: #333;
+}
+

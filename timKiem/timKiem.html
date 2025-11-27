@@ -48,16 +48,35 @@
     <!-- ==== Cac san pham tim kiem ==== -->
     <section id="products">
 
-      <!-- Dòng tiêu đề -->
-      <h2 class="title-center">Tìm Kiếm</h2>
-
-
       <div class="search-container">
-        <!-- SEARCH -->
-        <div class="search-row">
-          <input type="text" id="search-input" class="search-input" placeholder="Tìm sản phẩm, danh mục...">
-          <button id="search-btn" class="search-btn">Tìm</button>
-        </div>
+        <!-- FILTER -->
+          <div class="filter-bar" style="margin:10px 0; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <span>Lọc theo:</span>
+            <select id="filter-category">
+              <option value="">Tất cả danh mục</option>
+              <option value="dien-thoai">Điện thoại</option>
+              <option value="laptop">Laptop</option>
+              <option value="pc">PC</option>
+              <option value="phu-kien">Phụ kiện</option>
+            </select>
+
+            <select id="filter-price">
+              <option value="">Mọi mức giá</option>
+              <option value="0-1000000">Dưới 1 triệu</option>
+              <option value="1000000-5000000">1 - 5 triệu</option>
+              <option value="5000000-10000000">5 - 10 triệu</option>
+              <option value="10000000-">Trên 10 triệu</option>
+            </select>
+
+            <select id="filter-brand">
+              <option value="">Tất cả hãng</option>
+              <option value="samsung">Samsung</option>
+              <option value="apple">Apple</option>
+              <option value="asus">Asus</option>
+              <option value="dell">Dell</option>
+            </select>
+          </div>
+
 
         <!-- SORT -->
         <div class="sort-bar">
@@ -75,8 +94,6 @@
       </div>
     </section>
 </main>
-
-
 
   </main>
 
@@ -126,5 +143,6 @@
     <div style="margin-top:10px;display:flex;gap:8px"><button class="btn" id="checkout">Thanh toán</button><button class="icon-btn" id="clearCart">Xóa</button></div>
   </div>
   <script src="main.js"></script>
+  <script src="timKiem.js"></script>
 </body>
 </html>
