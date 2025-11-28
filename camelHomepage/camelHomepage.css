@@ -95,6 +95,8 @@ header {
   color: #fff
 }
 
+
+
 .nav-actions {
   display: flex;
   gap: 10px;
@@ -112,6 +114,38 @@ header {
   background: #9c9d9e;
   color: #fff
 } 
+
+.account-menu {
+  position: absolute;
+  right: 120px; /* chỉnh cho vừa vị trí nút */
+  top: 80px;
+
+  background: #fff;
+  border: 1px solid #e6e9ee;
+  border-radius: 10px;
+  width: 180px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+
+  display: none; /* ẩn mặc định */
+  flex-direction: column;
+  z-index: 100;
+}
+
+.account-menu a {  
+  padding: 12px;
+  text-decoration: none;
+  color: #111;
+  font-size: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.account-menu a:last-child {
+  border-bottom: none;
+}
+
+.account-menu a:hover {
+  background: #f3f4f6; 
+}
 
 /* nav */
 nav.main-nav {

@@ -125,7 +125,23 @@
     renderCards(products);
     updateCartUI();
 
-    // ==== BANNER SLIDER ====
+    // MENU TÀI KHOẢN
+const tkBtn = document.getElementById("taikhoan");
+const accountMenu = document.getElementById("accountMenu");
+
+tkBtn.addEventListener("click", () => {
+  accountMenu.style.display =
+    accountMenu.style.display === "flex" ? "none" : "flex";
+});
+
+// Ẩn menu khi bấm ra ngoài vùng
+document.addEventListener("click", (e) => {
+  if (!tkBtn.contains(e.target) && !accountMenu.contains(e.target)) {
+    accountMenu.style.display = "none";
+  }
+});
+
+    // BANNER SLIDER 
 let slideIndex = 0;
 const slides = document.querySelectorAll(".slide");
 const dots = document.querySelectorAll(".dot");
