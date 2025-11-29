@@ -1,34 +1,44 @@
-<!doctype html>
+<!doctype html> 
 <html lang="vi">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Shop 68IT1 </title>
+  <title>Shop 68IT1</title>
   <link rel="stylesheet" href="camelMobile.css" />
 </head>
+
 <body>
+  <!-- Topbar -->
   <div class="topbar">
-    <div class="container" style="display:flex;justify-content:space-between;align-items:center ;">
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;">
       <div>Giao hàng nhanh — Support: 1900 1009 </div>
-      <div> 
-        <button class="login"> Đăng nhập</button> 
-        <button class="login" > Đăng ký</button> 
+      <div>
+        <button class="login">Đăng nhập</button>
+        <button class="login">Đăng ký</button>
       </div>
     </div>
   </div>
 
+  <!-- Header -->
   <header>
     <div class="container head-main">
-      <div class="logo"><div class="mark"><a href="#"></a>SH</div></a><div>Shop68IT1</div></div>
+      <div class="logo">
+        <div class="mark"><a href="#"></a>SH</div>
+        <div>Shop68IT1</div>
+      </div>
+
       <div class="search">
         <input id="q" placeholder="Tìm điện thoại, laptop, linh kiện..." />
         <button class="icon-btn" id="searchBtn">Tìm kiếm</button>
       </div>
+
       <div class="nav-actions">
         <button class="icon-btn" id="favBtn">Yêu thích</button>
-        <a href="http://127.0.0.1:5500/DES-vs-HNB/DES-vs-HNB/gio-hang/gioHang.html"></a><button class="icon-btn" id="cartBtn">Giỏ hàng (<span id="cartCount">0</span>)</button>
+        <a href="gio-hang/gioHang.html"></a>
+        <button class="icon-btn" id="cartBtn">Giỏ hàng (<span id="cartCount">0</span>)</button>
       </div>
     </div>
+
     <nav class="main-nav">
       <div class="container menu">
         <a id="mb" href="#">Điện thoại</a>
@@ -40,79 +50,91 @@
     </nav>
   </header>
 
+  <!-- Main -->
   <main class="container">
-      </div>
-      
+
     <section id="products">
-      <div class="menumb" style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;width: auto;border-top: 1px solid #eef2f7;
-  border-bottom: 1px solid #eef2f7">
-        <a href="#">Iphone</a>
-        <a href="#">Samsung</a>
-        <a href="#">Xiaomi</a>
-        <a href="#">Oppo</a>
+
+      <!-- Brand Filter -->
+      <div class="menumb" style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;border-top:1px solid #eef2f7;border-bottom:1px solid #eef2f7">
+        <a href="?brand=iphone">iPhone</a>
+        <a href="?brand=samsung">Samsung</a>
+        <a href="?brand=xiaomi">Xiaomi</a>
+        <a href="?brand=oppo">Oppo</a>
       </div>
+
+      <!-- Sort Select -->
       <div>
-          <select id="sort">
-            <option value="popular">Phổ biến</option>
-            <option value="price-asc">Giá: thấp → cao</option>
-            <option value="price-desc">Giá: cao → thấp</option>
-          </select> 
+        <select id="sort">
+          <option value="popular">Phổ biến</option>
+          <option value="price-asc">Giá: thấp → cao</option>
+          <option value="price-desc">Giá: cao → thấp</option>
+        </select>
       </div>
-    </div>
 
+      <!-- Product Grid -->
       <div class="grid" id="grid">
-        <!-- Product cards injected by JS -->
+        <!-- Cards injected by JS -->
       </div>
-    </section>
 
+    </section>
 
   </main>
 
-   <footer style="justify-content:space-between; background-color: black;">
-      <div  class="container" style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap ; ">
-        <div style="min-width:220px">
-          <h3>Shop68IT1</h3>
-          <p>Địa chỉ: 55 Giải phóng,tp Hà Nội — Hotline: 1900 1009</p>
-        </div>
-        <div>
-          <h4>Chính sách</h4>
-          <p>Đổi trả · Bảo hành · Thanh toán</p>
-        </div>
-        <div>
-          <h4>Theo dõi</h4>
-          <p>Facebook · Instagram · YouTube</p>
-        </div>
+  <!-- FOOTER -->
+  <footer style="justify-content:space-between; background-color: black;">
+    <div class="container" style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+      <div style="min-width:220px">
+        <h3>Shop68IT1</h3>
+        <p>Địa chỉ: 55 Giải phòng, Hà Nội — Hotline: 1900 1009</p>
       </div>
-    </footer>
-   
-  <!-- Modal quick view -->
+      <div>
+        <h4>Chính sách</h4>
+        <p>Đổi trả · Bảo hành · Thanh toán</p>
+      </div>
+      <div>
+        <h4>Theo dõi</h4>
+        <p>Facebook · Instagram · YouTube</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal -->
   <div class="modal" id="modal">
     <div class="modal-content">
-      <div>
-        <img id="modalImg" src="" alt="product">
-      </div>
+      <div><img id="modalImg" src="" alt="product"></div>
       <div style="flex:1">
         <h3 id="modalTitle">Title</h3>
         <p id="modalDesc">Description</p>
-        <div style="margin:10px 0"><span id="modalPrice" class="price">0₫</span> <span id="modalOld" class="old"></span></div>
+        <div style="margin:10px 0">
+          <span id="modalPrice" class="price">0₫</span>
+          <span id="modalOld" class="old"></span>
+        </div>
         <div style="display:flex;gap:8px;align-items:center">
           <input type="number" id="qty" value="1" min="1" style="width:80px;padding:8px;border-radius:8px;border:1px solid #e6e9ee">
           <button class="btn" id="addToCartModal">Thêm vào giỏ</button>
         </div>
-        <div style="margin-top:14px"><button id="closeModal" class="icon-btn">Đóng</button></div>
+        <div style="margin-top:14px">
+          <button id="closeModal" class="icon-btn">Đóng</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Cart panel -->
+  <!-- Cart Panel -->
   <div class="cart-panel" id="cartPanel" style="display:none">
     <h4>Giỏ hàng</h4>
     <div class="cart-items" id="cartItems"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
       <strong>Tổng:</strong><strong id="cartTotal">0₫</strong>
     </div>
-    <div style="margin-top:10px;display:flex;gap:8px"><button class="btn" id="checkout">Thanh toán</button><button class="icon-btn" id="clearCart">Xóa</button></div>
+    <div style="margin-top:10px;display:flex;gap:8px">
+      <button class="btn" id="checkout">Thanh toán</button>
+      <button class="icon-btn" id="clearCart">Xóa</button>
+    </div>
   </div>
-  <script src="camelMobile.js"></script>
+
+  <script src="Demo.js"></script>
+
 </body>
 </html>

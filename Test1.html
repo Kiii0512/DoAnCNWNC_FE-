@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Category Demo</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .sidebar { width: 150px; float: left; }
+    .sidebar a { display: block; padding: 8px; margin-bottom: 6px; background: #eee; border-radius: 6px; text-decoration: none; }
+    .products { margin-left: 180px; }
+    .card { border: 1px solid #ccc; padding: 10px; border-radius: 6px; margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR CATEGORY -->
+  <div class="sidebar">
+    <h3>Danh mục</h3>
+    <a href="?brand=iphone">iPhone</a>
+    <a href="?brand=samsung">Samsung</a>
+    <a href="?brand=xiaomi">Xiaomi</a>
+  </div>
+
+  <!-- PRODUCT LIST -->
+  <div class="products">
+    <h2>Kết quả lọc</h2>
+    <div id="product-list"></div>
+  </div>
+
+<script>
+// ------------------------------
+// MOCK DATA (thay cho backend)
+// ------------------------------
+const products = [
+  { id: 1, name: "iPhone 14 Pro", brand: "iphone" },
+  { id: 2, name: "iPhone 12", brand: "iphone" },
+  { id: 3, name: "Samsung S23 Ultra", brand: "samsung" },
+  { id: 4, name: "Samsung A54", brand: "samsung" },
+  { id: 5, name: "Xiaomi Redmi Note 13", brand: "xiaomi" }
+];
+
+// ------------------------------
+// LẤY PARAM TỪ URL
+// ------------------------------
+const params = new URLSearchParams(window.location.search);
+const brand = params.get("brand");
+
+const container = document.getElementById("product-list");
+
+// ------------------------------
+// NẾU CHƯA BẤM MỤC NÀO
+// ------------------------------
+if (!brand) {
+  container.innerHTML = "<p>Vui lòng chọn danh mục bên trái.</p>";
+} else {
+  const result = products.filter(p => p.brand === brand);
+
+  if (result.length === 0) {
+    container.innerHTML = "<p>Không có sản phẩm nào.</p>";
+  } else {
+    container.innerHTML = result.map(p => `
+      <div class="card">
+        <h3>${p.name}</h3>
+        <p>Thương hiệu: ${p.brand}</p>
+      </div>
+    `).join("");
+  }
+}
+</script>
+
+</body>
+</html>
