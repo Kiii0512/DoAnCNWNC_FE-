@@ -1,66 +1,80 @@
-const input = document.getElementById("search-input");
-const sortSelect = document.getElementById("sort");
-const searchBtn = document.getElementById("search-btn");
-searchBtn.onclick = () => {
-    const keyword = input.value;
-    let result = searchProducts(keyword);
-};
+// ==========================
+// HÀM GỌI API BACKEND
+// ==========================
+async function fetchProducts() {
+  const q = document.getElementById("q").value.trim();
+  const category = document.getElementById("filter-category").value;
+  const brand = document.getElementById("filter-brand").value;
+  const price = document.getElementById("filter-price").value;
+  const sort = document.getElementById("sort").value;
 
-sortSelect.onchange = () => {
-    const keyword = input.value;
-    let result = searchProducts(keyword);
-    result = sortProducts(result, sortSelect.value);
-    renderProducts(result, keyword);
-};
+  // Tách khoảng giá
+  let min = "";
+  let max = "";
+  if (price.includes("-")) {
+    const range = price.split("-");
+    min = range[0];
+    max = range[1];
+  }
 
-
-function searchProducts(keyword) {
-    keyword = keyword.trim().toLowerCase();
-
-    const results = products.filter(item =>
-        item.name.toLowerCase().includes(keyword) ||
-        item.category.toLowerCase().includes(keyword) ||
-        item.description.toLowerCase().includes(keyword)
+  try {
+    const res = await fetch(
+      `http://localhost:3000/api/products?q=${q}&category=${category}&brand=${brand}&min=${min}&max=${max}&sort=${sort}`
     );
 
-    renderProducts(results, keyword);  // có highlight
+    const data = await res.json();
+    renderProducts(data);
+  } catch (err) {
+    console.error("Lỗi gọi API:", err);
+  }
 }
 
-function sortProducts(list, type) {
-    if (type === "price-asc") list.sort((a, b) => a.price - b.price);
-    if (type === "price-desc") list.sort((a, b) => b.price - a.price);
-    if (type === "popular") list.sort((a, b) => b.id - a.id); // giả sử id lớn hơn là mới hơn
+// ==========================
+// HÀM ĐỔ SẢN PHẨM RA HTML
+// ==========================
+function renderProducts(products) {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = ""; // clear trước
 
-    return list;
+  if (!products || products.length === 0) {
+    grid.innerHTML = "<p>Không tìm thấy sản phẩm.</p>";
+    return;
+  }
+
+  products.forEach(p => {
+    const card = `
+      <div class="card" onclick="openModal(${p.id})">
+        <img src="${p.img}" alt="${p.title}">
+        <h3>${p.title}</h3>
+        <p class="price">${p.price.toLocaleString()}₫</p>
+        <p class="old">${p.old ? p.old.toLocaleString() + "₫" : ""}</p>
+      </div>
+    `;
+    grid.innerHTML += card;
+  });
 }
 
-function filterByPrice(list, min, max) {
-    return list.filter(item => item.price >= min && item.price <= max);
-}
+// ==========================
+// GỌI API KHI TÌM KIẾM
+// ==========================
+document.getElementById("searchBtn").addEventListener("click", () => {
+  fetchProducts();
+});
 
-function highlight(text, keyword) {
-    if (!keyword) return text;
-    const regex = new RegExp(`(${keyword})`, "gi");
-    return text.replace(regex, `<span class="highlight">$1</span>`);
-}
+// Enter để tìm kiếm
+document.getElementById("q").addEventListener("keyup", (e) => {
+  if (e.key === "Enter") fetchProducts();
+});
 
-function renderProducts(list, keyword = "") {
-    const grid = document.getElementById("grid");
-    grid.innerHTML = "";
+// ==========================
+// GỌI API KHI FILTER / SORT
+// ==========================
+document.getElementById("filter-category").addEventListener("change", fetchProducts);
+document.getElementById("filter-brand").addEventListener("change", fetchProducts);
+document.getElementById("filter-price").addEventListener("change", fetchProducts);
+document.getElementById("sort").addEventListener("change", fetchProducts);
 
-    if (list.length === 0) {
-        grid.innerHTML = "<p style='text-align:center;'>Không tìm thấy sản phẩm.</p>";
-        return;
-    }
-
-    list.forEach(item => {
-        grid.innerHTML += `
-            <div class="product-card">
-                <img src="${item.image}">
-                <h3>${highlight(item.name, keyword)}</h3>
-                <p>${highlight(item.category, keyword)}</p>
-                <span class="price">${item.price.toLocaleString()}₫</span>
-            </div>
-        `;
-    });
-}
+// ==========================
+// LẦN ĐẦU LOAD TRANG
+// ==========================
+fetchProducts();
