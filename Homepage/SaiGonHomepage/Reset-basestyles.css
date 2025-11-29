@@ -1,0 +1,144 @@
+/* ===============================
+   TOPBAR TRÊN CÙNG
+   =============================== */
+.topbar {
+  background: #0f1724; /* nền tối */
+  color: #fff;         /* chữ trắng */
+  padding: 6px 16px;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between; /* hai bên trái phải */
+  align-items: center;
+}
+
+/* container chung */
+.container {
+  max-width: 1200px; /* chiều rộng tối đa */
+  margin: 0 auto;    /* căn giữa */
+  padding: 0 16px;   /* padding 2 bên */
+}
+
+/* nút login */
+.login {
+  margin-left:5px;
+  padding:5px 10px;
+  border-radius:8px;
+  border:0;
+  background:#fcfcfc;
+  color:#000000;
+}
+
+.login:hover {
+  background:#340303;
+  color: #ffffff;
+}
+
+/* header sticky */
+header {
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(16, 24, 40, .06);
+  position: sticky;
+  top: 0;
+  z-index: 50; /* trên các element khác */
+}
+
+/* main header layout */
+.head-main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+}
+
+/* logo */
+.logo {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 20px;
+  color: #111;
+}
+
+/* logo mark */
+.logo .mark {
+  text-decoration: none;
+  background: linear-gradient(90deg, #0000009d, #051017);
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+/* search box */
+.search {
+  flex: 1; /* chiếm toàn bộ khoảng trống */
+  display: flex;
+}
+
+.search input {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #e6e9ee;
+}
+
+.search button {
+  margin-left: 8px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 0;
+  background: #0f1724;
+  color: #fff;
+}
+
+/* nav actions (icon) */
+.nav-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* icon buttons chung */
+.icon-btn {
+  background: transparent;
+  border: 1px solid #e6e9ee;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.icon-btn:hover {
+  background: #9c9d9e;
+  color: #fff;
+}
+
+/* menu dropdown account */
+.account-menu {
+  position: absolute;
+  right: 120px; /* vị trí bên phải */
+  top: 80px;    /* cách top 80px */
+  background: #fff;
+  border: 1px solid #e6e9ee;
+  border-radius: 10px;
+  width: 180px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  display: none; /* ẩn mặc định */
+  flex-direction: column;
+  z-index: 100;
+}
+
+.account-menu a {  
+  padding: 12px;
+  text-decoration: none;
+  color: #111;
+  font-size: 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.account-menu a:last-child {
+  border-bottom: none; 
+}
+
+.account-menu a:hover {
+  background: #f3f4f6; 
+}

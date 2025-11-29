@@ -1,0 +1,60 @@
+/* ===============================
+   QUICK VIEW MODAL
+   =============================== */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: none; /* ẩn mặc định */
+  align-items: center;
+  justify-content: center;
+  background: rgba(11, 15, 25, .45);
+  z-index: 60;
+}
+
+.modal.open {
+  display: flex; /* hiện khi active */
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 12px;
+  padding: 18px;
+  max-width: 900px;
+  width: 96%;
+  display: flex;
+  gap: 18px;
+}
+
+.modal-content img {
+  width: 320px;
+  height: 320px;
+  object-fit: contain;
+}
+
+/* ===============================
+   CART PANEL
+   =============================== */
+.cart-panel {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  border: 1px solid #e6e9ee;
+  width: 320px;
+  box-shadow: 0 6px 20px rgba(16, 24, 40, .12);
+}
+
+.cart-items {
+  max-height: 220px;
+  overflow: auto;
+}
+
+.cart-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+}

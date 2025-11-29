@@ -1,0 +1,52 @@
+/* ===============================
+   NAVIGATION
+   =============================== */
+nav.main-nav {
+  background: #fff;
+  border-top: 1px solid #eef2f7;
+  border-bottom: 1px solid #eef2f7;
+}
+
+/* menu links */
+.menu {
+  display: flex;
+  gap: 18px;
+  padding: 10px 0;
+}
+
+.menu a {
+  color: #111;
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.menu a:hover {
+  color: #000000;
+  background: #e5e1e1;
+}
+
+/* menu bottom (sub-menu) */
+.menumb {
+  display: flex;
+  justify-content: flex-start !important; /* override inline nếu có */
+  align-items: center;
+  gap: 12px; /* khoảng cách giữa các link */
+  margin-top: 14px;
+  width: auto;
+  padding: 8px 0;
+  border-top: 1px solid #eef2f7;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.menumb a {
+  color: #111;
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+
+.menumb a:hover {
+  color: #000000;
+  background: #f3f0f0;
+}
