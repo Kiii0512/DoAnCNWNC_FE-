@@ -1,69 +1,6 @@
-class BannerSlider extends HTMLElement {
+class bannerSlider extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
-      <style>
-        .banner {
-          position: relative;
-          width: 100%;
-          height: 60vh;
-          margin-top: 80px;
-          overflow: hidden;
-        }
-
-        .slide img {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
-          background-color: #ffffff;
-          display: block;
-        }
-
-        .slides {
-          display: flex;
-          transition: transform 0.6s ease;
-          height: 100%;
-        }
-
-        .prev, .next {
-          position: absolute;
-          top:50%;
-          transform: translateY(-50%);
-          background: rgba(0,0,0,0.5);
-          color:white;
-          border:none;
-          font-size:30px;
-          cursor:pointer;
-          padding:8px 12px;
-          border-radius:50%;
-        }
-        .prev { left: 15px; }
-        .next { right: 15px; }
-
-        .dots {
-          position: absolute;
-          bottom: 20px;
-          width: 100%;
-          text-align: center;
-        }
-
-        .dot {
-          height: 12px;
-          width: 12px;
-          margin: 0 5px;
-          background-color: #bbb;
-          border-radius: 50%;
-          display: inline-block;
-          cursor: pointer;
-          transition: background-color 0.4s;
-        }
-        .dot.active { background-color: #0071e3; }
-
-        /* ẨN banner khi màn nhỏ */
-        @media (max-width: 600px) {
-           .banner { display: none !important; }
-        }
-      </style>
-
       <section class="banner">
         <div class="slides">
           <div class="slide"><img src="https://shopdunk.com/images/uploaded/banner/Banner%202025/Tha%CC%81ng%2010/banner%20iP17-%C4%90C_Danh%20m%E1%BB%A5c.png"></div>
@@ -108,4 +45,4 @@ class BannerSlider extends HTMLElement {
     this.appendChild(script);
   }
 }
-customElements.define("banner-slider", BannerSlider);
+customElements.define("banner-slider", bannerSlider);

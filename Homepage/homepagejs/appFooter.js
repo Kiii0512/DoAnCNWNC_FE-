@@ -1,10 +1,6 @@
-class AppFooter extends HTMLElement {
+class appFooter extends HTMLElement {
     connectedCallback() {
       this.innerHTML = `
-
-        <style>
-        footer { margin-top:28px; padding:28px 0; color:#6b7280 }
-        </style>
 
         <footer style="justify-content:space-between; background-color: black;">
           <div class="container" style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;">
@@ -25,4 +21,4 @@ class AppFooter extends HTMLElement {
       `;
     }
   }
-  customElements.define('app-footer', AppFooter);
+  customElements.define('app-footer', appFooter);

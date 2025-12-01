@@ -1,13 +1,6 @@
-class QuickModal extends HTMLElement {
+class quickModal extends HTMLElement {
     connectedCallback() {
       this.innerHTML = `
-        <style>
-            .modal { position: fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(11,15,25,.45); z-index:60 }
-            .modal.open { display:flex }
-            .modal-content { background:#fff; border-radius:12px; padding:18px; max-width:900px; width:96%; display:flex; gap:18px }
-            .modal-content img { width:320px; height:320px; object-fit:contain }
-        </style>
-
         <div class="modal" id="modal">
           <div class="modal-content">
             <div>
@@ -38,4 +31,4 @@ class QuickModal extends HTMLElement {
       this.appendChild(script);
     }
   }
-  customElements.define('quick-modal', QuickModal);
+  customElements.define('quick-modal', quickModal);
