@@ -1,4 +1,3 @@
-// ---------- Menu scroll behaviour (updated: active persists via location.hash) ----------
 (function () {
     const wrap = document.getElementById('scrollWrap');
     const inner = document.getElementById('scrollInner');
@@ -63,7 +62,6 @@
     wrap.addEventListener('touchmove', e => { if (!isTouching) return; const dx = startX - e.touches[0].clientX; wrap.scrollLeft += dx; startX = e.touches[0].clientX; });
     wrap.addEventListener('touchend', () => { isTouching = false; updateArrows(); });
 
-    // enhanced activation: supports location.hash persistence + click
     const menuItems = Array.from(document.querySelectorAll('.menu-item'));
 
     function setActiveElement(el) {
@@ -71,7 +69,6 @@
         if (!el) return;
         el.classList.add('active');
         el.setAttribute('aria-current', 'page');
-        // ensure visible inside scroll-wrap
         const wrapRect = wrap.getBoundingClientRect();
         const elRect = el.getBoundingClientRect();
         if (elRect.left < wrapRect.left || elRect.right > wrapRect.right) {
@@ -94,7 +91,7 @@
         const hash = location.hash || '';
         let sel = null;
         if (hash) { sel = document.querySelector(`.menu-item[href="${hash}"]`) || document.querySelector(`.menu-item[data-route="${hash.replace('#', '')}"]`); }
-       if(!sel) sel = document.querySelector('.menu-item[data-route="reports"]')
+        if (!sel) sel = document.querySelector('.menu-item[data-route="reports"]')
             || document.querySelector('.menu-item[href$="adminExport.html"]')
             || document.querySelector('.menu-item');
         setActiveElement(sel);
@@ -105,7 +102,6 @@
     setTimeout(() => { setActiveFromLocation(); updateArrows(); }, 160);
 })();
 
-/* ---------------- UI helpers and data ---------------- */
 const KHOA_ADMIN = 'admin_donhang_demo';
 function taiDon() { try { return JSON.parse(localStorage.getItem(KHOA_ADMIN)) || []; } catch (e) { return []; } }
 function luuDon(arr) { localStorage.setItem(KHOA_ADMIN, JSON.stringify(arr)); }
@@ -152,17 +148,16 @@ function renderBangDon(orders) {
     if (orders.length > 200) { const tr = document.createElement('tr'); tr.innerHTML = `<td colspan="5" class="small muted">Hiển thị 200 đơn đầu (trong tổng ${orders.length}).</td>`; tbody.appendChild(tr); }
 }
 
-/* ------- Responsive chart drawing ------- */
 function drawChart(data, hoverIndex = -1) {
     const canvas = document.getElementById('bieuDo');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    // Calculate desired height based on parent width (responsive)
+    // Tự tính toán khoảng cách và kích thước
     const parent = canvas.parentElement || canvas;
     const parentWidth = Math.max(100, parent.clientWidth || parent.getBoundingClientRect().width || 600);
-    const ratio = 0.42; // 42% of width
-    const minH = 120;    // minimum height in px
+    const ratio = 0.42; // 42% của chiều rộng
+    const minH = 120;    // khoảng chiều cao tối thiểu
     const desiredHeight = Math.max(minH, Math.round(parentWidth * ratio));
 
     canvas.style.width = '100%';
@@ -198,7 +193,7 @@ function drawChart(data, hoverIndex = -1) {
     const vals = data.map(d => Number(d.total || 0));
     const max = Math.max(...vals, 1);
 
-    // grid
+    // tự động vẽ lưới và trục
     ctx.lineWidth = 1;
     ctx.strokeStyle = '#f3f4f6';
     ctx.fillStyle = '#6b7280';
@@ -251,7 +246,7 @@ function drawChart(data, hoverIndex = -1) {
         x += barWidth + gap;
     }
 
-    // smooth line (optional)
+    // dòng kẻ và điểm
     if (points.length >= 3 && points.length <= 20) {
         const drawPts = points.map(p => ({ x: p.x, y: topPad + (chartH - Math.round(chartH * (p.value / max))), value: p.value }));
         function catmullRom2bezier(points) {
@@ -409,7 +404,7 @@ function drawChart(data, hoverIndex = -1) {
 function exportCSV(rows, tenfile = 'bao_cao.csv') { if (!rows || rows.length === 0) { alert('Không có dữ liệu để xuất'); return; } const keys = ['id', 'ten', 'sdt', 'ngay', 'trangThai', 'tong', 'items']; const csv = [keys.join(',')]; rows.forEach(r => { const items = (r.items || []).map(i => `${(i.title || i.name || '').replace(/"/g, '""')} x${i.qty || i.soLuong || 1}`).join(' | '); const tot = tinhTongDon(r); const line = [r.id, r.ten, r.sdt, formatDisplayDate(r.ngay), r.trangThai, tot, `"${items.replace(/"/g, '""')}"`]; csv.push(line.map(c => ('' + c).replace(/\n/g, ' ').replace(/\r/g, '')).join(',')); }); const blob = new Blob([csv.join('\n')], { type: 'text/csv;charset=utf-8;' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = tenfile; document.body.appendChild(a); a.click(); URL.revokeObjectURL(url); a.remove(); showToast('Đã xuất CSV'); }
 function exportPDFMock(rows, title = 'Báo cáo doanh thu') { const w = window.open('', '_blank'); const now = new Date().toLocaleString(); const rowsHtml = (rows || []).map(r => { const items = (r.items || []).map(i => `${i.title} x${i.qty || i.soLuong || 1}`).join('<br/>'); return `<tr>\n          <td>${r.id}</td><td>${formatDisplayDate(r.ngay)}</td><td>${r.ten}</td><td style="text-align:right">${(tinhTongDon(r)).toLocaleString('vi-VN')}₫</td><td>${r.trangThai}</td>\n        </tr>\n        <tr><td colspan="5" style="font-size:12px;color:#666;padding:6px 10px 12px 10px">Sản phẩm: ${items}</td></tr>`; }).join(''); const html = `<!doctype html><html><head><meta charset="utf-8"><title>${title}</title>\n        <style>body{font-family:Arial,Helvetica,sans-serif;padding:20px}table{width:100%;border-collapse:collapse}td,th{padding:8px;border:1px solid #eee}h2{margin:0 0 10px}</style></head><body>\n        <h2>${title}</h2><div>Ngày xuất: ${now}</div>\n        <table><thead><tr><th>Mã</th><th>Ngày</th><th>Khách</th><th>Tổng</th><th>Trạng thái</th></tr></thead><tbody>${rowsHtml}</tbody></table>\n        <p style="margin-top:16px;font-size:13px;color:#666">(* Demo xuất PDF ở đây.Sau có DB thì chỉnh lại sau)</p>\n        </body></html>`; w.document.write(html); w.document.close(); w.focus(); setTimeout(() => { try { w.print(); } catch (e) { } }, 600); showToast('Mở hộp in — bạn có thể lưu thành PDF (mock)'); }
 
-// UI bindings
+// UI ràng buộc và logic
 function khoiTaoNgayMacDinh() { const ketThuc = todayISO(); const batDau = addDaysISO(ketThuc, -29); document.getElementById('ngayBatDau').value = batDau; document.getElementById('ngayKetThuc').value = ketThuc; }
 function layDonDaLoc() { const arr = taiDon(); const tu = document.getElementById('ngayBatDau').value || null; const den = document.getElementById('ngayKetThuc').value || null; const filtered = filterTheoKhoang(arr, tu, den); return sortOrdersByDateDesc(filtered); }
 function capNhatBaoCao() { const arr = layDonDaLoc(); capNhatKPI(arr); renderBangDon(arr); const data = tinhDoanhThuTheoNgay(arr); drawChart(data); }
@@ -421,5 +416,5 @@ document.getElementById('btnXuatFilterCSV').addEventListener('click', () => { co
 document.getElementById('btnXuatToanBoCSV').addEventListener('click', () => exportCSV(sortOrdersByDateDesc(taiDon()), 'bao_cao_toan_bo.csv'));
 document.getElementById('btnXuatPDF').addEventListener('click', () => exportPDFMock(layDonDaLoc(), 'Báo cáo doanh thu (filter)'));
 
-function renderFull() { if (!localStorage.getItem(KHOA_ADMIN)) { /* nothing - sample data may come from adminOrder */ } khoiTaoNgayMacDinh(); capNhatBaoCao(); }
+function renderFull() { if (!localStorage.getItem(KHOA_ADMIN)) { /* chưa có gì ở đây - data demo lấy từ adminOrder */ } khoiTaoNgayMacDinh(); capNhatBaoCao(); }
 renderFull();

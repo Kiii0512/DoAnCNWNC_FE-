@@ -6,7 +6,7 @@
      --primary: #0b5cff;
      --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.04);
      --badge-dot-size: 14px;
-     /* kept from previous file set */
+    
  }
 
  * {
@@ -20,7 +20,7 @@
      color: #111
  }
 
- /* ----- Header & Menu (copied from the other file, kept identical) ----- */
+ /* ----- Header & Menu  ----- */
  header {
      background: #fff;
      color: #111;
@@ -125,8 +125,7 @@
      transform: translateY(-2px)
  }
 
- /* New: horizontal scroll menu like W3Schools */
- /* --- UPDATED: menu background & active styling to better match UI --- */
+ /* Menu chính của Admin */
  .menu {
      max-width: 1200px;
      margin: 6px auto 0;
@@ -185,7 +184,6 @@
      box-shadow: 0 8px 24px rgba(11, 92, 255, 0.06);
  }
 
- /* stronger visual for active item + small left accent bar */
  .menu-item.active {
      background: linear-gradient(90deg, rgba(11, 92, 255, 0.10), rgba(11, 92, 255, 0.04));
      color: var(--primary);
@@ -204,13 +202,11 @@
      box-shadow: 0 6px 16px rgba(11, 92, 255, 0.12);
  }
 
- /* accessible indicator (aria-current) */
  .menu-item[aria-current="page"] {
      outline: 3px solid rgba(11, 92, 255, 0.08);
      outline-offset: 2px
  }
 
- /* small arrow button */
  .nav-arrow {
      display: inline-flex;
      align-items: center;
@@ -245,7 +241,6 @@
      outline-offset: 2px;
  }
 
- /* mimic w3school dark bar style */
  .menu .menu-item .tag {
      font-size: 12px;
      color: var(--muted);
@@ -253,7 +248,6 @@
      margin-left: 6px;
  }
 
- /* Admin layout - rest unchanged */
  main {
      max-width: 1200px;
      margin: 24px auto;
@@ -371,7 +365,6 @@
      color: var(--muted)
  }
 
- /* chart layout */
  .chart-wrap {
      display: flex;
      gap: 16px;
