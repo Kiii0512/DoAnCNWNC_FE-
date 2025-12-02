@@ -1,0 +1,458 @@
+ :root {
+     --bg: #f6f7f9;
+     --card: #fff;
+     --muted: #6b7280;
+     --accent: #111827;
+     --primary: #0b5cff;
+     --shadow-soft: 0 6px 18px rgba(15, 23, 42, 0.04);
+     --badge-dot-size: 14px;
+     /* kept from previous file set */
+ }
+
+ * {
+     box-sizing: border-box
+ }
+
+ body {
+     font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+     margin: 0;
+     background: var(--bg);
+     color: #111
+ }
+
+ /* ----- Header & Menu (copied from the other file, kept identical) ----- */
+ header {
+     background: #fff;
+     color: #111;
+     padding: 12px 18px;
+     border-bottom: 1px solid #e6e7eb;
+     position: sticky;
+     top: 0;
+     z-index: 60
+ }
+
+ .thanh-tren {
+     max-width: 1200px;
+     margin: 0 auto;
+     display: flex;
+     gap: 18px;
+     align-items: center
+ }
+
+ .logo {
+     display: flex;
+     align-items: center;
+     gap: 12px;
+     text-decoration: none
+ }
+
+ .vuong {
+     width: 42px;
+     height: 42px;
+     border-radius: 8px;
+     background: linear-gradient(135deg, #ff8a65, #ffb563);
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     font-weight: 700;
+     color: #fff
+ }
+
+ .tim-kiem {
+     flex: 1;
+     display: flex;
+     align-items: center
+ }
+
+ .tim-kiem input {
+     flex: 1;
+     padding: 10px 14px;
+     border-radius: 999px;
+     border: 1px solid #e6e7eb
+ }
+
+ .nut-gio,
+ .nut-tk {
+     margin-left: 12px;
+     padding: 8px 12px;
+     border-radius: 8px;
+     text-decoration: none;
+     color: var(--accent);
+     font-weight: 600;
+     border: 1px solid transparent;
+     display: inline-flex;
+     align-items: center;
+     gap: 8px
+ }
+
+ .nut-gio svg,
+ .nut-tk svg {
+     width: 18px;
+     height: 18px;
+     flex-shrink: 0;
+     transition: stroke .22s ease, fill .22s ease
+ }
+
+ .nut-gio {
+     background: transparent;
+     transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, color .12s ease
+ }
+
+ .nut-gio:hover {
+     background: linear-gradient(180deg, rgba(11, 92, 255, 0.06), rgba(11, 92, 255, 0.03));
+     color: var(--primary);
+     transform: translateY(-3px);
+     box-shadow: 0 6px 18px rgba(11, 92, 255, 0.06)
+ }
+
+ .nut-gio:active {
+     transform: translateY(-1px) scale(.995);
+     box-shadow: 0 4px 12px rgba(11, 92, 255, 0.06)
+ }
+
+ .nut-gio:focus {
+     outline: 3px solid rgba(11, 92, 255, 0.12);
+     outline-offset: 2px
+ }
+
+ .nut-tk {
+     transition: background-color .22s ease, color .22s ease, transform .22s ease
+ }
+
+ .nut-tk:hover {
+     background: #111827;
+     color: #fff;
+     transform: translateY(-2px)
+ }
+
+ /* New: horizontal scroll menu like W3Schools */
+ /* --- UPDATED: menu background & active styling to better match UI --- */
+ .menu {
+     max-width: 1200px;
+     margin: 6px auto 0;
+     border-radius: 8px;
+     overflow: visible;
+     position: relative;
+     padding: 8px 12px;
+     background: #fff;
+     border: 1px solid #e6e7eb;
+     box-shadow: 0 1px 6px rgba(2, 6, 23, 0.04);
+ }
+
+ .menu-nav {
+     max-width: 1200px;
+     margin: 0 auto;
+     display: flex;
+     align-items: center;
+     gap: 8px;
+     position: relative
+ }
+
+ .scroll-wrap {
+     flex: 1;
+     overflow: hidden
+ }
+
+ .scroll-inner {
+     display: flex;
+     gap: 10px;
+     align-items: center;
+     white-space: nowrap;
+     transition: transform .22s ease
+ }
+
+ .menu-item {
+     display: inline-flex;
+     align-items: center;
+     gap: 8px;
+     padding: 10px 14px;
+     border-radius: 8px;
+     text-decoration: none;
+     color: var(--accent);
+     font-weight: 700;
+     background: transparent;
+     cursor: pointer;
+     border: 1px solid transparent;
+     flex: 0 0 auto;
+     position: relative;
+     transition: transform .14s ease, box-shadow .14s ease, background-color .14s ease;
+ }
+
+ .menu-item:hover {
+     background: linear-gradient(90deg, rgba(11, 92, 255, 0.06), rgba(11, 92, 255, 0.02));
+     color: var(--primary);
+     transform: translateY(-3px);
+     box-shadow: 0 8px 24px rgba(11, 92, 255, 0.06);
+ }
+
+ /* stronger visual for active item + small left accent bar */
+ .menu-item.active {
+     background: linear-gradient(90deg, rgba(11, 92, 255, 0.10), rgba(11, 92, 255, 0.04));
+     color: var(--primary);
+     box-shadow: 0 12px 30px rgba(2, 6, 23, 0.08);
+ }
+
+ .menu-item.active::after {
+     content: '';
+     position: absolute;
+     left: 6px;
+     top: 8%;
+     bottom: 8%;
+     width: 4px;
+     border-radius: 6px;
+     background: var(--primary);
+     box-shadow: 0 6px 16px rgba(11, 92, 255, 0.12);
+ }
+
+ /* accessible indicator (aria-current) */
+ .menu-item[aria-current="page"] {
+     outline: 3px solid rgba(11, 92, 255, 0.08);
+     outline-offset: 2px
+ }
+
+ /* small arrow button */
+ .nav-arrow {
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     width: 36px;
+     height: 36px;
+     border-radius: 8px;
+     background: #fff;
+     /* nền trắng để tương phản */
+     border: 1px solid rgba(2, 6, 23, 0.08);
+     color: var(--accent);
+     cursor: pointer;
+     margin-left: 8px;
+     flex: 0 0 auto;
+     box-shadow: 0 6px 12px rgba(2, 6, 23, 0.06);
+     transition: transform .14s ease, box-shadow .14s ease, background-color .14s ease, color .14s ease;
+ }
+
+ .nav-arrow:hover {
+     transform: translateY(-2px);
+     background: var(--primary);
+     color: #fff;
+     box-shadow: 0 12px 30px rgba(11, 92, 255, 0.12);
+ }
+
+ .nav-arrow[hidden] {
+     display: none !important;
+ }
+
+ .nav-arrow:focus {
+     outline: 3px solid rgba(11, 92, 255, 0.12);
+     outline-offset: 2px;
+ }
+
+ /* mimic w3school dark bar style */
+ .menu .menu-item .tag {
+     font-size: 12px;
+     color: var(--muted);
+     font-weight: 600;
+     margin-left: 6px;
+ }
+
+ /* Admin layout - rest unchanged */
+ main {
+     max-width: 1200px;
+     margin: 24px auto;
+     padding: 0 18px
+ }
+
+ .card {
+     background: var(--card);
+     padding: 16px;
+     border-radius: 12px;
+     box-shadow: var(--shadow-soft)
+ }
+
+ .page-head {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     margin-bottom: 14px
+ }
+
+ .page-title {
+     display: flex;
+     gap: 12px;
+     align-items: center
+ }
+
+ .controls {
+     display: flex;
+     gap: 8px;
+     align-items: center
+ }
+
+ .btn {
+     padding: 8px 12px;
+     border-radius: 10px;
+     border: 0;
+     cursor: pointer
+ }
+
+ .btn-primary {
+     background: var(--primary);
+     color: #fff
+ }
+
+ .btn-ghost {
+     background: transparent;
+     border: 1px solid #e6e7eb
+ }
+
+ .filters {
+     display: flex;
+     gap: 10px;
+     align-items: center;
+     margin-bottom: 12px;
+     flex-wrap: wrap
+ }
+
+ .filters input[type=date],
+ .filters input[type=text],
+ .filters select {
+     padding: 8px 10px;
+     border-radius: 8px;
+     border: 1px solid #e6e7eb
+ }
+
+ .kpi-grid {
+     display: flex;
+     gap: 12px;
+     margin-bottom: 12px
+ }
+
+ .kpi {
+     flex: 1;
+     background: #fbfcfd;
+     padding: 12px;
+     border-radius: 10px;
+     text-align: center
+ }
+
+ .kpi h3 {
+     margin: 0;
+     font-size: 18px
+ }
+
+ .kpi p {
+     margin: 4px 0 0;
+     color: var(--muted)
+ }
+
+ .bang {
+     overflow: auto;
+     margin-top: 12px
+ }
+
+ table {
+     width: 100%;
+     border-collapse: collapse;
+     font-size: 14px
+ }
+
+ thead th {
+     background: #fbfcfd;
+     padding: 10px;
+     text-align: left;
+     border-bottom: 1px solid #eef2f7
+ }
+
+ tbody td {
+     padding: 10px;
+     border-bottom: 1px solid #f3f4f6
+ }
+
+ .small {
+     font-size: 13px;
+     color: var(--muted)
+ }
+
+ /* chart layout */
+ .chart-wrap {
+     display: flex;
+     gap: 16px;
+     align-items: flex-start;
+     transition: all .18s ease
+ }
+
+ .chart-wrap>.chart-area {
+     flex: 1;
+     min-width: 0;
+     border-radius: 10px;
+     padding: 10px;
+     background: linear-gradient(180deg, #fff, #fbfdff);
+     box-shadow: var(--shadow-soft)
+ }
+
+ .chart-wrap>.detail-panel {
+     width: 420px;
+     flex: 0 0 auto;
+     transition: all .18s ease;
+ }
+
+ canvas {
+     width: 100%;
+     display: block;
+     padding: 0;
+     border: 0;
+     background: transparent;
+     height: auto;
+ }
+
+ .detail-panel .xuathang {
+     display: flex;
+     gap: 8px;
+     align-items: center
+ }
+
+ .detail-panel .bang {
+     max-height: 480px;
+     overflow: auto;
+     border-radius: 8px;
+     padding: 6px;
+     background: #fff;
+     box-shadow: 0 2px 8px rgba(2, 6, 23, 0.04);
+ }
+
+ .muted {
+     color: var(--muted)
+ }
+
+ @media (max-width:900px) {
+     .chart-wrap {
+         flex-direction: column
+     }
+
+     .chart-wrap>.chart-area {
+         order: 1
+     }
+
+     .chart-wrap>.detail-panel {
+         order: 2;
+         width: 100%;
+         margin-top: 12px
+     }
+
+     .kpi-grid {
+         flex-direction: column
+     }
+
+     .menu {
+         padding: 6px
+     }
+ }
+
+ @media (max-width:500px) {
+     .thanh-tren {
+         padding-right: 8px;
+         padding-left: 8px
+     }
+
+     .tim-kiem input {
+         padding: 8px
+     }
+ }
