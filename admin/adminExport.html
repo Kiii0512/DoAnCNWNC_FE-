@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Báo cáo / Export — Shop68IT1</title>
+
+  <!-- CSS chung + page-specific -->
+  <link rel="stylesheet" href="./assets/css/bienChung.css" />
+  <link rel="stylesheet" href="./assets/css/header.css" />
+  <link rel="stylesheet" href="./assets/css/menu.css" />
+  <link rel="stylesheet" href="./assets/css/adminExport.css" />
+</head>
+<body>
+  <!-- Header partial -->
+  <!--#include file="partials/headerAdmin.html" -->
+  <div id="headerPlaceholder" data-partial="./partials/headerAdmin.html"></div>
+
+  <!-- Menu partial -->
+  <!--#include file="partials/menuAdmin.html" -->
+  <div id="menuPlaceholder" data-partial="./partials/menuAdmin.html"></div>
+
+  <main>
+    <div class="card">
+      <div class="page-head">
+        <div class="page-title">
+          <h2 style="margin:0">Admin — Báo cáo / Export</h2>
+          <div class="small muted">Báo cáo doanh thu cơ bản, lọc theo ngày, xuất CSV / PDF (mock)</div>
+        </div>
+        <div class="controls">
+          <button class="btn btn-ghost" id="btnLamMoi">Làm mới</button>
+          <button class="btn btn-ghost" id="btnXuatToanBoCSV">Xuất CSV (toàn bộ)</button>
+        </div>
+      </div>
+
+      <div class="filters" role="search" aria-label="Lọc báo cáo">
+        <label class="small muted" for="ngayBatDau">Từ</label>
+        <input type="date" id="ngayBatDau" />
+        <label class="small muted" for="ngayKetThuc">Đến</label>
+        <input type="date" id="ngayKetThuc" />
+        <button class="btn btn-primary" id="nutLoc">Áp dụng</button>
+
+        <div style="margin-left:8px" class="inline">
+          <button class="btn btn-ghost" data-range="7">7 ngày</button>
+          <button class="btn btn-ghost" data-range="30">30 ngày</button>
+          <button class="btn btn-ghost" data-range="this-month">Tháng này</button>
+          <button class="btn btn-ghost" data-range="all">Tất cả</button>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <h3 id="baoCaoTongDoanhThu">0₫</h3>
+          <p>Doanh thu trong khoảng</p>
+        </div>
+        <div class="kpi">
+          <h3 id="baoCaoSoDon">0</h3>
+          <p>Số đơn</p>
+        </div>
+        <div class="kpi">
+          <h3 id="baoCaoDonTB">0₫</h3>
+          <p>Giá trị trung bình / đơn</p>
+        </div>
+      </div>
+
+      <div class="chart-wrap" id="chartWrap">
+        <div class="chart-area" id="chartArea">
+          <canvas id="bieuDo" aria-label="Báo cáo doanh thu theo ngày"></canvas>
+        </div>
+
+        <div class="detail-panel">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="small muted">Chi tiết đơn</div>
+            <div class="xuathang">
+              <button class="btn btn-ghost" id="btnXuatFilterCSV">Xuất CSV (filter)</button>
+              <button class="btn btn-ghost" id="btnXuatPDF">Xuất PDF (mock)</button>
+            </div>
+          </div>
+          <div class="bang" style="max-height:480px;overflow:auto">
+            <table id="bangBaoCao" aria-describedby="Bảng chi tiết đơn">
+              <thead>
+                <tr>
+                  <th>Mã đơn</th>
+                  <th>Ngày</th>
+                  <th>Khách</th>
+                  <th>Tổng</th>
+                  <th>Trạng thái</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Toast (shared) -->
+  <div id="toast" class="toast" role="status" aria-live="polite" style="display:none"></div>
+
+  <!-- Fallback client-side partial loader (nếu không dùng SSI) -->
+  <script>
+    (function loadPartialsIfNeeded() {
+      const parts = [
+        { sel: '#headerPlaceholder', url: './partials/headerAdmin.html' },
+        { sel: '#menuPlaceholder', url: './partials/menuAdmin.html' }
+      ];
+      function fetchAndInject(p) {
+        const el = document.querySelector(p.sel);
+        if (!el) return Promise.resolve();
+        if (el.children.length > 0 || el.innerHTML.trim().length > 0) return Promise.resolve();
+        return fetch(p.url, { cache: 'no-store' })
+          .then(r => {
+            if (!r.ok) throw new Error('Không tải được partial: ' + p.url);
+            return r.text();
+          })
+          .then(html => { el.innerHTML = html; })
+          .catch(err => { console.warn(err); });
+      }
+      Promise.all(parts.map(fetchAndInject)).then(() => {
+        window.dispatchEvent(new Event('adminPartialsLoaded'));
+      });
+    })();
+  </script>
+
+  <!-- Core JS (helpers + menu + page-specific) -->
+  <script src="./assets/js/duLieuUtils.js"></script>
+  <script src="./assets/js/giaoDienUtils.js"></script>
+  <script src="./assets/js/xuatUtils.js"></script>
+
+  <!-- menu.js cần partials có sẵn; nếu partials load sau, menu.js cũng sẽ được refresh via event -->
+  <script src="./assets/js/menu.js"></script>
+
+  <!-- adminExport.js chứa logic page-specific (bao gồm drawChart nếu file này là phiên bản đầy đủ) -->
+  <script src="./assets/js/adminExport.js"></script>
+
+  <script>
+    // Nếu partials được inject sau khi menu.js đã chạy, gọi refresh
+    window.addEventListener('adminPartialsLoaded', function () {
+      if (window.__adminMenu && typeof window.__adminMenu.refresh === 'function') {
+        try { window.__adminMenu.refresh(); } catch (e) { /* ignore */ }
+      }
+      // Thông báo cho adminExport nếu cần (nếu script chờ partials)
+      if (window.__adminExport && typeof window.__adminExport.refresh === 'function') {
+        try { window.__adminExport.refresh(); } catch (e) { /* ignore */ }
+      }
+    });
+  </script>
+</body>
+</html>
