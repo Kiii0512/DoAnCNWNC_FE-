@@ -94,7 +94,9 @@
     const hash = location.hash || '';
     let sel = null;
     if(hash){ sel = document.querySelector(`.menu-item[href="${hash}"]`) || document.querySelector(`.menu-item[data-route="${hash.replace('#','')}"]`); }
-    if(!sel) sel = document.querySelector('.menu-item[href="#orders"]') || document.querySelector('.menu-item'); // default to Orders (or first)
+    if(!sel) sel = document.querySelector('.menu-item[data-route="orders"]')
+            || document.querySelector('.menu-item[href$="adminOrder.html"]')
+            || document.querySelector('.menu-item'); // mặc định đấnh dấu trang đang hiển thị
     setActiveElement(sel);
   }
 
