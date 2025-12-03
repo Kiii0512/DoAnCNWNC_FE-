@@ -1,0 +1,28 @@
+/* SIDEBAR */
+        .sidebar {
+            width: 240px;
+            background: #ffffff;
+            min-height: 100vh;
+            border-right: 1px solid #ddd;
+            padding-top: 30px;
+        }
+
+        .sidebar h3 {
+            font-size: 15px;
+            padding: 0 20px;
+            color: #888;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 25px;
+            color: #333;
+            font-size: 15px;
+            text-decoration: none;
+        }
+
+        .sidebar a:hover,
+        .sidebar .active {
+            background: #e8f0ff;
+            color: #0d6efd;
+        }
