@@ -1,0 +1,42 @@
+.error-wrapper {
+      text-align: center;
+      padding: 60px 20px;
+      max-width: 700px;
+      margin: 80px auto;
+    }
+
+    .error-code {
+      font-size: 120px;
+      font-weight: 900;
+      color: #ff4d4f;
+      margin-bottom: 10px;
+    }
+
+    .error-title {
+      font-size: 28px;
+      color: #333;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .error-desc {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+
+    .back-home-btn {
+      display: inline-block;
+      padding: 12px 25px;
+      background: #0066ff;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 16px;
+      transition: 0.2s ease;
+    }
+
+    .back-home-btn:hover {
+      background: #004dbf;
+    }
