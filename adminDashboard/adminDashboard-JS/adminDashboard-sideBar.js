@@ -1,14 +1,19 @@
 class SideBar extends HTMLElement {
     connectedCallback() {
       this.innerHTML = `
-    <div class="sidebar">
-        <h3>MENU</h3>
-        <a class="active" href="admin.html"><i class="fa fa-chart-line"></i> Dashboard</a>
-        <a href="#"><i class="fa fa-box"></i> Sản phẩm</a>
-        <a href="#"><i class="fa fa-shopping-cart"></i> Đơn hàng</a>
-        <a href="#"><i class="fa fa-users"></i> Khách hàng</a>
-        <a href="#"><i class="fa fa-gear"></i> Cài đặt</a>
-    </div>
+        <div class="sidebar">
+            <ul class="side-menu">
+                <li><a href="#" class="active">Dashboard</a></li>
+                <li><a href="#">Orders</a></li>
+                <li><a href="#">Products</a></li>
+                <li><a href="#">Customers</a></li>
+                <li><a href="#">Vendors</a></li>
+                <li><a href="#">History</a></li>
+                <li><a href="#">Messages</a></li>
+                <li><a href="#">Settings</a></li>
+                <li><a href="#">Logout</a></li>
+            </ul>
+        </div>
       `;
     }
 }

@@ -1,9 +1,11 @@
-            .container {
-              jutify-contene: between;
-              margin: 0 auto;
-              padding: 0 20px;
-              display: flex;
-            }
+    .container {
+        margin-left: 0;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 25px;
+    }
 
             .login{
               margin-left:5px;
@@ -18,20 +20,17 @@
               color:#ffffff;
             }
 
-            header {
-              background: #fff;
-              box-shadow: 0 1px 4px rgba(16,24,40,.06);
-              position: sticky;
-              top: 0;
-              z-index: 50;
-            }
+    header {
+        background: #fff;
+        box-shadow: 0 1px 4px rgba(16,24,40,.06);
+        position: fixed;
+        top: 0;
+        left: 240px;
+        right: 0;
+        z-index: 50;
+    }
 
-            .head-main {
-              display: flex;
-              align-items: center;
-              gap: 16px;
-              padding: 14px 0;
-            }
+    .head-main { display: flex; gap: 16px; align-items: center; }
 
             .logo {
               text-decoration: none;

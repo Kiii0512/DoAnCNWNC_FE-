@@ -1,0 +1,85 @@
+    .content {
+        margin-left: 240px;
+        padding: 100px 35px 40px;
+        width: 100%;
+    }
+
+    .page-title {
+        font-size: 22px;
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+
+    .breadcrumb {
+        font-size: 14px;
+        color: #6b7280;
+        margin-bottom: 25px;
+    }
+
+    /* ============================
+       TABLE
+    ============================ */
+    .table-wrapper {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        text-align: left;
+        padding: 14px;
+        background: #f8fafc;
+        color: #374151;
+        font-size: 14px;
+    }
+
+    td {
+        padding: 14px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 14px;
+    }
+
+    tr:hover td {
+        background: #f9fafb;
+    }
+
+    .status-paid {
+        background: #fee2e2;
+        color: #b91c1c;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+    }
+
+    .status-ship {
+        background: #e0e7ff;
+        color: #3730a3;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+    }
+
+    .status-process {
+        background: #dcfce7;
+        color: #166534;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 13px;
+    }
+
+    .actions button {
+        border: none;
+        padding: 6px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        margin-right: 5px;
+    }
+
+    .edit { background: #dbeafe; }
+    .delete { background: #fee2e2; }
