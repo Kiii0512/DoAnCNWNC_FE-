@@ -4,7 +4,7 @@ class content extends HTMLElement {
 <div class="content">
 
     <div class="page-title">Order List</div>
-    <div class="breadcrumb">Home / Order List</div>
+    <div class="breadcrumb"> <a href="#">home</a>/ Order List</div>
 
     <div class="table-wrapper">
         <table>
