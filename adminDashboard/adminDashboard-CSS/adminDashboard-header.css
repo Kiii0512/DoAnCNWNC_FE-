@@ -1,10 +1,11 @@
-    .container {
-        margin-left: 0;
-        height: 70px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 25px;
+.container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      height: 70px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
     }
 
             .login{
@@ -21,13 +22,14 @@
             }
 
     header {
-        background: #fff;
-        box-shadow: 0 1px 4px rgba(16,24,40,.06);
-        position: fixed;
-        top: 0;
-        left: 240px;
-        right: 0;
-        z-index: 50;
+      position: fixed;
+      top: 0;
+      left: 240px;
+      right: 0;
+      background: var(--card);
+      box-shadow: 0 1px 4px rgba(16,24,40,.06);
+      z-index: 50;
+      border-bottom: 1px solid var(--border);
     }
 
     .head-main { display: flex; gap: 16px; align-items: center; }

@@ -1,36 +1,37 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <title>Admin Dashboard - ShopDunk Clone</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- FONT / ICON -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Order List — Dashboard</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="adminDashboard-CSS/adminDashboard-header.css">
     <link rel="stylesheet" href="adminDashboard-CSS/adminDashboard-dashboardLayout.css">
     <link rel="stylesheet" href="adminDashboard-CSS/adminDashboard-sideBar.css">
     <link rel="stylesheet" href="adminDashboard-CSS/adminDashboard-content.css">
+    <link rel="stylesheet" href="adminDashboard-CSS/adminDashboard-darkMode.css">
 
     <script src="adminDashboard-JS/adminDashboard-topheader.js"></script>
     <script src="adminDashboard-JS/adminDashboard-sideBar.js"></script>
     <script src="adminDashboard-JS/adminDashboard-content.js"></script>
-    
+    <script src="adminDashboard-JS/adminDashboard-darkMode.js"></script>
 </head>
-<top-header></top-header>
+
 <body>
+<side-bar></side-bar>
 
-        <div class="admin-container"> 
-        <side-bar></side-bar>
-        <div class="main">
-        <h1>Dashboard</h1>
-        <con-tent></con-tent>
-    </div>
-</div>
+  <!-- HEADER: web component inserted here -->
+  <top-header></top-header>
 
-<!-- CHART JS -->
+  <!-- SEARCH POPUP (component also injects one but keep fallback) -->
+  <div id="searchPopupGlobal" class="search-popup" style="display:none">
+    <input placeholder="Nhập từ khóa..." />
+  </div>
 
+  <!-- PAGE CONTENT -->
+<con-tent></con-tent>
 
-
+  <!-- DARK MODE TOGGLE -->
+  <button id="darkToggle">Dark</button>
 </body>
 </html>

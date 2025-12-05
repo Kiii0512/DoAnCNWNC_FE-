@@ -2,6 +2,7 @@ class SideBar extends HTMLElement {
     connectedCallback() {
       this.innerHTML = `
         <div class="sidebar">
+            <h2>ADMIN</h2>
             <ul class="side-menu">
                 <li><a href="#" class="active">Dashboard</a></li>
                 <li><a href="#">Orders</a></li>

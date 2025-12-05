@@ -1,15 +1,15 @@
 class content extends HTMLElement {
     connectedCallback() {
       this.innerHTML = `
-<div class="content">
+        <div class="content">
+            <div class="inner">
+            <div class="page-title">Order List</div>
+            <div class="breadcrumb">Home / Order List</div>
 
-    <div class="page-title">Order List</div>
-    <div class="breadcrumb"> <a href="#">home</a>/ Order List</div>
-
-    <div class="table-wrapper">
-        <table>
-            <thead>
-                <tr>
+            <div class="table-wrapper">
+                <table>
+                <thead>
+                    <tr>
                     <th></th>
                     <th>Order ID</th>
                     <th>Customer Name</th>
@@ -19,11 +19,11 @@ class content extends HTMLElement {
                     <th>Payment Method</th>
                     <th>Order Status</th>
                     <th>Action</th>
-                </tr>
-            </thead>
+                    </tr>
+                </thead>
 
-            <tbody>
-                <tr>
+                <tbody>
+                    <tr>
                     <td><input type="checkbox"></td>
                     <td>#Kc025418</td>
                     <td>Mendocart</td>
@@ -36,9 +36,9 @@ class content extends HTMLElement {
                         <button class="edit">✏️</button>
                         <button class="delete">🗑</button>
                     </td>
-                </tr>
+                    </tr>
 
-                <tr>
+                    <tr>
                     <td><input type="checkbox"></td>
                     <td>#Kc025520</td>
                     <td>Margaret Ak</td>
@@ -51,13 +51,14 @@ class content extends HTMLElement {
                         <button class="edit">✏️</button>
                         <button class="delete">🗑</button>
                     </td>
-                </tr>
+                    </tr>
 
-            </tbody>
-        </table>
-    </div>
+                </tbody>
+                </table>
+            </div>
 
-</div>
+            </div>
+        </div>
 
       `;
     }
