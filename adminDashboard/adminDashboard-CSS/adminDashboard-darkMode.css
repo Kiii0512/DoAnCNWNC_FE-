@@ -1,4 +1,4 @@
-            :root{
+    :root{
       --bg: #f5f7fb;
       --card: #ffffff;
       --text: #111827;
@@ -23,6 +23,12 @@
       background:var(--accent-strong); color:#fff; border:0; padding:10px 14px; border-radius:999px; cursor:pointer;
       box-shadow:0 6px 18px rgba(16,24,40,0.15);
     }
+
+    
+    /* dark tweaks for some status pills */
+    .dark .status-paid{ background:#381214; color:#fca5a5 }
+    .dark .status-ship{ background:#0f172a; color:#bfdbfe }
+    .dark .status-process{ background:#052e12; color:#bbf7d0 }
 
     /* ===========================
        RESPONSIVE
