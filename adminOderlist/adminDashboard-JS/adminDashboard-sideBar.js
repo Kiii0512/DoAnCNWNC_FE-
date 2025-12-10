@@ -4,8 +4,8 @@ class SideBar extends HTMLElement {
         <div class="sidebar">
             <h2>ADMIN</h2>
             <ul class="side-menu">
-                <li><a href="#" class="active" >Dashboard</a></li>
-                <li><a href="#">Orders</a></li>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#" class="active">Orders</a></li>
                 <li><a href="#">Products</a></li>
                 <li><a href="#">Customers</a></li>
                 <li><a href="#">Vendors</a></li>
