@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thanh toán — Shop68IT1</title>
+ <link rel="stylesheet" href="thanhToan.css" />
+</head>
+<body>
+  <header>
+    <div class="thanh-tren">
+      <a class="logo" href="../home1/homee.html" aria-label="Về trang chủ">
+        <div class="vuong">68</div>
+        <div style="font-weight:700">Shop68IT1</div>
+      </a>
+
+      <div class="tim-kiem">
+        <input placeholder="Tìm sản phẩm, điện thoại, laptop..." aria-label="Tìm kiếm" />
+
+        <a id="btnGio" class="nut-gio" href="../gio-hang/gioHang.html" title="Xem giỏ hàng">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 6h15l-1.2 6.3A2 2 0 0 1 17.9 14H9.6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="19" r="1.4" fill="#111827"/><circle cx="18" cy="19" r="1.4" fill="#111827"/></svg>
+          <span>Giỏ hàng</span>
+        </a>
+
+        <a id="btnTK" class="nut-tk" href="#" title="Tài khoản">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Tài khoản</span>
+        </a>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:center;color:#111">&nbsp;</div>
+    </div>
+  </header>
+
+  <div class="menu">
+    <div class="menu-inner">
+      <a href="#">Điện thoại</a>
+      <a href="#">Laptop</a>
+      <a href="#">PC</a>
+      <a href="#">Phụ kiện</a>
+      <a href="#">Tin tức</a>
+      <a href="#">Khuyến mãi</a>
+    </div>
+  </div>
+
+  <main>
+    <div class="luoi-thanh-toan">
+      <form id="form-thanh-toan" class="card" novalidate>
+        <div class="nhom">
+          <h3>Thông tin khách hàng</h3>
+          <div class="dong-form">
+            <div class="field">
+              <label for="hoTen">Họ và tên <span style="color:var(--danger)">*</span></label>
+              <input type="text" id="hoTen" name="hoTen" placeholder="Nhập họ và tên" />
+              <div class="bao-loi" id="loi-hoTen">Vui lòng nhập họ và tên</div>
+            </div>
+            <div class="field">
+              <label for="dienThoai">Số điện thoại <span style="color:var(--danger)">*</span></label>
+            
+              <input type="tel" id="dienThoai" name="dienThoai" placeholder="0xxxxxxxx" maxlength="11" />
+              <div class="bao-loi" id="loi-dienThoai">Vui lòng nhập số điện thoại (8–11 chữ số)</div>
+            </div>
+          </div>
+        </div>
+        <div class="nhom">
+          <h3>Hình thức nhận hàng</h3>
+          <div class="chon" role="radiogroup" aria-label="Chọn hình thức nhận hàng">
+            <label><input type="radio" name="hinhThuc" value="giao" checked /> Giao tận nơi</label>
+            <label><input type="radio" name="hinhThuc" value="lay-tai-cua-hang" /> Nhận tại cửa hàng</label>
+          </div>
+        </div>
+        <div class="nhom" id="khu-dia-chi">
+          <h3>Địa chỉ nhận hàng</h3>
+          <div class="dong-form">
+            <div class="field">
+              <label for="tinh">Tỉnh/Thành <span style="color:var(--danger)">*</span></label>
+              <select id="tinh" name="tinh">
+                <option value="">-- Chọn tỉnh, thành --</option>
+                <option value="Hà Nội">Hà Nội</option>
+                <option value="TP.Hồ Chí Minh">TP. Hồ Chí Minh</option>
+                <option value="Đà Nẵng">Đà Nẵng</option>
+              </select>
+              <div class="bao-loi" id="loi-tinh">Vui lòng chọn tỉnh/thành</div>
+            </div>
+            <div class="field">
+              <label for="quan">Quận/Huyện <span style="color:var(--danger)">*</span></label>
+              <select id="quan" name="quan">
+                <option value="">-- Chọn quận/huyện --</option>
+                <option value="Quận 1">Quận 1</option>
+                <option value="Quận 7">Quận 7</option>
+                <option value="Bình Dương">Bình Dương</option>
+              </select>
+              <div class="bao-loi" id="loi-quan">Vui lòng chọn quận/huyện</div>
+            </div> 
+            
+          </div>
+
+          <div style="margin-top:12px">
+            <label for="diaChi">Địa chỉ cụ thể <span style="color:var(--danger)">*</span></label>
+            <textarea id="diaChi" name="diaChi" placeholder="Số nhà, tên đường, phường..."></textarea>
+            <div class="bao-loi" id="loi-diaChi">Vui lòng nhập địa chỉ nhận hàng</div>
+          </div>
+        </div>
+        <div class="nhom">
+          <label for="ghiChu">Nhập ghi chú (nếu có)</label>
+          <textarea id="ghiChu" name="ghiChu" placeholder="Yêu cầu giao hàng, lưu ý... (không bắt buộc)"></textarea>
+        </div>
+        <div class="nhom">
+          <label style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="dongY" /> Tôi đã đọc và đồng ý với <a href="#">điều khoản và điều kiện</a></label>
+          <div class="bao-loi" id="loi-dongY">Bạn cần đồng ý điều khoản để tiếp tục</div>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:12px">
+          <button type="button" id="nut-xac-nhan" class="nut nut-chinh">Tiến hành đặt hàng</button>
+          <button type="button" id="nut-quay-lai" class="nut nut-ghost">Quay lại giỏ hàng</button>
+        </div>
+
+      </form>
+      <aside class="tom-tat card" aria-label="Tóm tắt đơn hàng">
+        <h3>Tóm tắt đơn hàng</h3>
+        <div id="ds-tom-tat">
+        </div>
+        <div class="dong"><div>Tạm tính</div><div id="tam-tinh">0₫</div></div>
+        <div class="dong"><div>Phí giao hàng</div><div id="phi-van-chuyen">Miễn phí</div></div>
+        <div class="dong"><div>Ưu đãi</div><div id="uudai">-0₫</div></div>
+        <div class="dong" style="font-weight:700"><div>Tổng thanh toán</div><div id="tong-thanh-toan" class="tong">0₫</div></div>
+     
+      </aside>
+
+    </div>
+  </main>
+
+    <script src="thanhToan.js"></script>
+</body>
+</html>
