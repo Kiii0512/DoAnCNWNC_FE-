@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="vi">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Đơn hàng — Shop68IT1</title>
+    <link rel="stylesheet" href="demoHoaDon.css" />
+</head>
+
+<body> <!-- Header + Menu  -->
+    <header>
+        <div class="thanh-tren"> <a class="logo" href="../index.html" aria-label="Về trang chủ">
+                <div class="vuong">68</div>
+                <div style="font-weight:700">Shop68IT1</div>
+            </a>
+            <div class="tim-kiem"> <input placeholder="Tìm sản phẩm, điện thoại, laptop..." aria-label="Tìm kiếm" />
+                <!-- Nút Giỏ hàng (nhỏ) --> <button id="btnGio" class="nut-gio" title="Xem giỏ hàng"
+                    aria-label="Giỏ hàng"> <!-- dùng currentColor để nếu muốn đổi màu theo CSS  --> <svg
+                        viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M6 6h15l-1.2 6.3A2 2 0 0 1 17.9 14H9.6" stroke="currentColor" stroke-width="1.6"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                        <circle cx="10" cy="19" r="1.4" fill="currentColor" />
+                        <circle cx="18" cy="19" r="1.4" fill="currentColor" />
+                    </svg> <span>Giỏ hàng</span> </button> <!-- Nút Tài khoản (nhỏ) --> <button id="btnTK"
+                    class="nut-tk" title="Tài khoản" aria-label="Tài khoản"> <svg viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="1.6"
+                            fill="none" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" stroke-width="1.6" fill="none"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg> <span>Tài khoản</span> </button> </div>
+        </div>
+    </header>
+    <div class="menu">
+        <div class="menu-inner"> <a href="#">Điện thoại</a> <a href="#">Laptop</a> <a href="#">PC</a> <a href="#">Phụ
+                kiện</a> <a href="#">Tin tức</a> <a href="#">Khuyến mãi</a> </div>
+    </div>
+    <main>
+        <div class="luoi-don"> <!-- PHẦN TRÁI: Thông tin xác nhận đơn (lấy từ sessionStorage 'donHangTam') -->
+            <section class="card">
+                <h2>Đơn hàng — Xác nhận</h2>
+                <div class="nhom">
+                    <h3>Thông tin khách hàng</h3>
+                    <div id="khung-thong-tin-khach" class="khung-thong-tin"> <!-- Dữ liệu sẽ được render bởi localStorage(KHOA) -->
+                        <div class="trong">Đang lấy thông tin khách hàng…</div>
+                    </div>
+                </div>
+                <div class="nhom">
+                    <h3>Ghi chú đơn hàng</h3>
+                    <div id="khung-ghi-chu" class="khung-thong-tin">—</div>
+                </div>
+                <div class="nhom">
+                    <h3>Sản phẩm đã chọn</h3>
+                    <div id="khung-ds-sp" class="khung-thong-tin">
+                        <div class="trong">Đang lấy sản phẩm trong giỏ…</div>
+                    </div>
+                </div>
+                <div class="nhom-nut"> <button id="btn-dong-y" class="btn btn-chinh">Đồng ý — Xác nhận đơn</button>
+                    <button id="btn-quay-lai-thanh-toan" class="btn btn-ghost">Quay lại trang thanh toán</button> </div>
+            </section> <!-- PHẦN PHẢI: Tóm tắt thanh toán -->
+            <aside class="tom-tat card" aria-label="Tóm tắt đơn hàng">
+                <h3>Tóm tắt đơn hàng</h3>
+                <div id="ds-tom-tat">
+                    <div class="trong">Đang tính toán…</div>
+                </div>
+                <div class="dong">
+                    <div>Tạm tính</div>
+                    <div id="tam-tinh">0₫</div>
+                </div>
+                <div class="dong">
+                    <div>Phí giao hàng</div>
+                    <div id="phi-van-chuyen">Miễn phí</div>
+                </div>
+                <div class="dong">
+                    <div>Ưu đãi</div>
+                    <div id="uudai">-0₫</div>
+                </div>
+                <div class="dong" style="font-weight:700">
+                    <div>Tổng thanh toán</div>
+                    <div id="tong-thanh-toan" class="tong">0₫</div>
+                </div>
+            </aside>
+        </div>
+    </main>
+    <script src="demoHoaDon.js"></script>
+</body>
+
+</html>
