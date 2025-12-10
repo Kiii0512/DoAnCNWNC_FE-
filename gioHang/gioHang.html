@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Giỏ hàng</title>
+  <link rel="stylesheet" href="gioHang.css" />
+</head>
+<body>
+  <!-- Header chính: nền trắng, chữ đen -->
+  <header>
+    <div class="thanh-tren">
+      <a class="logo" href="../home1/homee.html" aria-label="Về trang chủ">  <div class="vuong">68</div><div class="tenshop">Shop68IT1</div></a>
+
+      <!-- Thanh tìm kiếm -->
+      <div class="tim-kiem">
+        <input placeholder="Tìm sản phẩm, điện thoại, laptop..." aria-label="Tìm kiếm" />
+
+        <!-- Nút Giỏ hàng cạnh thanh tìm kiếm -->
+        <a id="btnGio" class="nut-gio" href="../gio-hang/gioHang.html" title="Xem giỏ hàng">
+          <!-- SVG biểu tượng giỏ hàng nhỏ bên trái -->
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 6h15l-1.2 6.3A2 2 0 0 1 17.9 14H9.6" stroke="#111827" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="19" r="1.4" fill="#111827"/><circle cx="18" cy="19" r="1.4" fill="#111827"/></svg>
+          <span>Giỏ hàng</span>
+        </a>
+
+        <!-- Nút Tài khoản cạnh nút Giỏ hàng,  -->
+        <a id="btnTK" class="nut-tk" href="#" title="Tài khoản">
+          <!-- SVG biểu tượng nửa người (user) dùng  -->
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Tài khoản</span>
+        </a>
+      </div>
+
+      <!-- khu vực bên phải  -->
+      <div style="display:flex;gap:12px;align-items:center;color:#111">&nbsp;</div>
+    </div>
+  </header>
+
+  <!-- Menu dưới header  -->
+  <div class="menu">
+    <div class="menu-inner">
+      <a href="#">Điện thoại</a>
+      <a href="#">Laptop</a>
+      <a href="#">PC</a>
+      <a href="#">Phụ kiện</a>
+      <a href="#">Tin tức</a>
+      <a href="#">Khuyến mãi</a>
+    </div>
+  </div>
+
+  <main>
+    <!-- Nội dung chính (giỏ hàng) -->
+    <div id="noidung"></div>
+  </main>
+
+    <script src="gioHang.js"></script>
+</body>
+</html>
