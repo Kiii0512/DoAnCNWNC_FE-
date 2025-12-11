@@ -1,0 +1,4 @@
+/* footer component */
+footer.app-footer { margin-top:28px; padding:28px 0; color:#6b7280; background-color: #111; }
+footer.app-footer h3, footer.app-footer h4, footer.app-footer p { color: #fff; margin:0 0 6px 0; }
+footer.app-footer .container { display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; }

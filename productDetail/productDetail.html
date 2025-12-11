@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chi tiết sản phẩm — Shop68IT1</title>
+
+  <!-- CSS chung + page -->
+  <link rel="stylesheet" href="productDetailCSS/stylesChung.css">
+  <link rel="stylesheet" href="productDetailCSS/stylesRiengCuaProductDetail.css">
+
+  <!-- component-specific CSS -->
+  <link rel="stylesheet" href="productDetailCSS/header.css">
+  <link rel="stylesheet" href="productDetailCSS/menu.css">
+  <link rel="stylesheet" href="productDetailCSS/footer.css">
+</head>
+<body>
+
+  <top-header></top-header>
+  <main-nav></main-nav>
+
+  <main>
+    <div class="breadcrumb"><a href="../home1/homee.html">Trang chủ</a> › <a href="#">Điện thoại</a> › <strong id="breadcrumbTitle">iPhone 17 Pro (256GB)</strong></div>
+
+    <div class="chi-tiet-wrap">
+      <!-- LEFT -->
+      <section class="card" aria-labelledby="chiTietTitle">
+        <div class="detail-grid">
+          <div class="left-col">
+            <div class="khung-gallery" id="khungGallery">
+              <div class="gallery-thumbs" id="galleryThumbs"></div>
+              <div class="gallery-main" id="galleryMain"><img id="hinhChinh" src="" alt="Hình sản phẩm chính" /></div>
+            </div>
+          </div>
+
+          <div class="right-col">
+            <h1 id="chiTietTitle">Đang tải...</h1>
+            <div class="muted" id="maSanPham">Mã: —</div>
+
+            <div class="gia" id="giaBlock">
+              <span class="gia-chinh" id="giaChinh">0₫</span>
+              <span class="gia-c-cu" id="giaCu" style="display:none">0₫</span>
+              <span class="vat" id="ghiChuVAT">(Đã bao gồm VAT)</span>
+              <span class="badge-sale" id="badgeGiam" style="display:none"></span>
+            </div>
+
+            <div class="tinh-trang" id="tinhTrangKho">Tình trạng: <span class="small muted">—</span></div>
+
+            <!-- variants -->
+            <div>
+              <div class="muted" style="margin-top:8px">Dung lượng</div>
+              <div class="variants" id="khungDungLuong" role="list"></div>
+
+              <div class="muted" style="margin-top:8px">Màu sắc</div>
+              <div class="variants" id="khungMauSac" role="list"></div>
+
+              <div class="muted" style="margin-top:8px">Khu vực</div>
+              <select id="khuVuc" class="select-khu-vuc">
+                <option value="vn">Toàn quốc</option>
+                <option value="hn">Hà Nội</option>
+                <option value="hcm">TP. HCM</option>
+              </select>
+            </div>
+
+            <div class="controls-add" style="margin-top:12px">
+              <div class="qty" aria-label="Số lượng"><button id="btnMinus">−</button><input id="soLuong" type="number" min="1" value="1" /><button id="btnPlus">+</button></div>
+              <button id="nutThemVaoGio" class="btn-mua">Thêm vào giỏ</button>
+            </div>
+
+            <div style="margin-top:12px;display:flex;gap:10px;align-items:center">
+              <button id="btnUuDai" class="nut nut-ghost" type="button">Ưu đãi</button>
+              <button id="btnThanhToan" class="nut nut-chinh" type="button">Thanh toán</button>
+            </div>
+            <div id="panelUuDai" class="panel-uu-dai" style="display:none;">
+              <ul>
+                <li>Giảm 1.000.000₫ khi dùng mã DEMO1000</li>
+                <li>Trả góp 0% qua CreditBank</li>
+                <li>Tặng ốp lưng chính hãng (khách mua trong tháng)</li>
+              </ul>
+            </div>
+
+            <div class="thong-so" id="khungThongSo">
+              <h3 style="margin-top:16px">Thông số chính</h3>
+              <table id="bangThongSo" aria-describedby="Bảng thông số"></table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div style="margin-top:18px">
+          <nav class="product-tabs" role="tablist" aria-label="Nội dung sản phẩm">
+            <button role="tab" aria-selected="true" data-tab="moTa">Mô tả</button>
+            <button role="tab" data-tab="thongSo">Thông số</button>
+            <button role="tab" data-tab="danhGia">Đánh giá</button>
+            <button role="tab" data-tab="baoHanh">Bảo hành</button>
+          </nav>
+
+          <section id="tab-moTa" class="tab-panel">
+            <h3>Mô tả</h3>
+            <div id="moTa" class="muted">—</div>
+          </section>
+
+          <section id="tab-thongSo" class="tab-panel" hidden>
+            <h3>Thông số chi tiết</h3>
+            <div id="thongSoDayDu" class="muted">—</div>
+          </section>
+
+          <section id="tab-danhGia" class="tab-panel" hidden>
+            <h3>Đánh giá khách hàng</h3>
+            <div class="rating" style="margin-bottom:8px"><div class="stars">★★★★★</div><div class="muted">4.8 (125 đánh giá)</div></div>
+            <div id="listReviews" class="muted">Chưa có đánh giá thực tế (demo)</div>
+          </section>
+
+          <section id="tab-baoHanh" class="tab-panel" hidden>
+            <h3>Bảo hành & Đổi trả</h3>
+            <ul class="muted"><li>Bảo hành 12 tháng chính hãng.</li><li>Đổi trả trong 7 ngày nếu lỗi NSX.</li></ul>
+          </section>
+        </div>
+
+        <div class="lien-quan"><h3>Sản phẩm liên quan</h3><div class="grid-lq" id="sanPhamLienQuan"></div></div>
+      </section>
+
+      <!-- RIGHT -->
+      <aside class="card" aria-label="Tóm tắt mua hàng">
+        <h3>Tóm tắt</h3>
+        <div style="margin-top:8px">
+          <div style="display:flex;justify-content:space-between"><div class="muted">Giá</div><div id="sumGia" style="font-weight:700">0₫</div></div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px"><div class="muted">Số lượng</div><div id="sumSoLuong" class="muted">1</div></div>
+          <div style="display:flex;justify-content:space-between;margin-top:12px;font-weight:800"><div>Tổng</div><div id="sumTong">0₫</div></div>
+        </div>
+        <div style="margin-top:12px"><button id="nutMuaNgay" class="btn-mua" style="width:100%">Mua ngay</button></div>
+        <div style="margin-top:12px" class="muted">Thanh toán an toàn — Giao hàng nhanh</div>
+        <div style="margin-top:12px" class="muted"><strong>Giao hàng:</strong> 1-3 ngày (tuỳ khu vực).<br><strong>Đổi trả:</strong> 7 ngày.</div>
+      </aside>
+    </div>
+  </main>
+
+  <div id="stickyBuybar" class="sticky-buybar" style="display:none">
+    <img id="stickyThumb" class="thumb" src="" alt="">
+    <div style="flex:1">
+      <div id="stickyName" style="font-weight:700">Tên sản phẩm</div>
+      <div id="stickyPrice" class="muted">0₫</div>
+    </div>
+    <button id="stickyBuy" class="btn-mua">Mua ngay</button>
+  </div>
+
+  <div id="lightbox" class="lightbox" role="dialog" aria-hidden="true"><img src="" alt="Ảnh lớn"/></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <app-footer></app-footer>
+
+  <!-- JS: thứ tự quan trọng: helpers -> component defs -> demo data -> page logic -->
+  <script src="productDetailJS/stylesChung.js"></script>
+  <script src="productDetailJS/header.js"></script>
+  <script src="productDetailJS/menu.js"></script>
+  <script src="productDetailJS/footer.js"></script>
+  <script src="productDetailJS/thongtinDemo.js"></script>
+  <script src="productDetailJS/stylesRiengCuaProductDetail.js"></script>
+</body>
+</html>
