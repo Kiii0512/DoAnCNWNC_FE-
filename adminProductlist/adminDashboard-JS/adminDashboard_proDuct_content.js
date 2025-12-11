@@ -29,10 +29,6 @@ class productcontent extends HTMLElement {
     </div>
   </div>
         `;
-
-        // ================================
-        // DATASET: DANH SÁCH SẢN PHẨM
-        // ================================
         const products = [
             {
                 img: "https://via.placeholder.com/40",
