@@ -1,33 +1,33 @@
 class productcontent extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
-  <div class="content">
-    <div class="page-title">Product List</div>
-    <div class="breadcrumb">Home / Product List</div>
+        <div class="content">
+          <div class="page-title">Product List</div>
+          <div class="breadcrumb">Home / Product List</div>
 
-    <div class="tools">
-      <input id="searchInput" type="text" placeholder="Tìm sản phẩm..." />
-      <button id="addProductBtn">+ Add Product</button>
-    </div>
+          <div class="tools">
+            <input id="searchInput" type="text" placeholder="Tìm sản phẩm..." />
+            <button id="addProductBtn">+ Add Product</button>
+          </div>
 
-    <div class="table-card">
-      <table id="productTable">
-        <thead>
-          <tr>
-            <th><input type="checkbox" /></th>
-            <th>Product</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Stock</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
+          <div class="table-card">
+            <table id="productTable">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" /></th>
+                  <th>Product</th>
+                  <th>Category</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
 
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
         `;
         const products = [
             {
