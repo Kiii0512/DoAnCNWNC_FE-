@@ -1,0 +1,20 @@
+.site-footer{
+  background:#0b0b0b;
+  color:#ffffff;
+  padding:22px 18px;
+  border-top:1px solid rgba(255,255,255,0.04);
+  margin-top:24px;
+  flex-shrink:0;
+}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:18px;justify-content:space-between;flex-wrap:wrap}
+.footer-left{min-width:220px}
+.footer-left .shop-name{font-weight:800;font-size:18px;letter-spacing:0.2px}
+.footer-left .address{font-size:14px;opacity:0.92;margin-top:8px;line-height:1.4}
+.footer-right{font-size:16px;text-align:right;max-width:600px}
+.footer-right .greeting{font-weight:700}
+.footer-right .sub{opacity:0.9;margin-top:6px}
+
+@media (max-width:720px){
+  .footer-inner{padding:8px 0}
+  .footer-right{width:100%;text-align:left;margin-top:12px}
+}

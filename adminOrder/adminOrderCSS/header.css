@@ -1,0 +1,43 @@
+/* Header & search & account */
+header{background:#fff;color:#111;padding:12px 18px;border-bottom:1px solid #e6e7eb;position:sticky;top:0;z-index:60}
+.thanh-tren{max-width:1200px;margin:0 auto;display:flex;gap:18px;align-items:center}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.vuong{width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,#ff8a65,#ffb563);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
+.tim-kiem{flex:1;display:flex;align-items:center}
+.tim-kiem input{flex:1;padding:10px 14px;border-radius:999px;border:1px solid #e6e7eb}
+.nut-gio, .nut-tk{margin-left:12px;padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--accent);font-weight:600;border:1px solid transparent;display:inline-flex;align-items:center;gap:8px}
+.nut-gio svg, .nut-tk svg{width:18px;height:18px;flex-shrink:0;transition:stroke .22s ease, fill .22s ease}
+.nut-gio{background:transparent;transition:transform .12s ease,box-shadow .12px ease,background-color .12s ease,color .12s ease}
+.nut-gio:hover{background:linear-gradient(180deg,rgba(11,92,255,0.06),rgba(11,92,255,0.03));color:var(--primary);transform:translateY(-3px);box-shadow:0 6px 18px rgba(11,92,255,0.06)}
+.nut-gio:active{transform:translateY(-1px) scale(.995);box-shadow:0 4px 12px rgba(11,92,255,0.06)}
+.nut-gio:focus{outline:3px solid rgba(11,92,255,0.12);outline-offset:2px}
+.nut-tk{transition:background-color .22s ease,color .22s ease,transform .22s ease}
+.nut-tk:hover{background:#111827;color:#fff;transform:translateY(-2px)}
+
+/* account dropdown */
+.account { display:inline-flex; align-items:center; margin-left:12px; position:relative; }
+.account-menu{
+  position:absolute;
+  top:calc(100% + 8px);
+  right:0;
+  min-width:180px;
+  background:var(--card);
+  border-radius:10px;
+  box-shadow:0 10px 30px rgba(2,6,23,0.12);
+  padding:6px;
+  display:none;
+  z-index:160;
+  border:1px solid rgba(2,6,23,0.04);
+}
+.account-menu[aria-hidden="false"], .account:hover .account-menu, .account:focus-within .account-menu {
+  display:block;
+}
+.account-item{
+  padding:8px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:700;
+  color:var(--accent);
+}
+.account-item:focus,
+.account-item:hover{ background:#f3f4f6; outline:none; }

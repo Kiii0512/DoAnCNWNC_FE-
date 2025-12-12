@@ -4,7 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Admin — Quản lý đơn hàng</title>
- <link rel="stylesheet" href="./adminOrder.css" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="adminOrderCSS/stylesChung.css" />
+  <link rel="stylesheet" href="adminOrderCSS/header.css" />
+  <link rel="stylesheet" href="adminOrderCSS/menu.css" />
+  <link rel="stylesheet" href="adminOrderCSS/stylesRiengCuaAdminOrder.css" />
+  <link rel="stylesheet" href="adminOrderCSS/footer.css" />
 </head>
 <body>
   <!-- Header + Menu -->
@@ -15,37 +21,46 @@
         <div style="font-weight:700">Shop68IT1</div>
       </a>
 
-      <div class="tim-kiem">
+      <div class="tim-kiem" style="position:relative">
         <input id="timKiemChung" placeholder="Tìm sản phẩm, đơn, khách..." aria-label="Tìm kiếm" />
 
-        <a id="nutGio" class="nut-gio" href="gioHang.html" title="Xem giỏ hàng" aria-label="Giỏ hàng">
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 6h15l-1.2 6.3A2 2 0 0 1 17.9 14H9.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="10" cy="19" r="1.4" fill="currentColor"/><circle cx="18" cy="19" r="1.4" fill="currentColor"/></svg>
-          <span>Giỏ hàng</span>
-        </a>
-
-        <button id="nutTaiKhoan" class="nut-tk" title="Tài khoản" aria-label="Tài khoản">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span>Tài khoản</span>
+        <button id="nutTimKiem" class="nut-gio" title="Tìm kiếm" aria-label="Tìm kiếm">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Tìm</span>
         </button>
+
+        <div class="account" style="position:relative">
+          <button id="nutTaiKhoan" class="nut-tk" title="Tài khoản" aria-haspopup="true" aria-expanded="false" aria-controls="accountMenu">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span>Tài khoản</span>
+          </button>
+
+          <div id="accountMenu" class="account-menu" role="menu" aria-hidden="true">
+            <div class="account-item" role="menuitem" tabindex="0" data-action="profile">Thay đổi thông tin</div>
+            <div class="account-item" role="menuitem" tabindex="0" data-action="logout">Đăng xuất</div>
+          </div>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Replaced menu: horizontal, scrollable with arrows -->
+  <!-- Menu -->
   <div class="menu" role="navigation" aria-label="Main menu">
     <div class="menu-nav" id="menuNav">
       <div class="scroll-wrap" id="scrollWrap" tabindex="0" aria-label="Danh mục">
         <div class="scroll-inner" id="scrollInner">
-          <!-- menu items (hrefs use hashes so active can match current location) -->
           <a class="menu-item" href="#admin" data-route="admin">Admin Dashboard<span class="tag">ADMIN</span></a>
           <a class="menu-item" href="#products" data-route="products">Quản lý sản phẩm <span class="tag">PRODUCTS</span></a>
           <a class="menu-item" href="#categories" data-route="categories">Quản lý danh mục &amp; thương hiệu <span class="tag">CATEGORIES</span></a>
-          <a class="menu-item" href="#orders" data-route="orders">Quản lý đơn hàng <span class="tag">ORDERS</span></a>
+          <a class="menu-item" href="adminOrder.html" data-route="orders">Quản lý đơn hàng <span class="tag">ORDERS</span></a>
           <a class="menu-item" href="#accounts" data-route="accounts">Quản lý khách hàng / tài khoản <span class="tag">ACCOUNTS</span></a>
           <a class="menu-item" href="#discounts" data-route="discounts">Quản lý khuyến mãi / coupon <span class="tag">DISCOUNTS</span></a>
           <a class="menu-item" href="#payments" data-route="payments">Cấu hình thanh toán <span class="tag">PAYMENTS</span></a>
           <a class="menu-item" href="#feedbacks" data-route="feedbacks">Duyệt đánh giá / phản hồi <span class="tag">FEEDBACKS</span></a>
-          <a class="menu-item" href="#reports" data-route="reports">Báo cáo / Export <span class="tag">REPORTS</span></a>
+          <a class="menu-item" href="adminExport.html" data-route="reports">Báo cáo / Export <span class="tag">REPORTS</span></a>
         </div>
       </div>
 
@@ -134,9 +149,28 @@
     <div style="margin-top:12px" id="chiTietTong"></div>
   </aside>
 
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <div class="shop-name">SHOP68IT1</div>
+        <div class="address">55 Giải Phóng, Hai Bà Trưng, Hà Nội<br>Hotline: 0877781262</div>
+      </div>
+      <div class="footer-right">
+        <div class="greeting">Chào quản lí,</div>
+        <div class="sub">Chúc một ngày tốt lành.</div>
+      </div>
+    </div>
+  </footer>
+
   <!-- toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-      <script src="./adminOrder.js"></script>
+  <!-- JS: order is important -->
+  <script src="adminOrderJS/jsChung.js"></script>
+  <script src="adminOrderJS/thongTinDemo.js"></script>
+  <script src="adminOrderJS/menu.js"></script>
+  <script src="adminOrderJS/header.js"></script>
+  <script src="adminOrderJS/jsRiengCuaAdminOrder.js"></script>
 </body>
 </html>
