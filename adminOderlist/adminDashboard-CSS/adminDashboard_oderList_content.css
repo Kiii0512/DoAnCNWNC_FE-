@@ -3,14 +3,11 @@
   padding: 110px 28px 40px;
   width: calc(100% - 240px);
 }
-
-.card {
-  background: var(--card);
-  padding: 16px;
-  border-radius: 12px;
-  box-shadow: var(--shadow-soft);
+.inner {
+  width: 100%;
+  max-width: 1200px;
+  justify-content: space-around;
 }
-
 .page-head {
   display: flex;
   align-items: center;
@@ -28,13 +25,23 @@
   display: flex;
   gap: 8px;
   align-items: center;
+
 }
 
 .btn {
+  background-color: #111827;
+  color: #fff;
+  font-weight: 700;
   padding: 8px 12px;
   border-radius: 10px;
   border: 0;
   cursor: pointer;
+}
+
+.btn:hover {
+  box-shadow: var(--shadow-soft);
+  transform: translateY(-1px);
+  transition: transform .12s ease, box-shadow .12s ease;
 }
 
 .btn-primary {
@@ -45,6 +52,10 @@
 .btn-ghost {
   background: transparent;
   border: 1px solid #e6e7eb;
+}
+
+.btn-ghost :hover {
+  background: #d3d5da;
 }
 
 .filters {

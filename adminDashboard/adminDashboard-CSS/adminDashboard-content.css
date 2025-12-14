@@ -1,4 +1,4 @@
-    .content {
+.content {
       margin-left: 240px;
       padding: 110px 28px 40px; /* leave space for fixed header */
       width: calc(100% - 240px);
@@ -7,7 +7,7 @@
       justify-content:center;
     }
 
-    .inner {
+.inner {
       width:100%;
       max-width:1200px;
       justify-content: space-between;
