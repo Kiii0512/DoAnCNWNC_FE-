@@ -1,0 +1,30 @@
+[
+  {
+    "id": "coupon-10off",
+    "code": "XMAS10",
+    "description": "Giảm 10% cho đơn hàng điện thoại",
+    "type": "percent",
+    "value": 10,
+    "startDate": "2025-12-20",
+    "endDate": "2025-12-31",
+    "usageLimit": 100,
+    "used": 12,
+    "products": [1,2],
+    "categories": ["phones"],
+    "active": true
+  },
+  {
+    "id": "coupon-bag",
+    "code": "BALO2025",
+    "description": "Tặng balo khi mua laptop trên 10 triệu",
+    "type": "fixed",
+    "value": 0,
+    "startDate": "2025-12-01",
+    "endDate": "2026-01-31",
+    "usageLimit": 50,
+    "used": 0,
+    "products": [10,11],
+    "categories": ["laptops"],
+    "active": true
+  }
+]

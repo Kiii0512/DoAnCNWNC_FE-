@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Tạo / Sửa Coupon</title>
+
+  <link rel="stylesheet" href="CSS/globalStyle.css" />
+  <link rel="stylesheet" href="CSS/topheader.css" />
+  <link rel="stylesheet" href="CSS/mainNav.css" />
+  <link rel="stylesheet" href="CSS/appFooter.css" />
+
+  <link rel="stylesheet" href="CSS/adminDiscounts.css" />
+  <script src="JS/topHeader.js" defer></script>
+  <script src="JS/mainNav.js" defer></script>
+  <script src="JS/appFooter.js" defer></script>
+  <script src="JS/adminDiscounts.js" defer></script>
+</head>
+<body>
+  <top-header></top-header>
+  <main-nav></main-nav>
+
+  <main class="container">
+    <a href="index.html" class="back-link">← Quay lại danh sách</a>
+    <form id="discountForm" class="discount-form" novalidate>
+      <div class="row">
+        <label>Mã (code) <input id="fldCode" required /></label>
+        <label>Mô tả <input id="fldDesc" /></label>
+      </div>
+
+      <div class="row">
+        <label>Loại
+          <select id="fldType">
+            <option value="percent">% (Phần trăm)</option>
+            <option value="fixed">VNĐ (Cố định)</option>
+          </select>
+        </label>
+        <label>Giá trị <input id="fldValue" type="number" min="0" required /></label>
+      </div>
+
+      <div class="row">
+        <label>Ngày bắt đầu <input id="fldStart" type="date" /></label>
+        <label>Ngày kết thúc <input id="fldEnd" type="date" /></label>
+      </div>
+
+      <div class="row">
+        <label>Usage limit <input id="fldLimit" type="number" min="0" /></label>
+        <label>Active <input id="fldActive" type="checkbox" /></label>
+      </div>
+
+      <div class="row">
+        <label>Gán sản phẩm (IDs, comma) <input id="fldProducts" placeholder="1,2,3" /></label>
+        <label>Gán danh mục (IDs, comma) <input id="fldCategories" placeholder="phones,laptops" /></label>
+      </div>
+
+      <div class="form-actions">
+        <button class="btn primary" type="submit">Lưu</button>
+        <button class="btn" type="button" id="btnCancel">Hủy</button>
+      </div>
+    </form>
+  </main>
+
+  <app-footer></app-footer>
+</body>
+</html>

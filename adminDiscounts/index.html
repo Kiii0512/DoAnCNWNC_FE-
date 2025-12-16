@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Quản lý khuyến mãi</title>
+
+  <!-- admin header/footer styles from adminDiscounts -->
+  <link rel="stylesheet" href="CSS/globalStyle.css" />
+  <link rel="stylesheet" href="CSS/topheader.css" />
+  <link rel="stylesheet" href="CSS/mainNav.css" />
+  <link rel="stylesheet" href="CSS/appFooter.css" />
+
+  <!-- page styles -->
+  <link rel="stylesheet" href="CSS/adminDiscounts.css" />
+
+  <script src="JS/topHeader.js" defer></script>
+  <script src="JS/mainNav.js" defer></script>
+  <script src="JS/appFooter.js" defer></script>
+  <script src="JS/adminDiscounts.js" defer></script>
+</head>
+<body>
+  <top-header></top-header>
+  <main-nav></main-nav>
+
+  <main class="container">
+    <header class="page-header">
+      <h1>Quản lý Khuyến mãi / Coupon</h1>
+      <div class="actions">
+        <a href="edit.html" class="btn primary">Tạo coupon mới</a>
+      </div>
+    </header>
+
+    <section class="list-section">
+      <table class="discount-table" aria-label="Danh sách khuyến mãi">
+        <thead>
+          <tr>
+            <th>Mã</th>
+            <th>Mô tả</th>
+            <th>Loại</th>
+            <th>Giá trị</th>
+            <th>Thời gian</th>
+            <th>Hạn dùng</th>
+            <th>Gán</th>
+            <th>Trạng thái</th>
+            <th>Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="discountTbody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <app-footer></app-footer>
+</body>
+</html>
