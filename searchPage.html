@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shop 68IT1 </title>
+  <link rel="stylesheet" href="CSS/main.css" />
+  <link rel="stylesheet" href="CSS/searchpage.css" />
+</head>
+<body>
+  <div class="topbar">
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center ;">
+      <div>Giao hàng nhanh — Support: 1900 1009 </div>
+      <div> 
+        <button class="login"> Đăng nhập</button> 
+        <button class="login" > Đăng ký</button> 
+      </div>
+    </div>
+  </div>
+
+ <header>
+    <div class="container head-main">
+      <div class="logo"><div class="mark"><a href="#"></a>SH</div></a><div>Shop68IT1</div></div>
+      <div class="search">
+        <input id="q" placeholder="Tìm điện thoại, laptop, linh kiện..." />
+        <button class="icon-btn" id="searchBtn">Tìm kiếm</button>
+      </div>
+      <div class="nav-actions">
+        <button class="icon-btn" id="favBtn">Yêu thích</button>
+        <a href="http://127.0.0.1:5500/DES-vs-HNB/DES-vs-HNB/gio-hang/gioHang.html"></a><button class="icon-btn" id="cartBtn">Giỏ hàng (<span id="cartCount">0</span>)</button>
+      </div>
+      <div> 
+        <button class="icon-btn" id="taikhoan"> <div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+            <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+            <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10.5 8 10.5s4.757.726 5.468 1.87A7 7 0 0 0 8 1z"/>
+          </svg>
+        </div> Tài khoản</button>
+        <div>
+          
+        <div id="accountMenu" class="account-menu"> 
+          <a href="#">Đăng nhập</a> 
+          <a href="#">Đăng ký</a> 
+          <a href="#">Thông tin cá nhân</a>
+          <a href="#">Đơn hàng của tôi</a>
+          <a href="#">Đăng xuất</a>
+        </div>
+        </div>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <div class="container menu">
+        <a href="#">Điện thoại</a>
+        <a href="#">Laptop</a>
+        <a href="#">PC</a>
+        <a href="#">Phụ kiện</a>
+        <a href="#">Khuyến mãi</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- ==== Cac san pham tim kiem ==== -->
+    <section id="products">
+
+      <div class="search-container">
+        <!-- FILTER -->
+          <div class="filter-bar" style="margin:10px 0; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <span>Lọc theo:</span>
+            <select id="filter-category">
+              <option value="">Tất cả danh mục</option>
+              <option value="dien-thoai">Điện thoại</option>
+              <option value="laptop">Laptop</option>
+              <option value="pc">PC</option>
+              <option value="phu-kien">Phụ kiện</option>
+            </select>
+
+            <select id="filter-price">
+              <option value="">Mọi mức giá</option>
+              <option value="0-1000000">Dưới 1 triệu</option>
+              <option value="1000000-5000000">1 - 5 triệu</option>
+              <option value="5000000-10000000">5 - 10 triệu</option>
+              <option value="10000000-">Trên 10 triệu</option>
+            </select>
+
+            <select id="filter-brand">
+              <option value="">Tất cả hãng</option>
+              <option value="samsung">Samsung</option>
+              <option value="apple">Apple</option>
+              <option value="asus">Asus</option>
+              <option value="dell">Dell</option>
+            </select>
+          </div>
+
+
+        <!-- SORT -->
+        <div class="sort-bar">
+          <span>Sắp xếp theo:</span>
+          <select id="sort">
+            <option value="popular">Mới nhất</option>
+            <option value="price-asc">Giá: thấp → cao</option>
+            <option value="price-desc">Giá: cao → thấp</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid" id="grid">
+        <!-- Product cards da duoc xu ly boi JS -->
+      </div>
+    </section>
+</main>
+
+  </main>
+
+   <footer style="justify-content:space-between; background-color: black;">
+      <div  class="container" style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap ; ">
+        <div style="min-width:220px">
+          <h3>Shop68IT1</h3>
+          <p>Địa chỉ: 55 Giải phóng,tp Hà Nội — Hotline: 1900 1009</p>
+        </div>
+        <div>
+          <h4>Chính sách</h4>
+          <p>Đổi trả · Bảo hành · Thanh toán</p>
+        </div>
+        <div>
+          <h4>Theo dõi</h4>
+          <p>Facebook · Instagram · YouTube</p>
+        </div>
+      </div>
+    </footer>
+   
+  <!-- Modal quick view -->
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <div>
+        <img id="modalImg" src="" alt="product">
+      </div>
+      <div style="flex:1">
+        <h3 id="modalTitle">Title</h3>
+        <p id="modalDesc">Description</p>
+        <div style="margin:10px 0"><span id="modalPrice" class="price">0₫</span> <span id="modalOld" class="old"></span></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="number" id="qty" value="1" min="1" style="width:80px;padding:8px;border-radius:8px;border:1px solid #e6e9ee">
+          <button class="btn" id="addToCartModal">Thêm vào giỏ</button>
+        </div>
+        <div style="margin-top:14px"><button id="closeModal" class="icon-btn">Đóng</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cart panel -->
+  <div class="cart-panel" id="cartPanel" style="display:none">
+    <h4>Giỏ hàng</h4>
+    <div class="cart-items" id="cartItems"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px">
+      <strong>Tổng:</strong><strong id="cartTotal">0₫</strong>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px"><button class="btn" id="checkout">Thanh toán</button><button class="icon-btn" id="clearCart">Xóa</button></div>
+  </div>
+  <script src="JS/main.js"></script>
+  <script src="JS/searchPage.js"></script>
+</body>
+</html>
