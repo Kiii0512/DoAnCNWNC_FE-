@@ -1,0 +1,162 @@
+/* header.css
+   Styles cho phần header (thanh trên) dùng chung cho adminOrder và adminExport
+   - Các chú thích bằng tiếng Việt
+   - Dựng trên biến trong bienChung.css (ví dụ --primary, --muted, --card, --radius)
+*/
+
+/* ----- Container chính của header ----- */
+header {
+  background: var(--card);
+  color: var(--accent);
+  padding: 12px 18px;
+  border-bottom: 1px solid #e6e7eb;
+  position: sticky;
+  top: 0;
+  z-index: 60;
+}
+
+/* Thanh trên (nội dung căn giữa, giới hạn chiều rộng) */
+.thanh-tren {
+  max-width: var(--maxWidth);
+  margin: 0 auto;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  /* đảm bảo tương thích khi co nhỏ */
+  flex-wrap: nowrap;
+}
+
+/* ----- Logo ----- */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  flex: 0 0 auto; /* không co giãn */
+}
+
+/* Khối vuông chứa số '68' */
+.vuong {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ff8a65, #ffb563);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #fff;
+  flex: 0 0 auto;
+  box-shadow: var(--shadow-soft);
+}
+
+/* ----- Khung tìm kiếm + các nút bên phải ----- */
+.tim-kiem {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0; /* cho input thu nhỏ đúng */
+}
+
+/* input tìm kiếm chính trong header */
+.tim-kiem input {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 10px 14px;
+  border-radius: 999px;
+  border: 1px solid #e6e7eb;
+  background: #fff;
+  font-size: 14px;
+  color: var(--accent);
+  transition: box-shadow .14s ease, transform .12s ease, border-color .12s ease;
+}
+
+/* focus rõ ràng cho input (tăng khả năng truy cập) */
+.tim-kiem input:focus {
+  outline: none;
+  border-color: rgba(11,92,255,0.28);
+  box-shadow: 0 6px 18px rgba(11,92,255,0.06);
+  transform: translateY(-1px);
+}
+
+/* ----- Nút giỏ hàng / tài khoản (liên kết hoặc button) ----- */
+.nut-gio,
+.nut-tk {
+  margin-left: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--accent);
+  font-weight: 600;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease, color .12s ease;
+}
+
+/* Kích thước icon SVG bên trong nút */
+.nut-gio svg,
+.nut-tk svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Hover effect cho nút giỏ hàng: nền mảnh + đổi màu chữ */
+.nut-gio:hover {
+  background: linear-gradient(180deg, rgba(11,92,255,0.06), rgba(11,92,255,0.03));
+  color: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(11,92,255,0.06);
+}
+
+/* Hover cho nút tài khoản: đảo màu tối */
+.nut-tk:hover {
+  background: #111827;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* Trạng thái active / focus cho các nút (truy cập bằng bàn phím) */
+.nut-gio:focus,
+.nut-tk:focus,
+.tim-kiem input:focus {
+  outline: 3px solid rgba(11,92,255,0.12);
+  outline-offset: 2px;
+}
+
+/* ----- Khi không đủ chỗ (mobile/tablet) ----- */
+/* thay đổi cấu trúc để header không bị quá chật */
+@media (max-width: 880px) {
+  .thanh-tren {
+    gap: 10px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .tim-kiem input {
+    padding: 8px 10px;
+    font-size: 14px;
+  }
+  .vuong { width: 38px; height: 38px; }
+  .nut-gio, .nut-tk { padding: 6px 10px; }
+}
+
+/* Khi rất nhỏ (điện thoại), thu gọn label text trong nut-gio/nut-tk nếu cần */
+@media (max-width: 520px) {
+  .tim-kiem { gap: 8px; }
+  /* ẩn text trong nút, chỉ giữ icon (nếu muốn); hiện tại giữ nguyên nhưng thêm rule mẫu */
+  /* .nut-gio span, .nut-tk span { display:none; } */
+  .thanh-tren { align-items: center; }
+}
+
+/* ----- Hints / chú ý: 
+   - Các style ở đây dùng biến gốc (bienChung.css). 
+   - Nếu muốn thay đổi màu hoặc radius chung, chỉnh bienChung.css. 
+   - Giữ menuAdmin partial và menu.js tách biệt; menu.js sẽ cần #scrollWrap / #scrollInner (không nằm ở đây).
+*/

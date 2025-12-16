@@ -1,0 +1,199 @@
+/* adminExport.css
+   Style dành riêng cho trang "Admin — Báo cáo / Export"
+   - Chú thích bằng tiếng Việt
+   - Dựa trên bienChung.css, header.css, menu.css (đã nạp chung)
+   - Tập trung: kpi, chart-wrap, detail-panel, bảng báo cáo, responsive tweaks
+*/
+
+/* ----- Container chính cho phần nội dung báo cáo ----- */
+main {
+  max-width: var(--maxWidth);
+  margin: 24px auto;
+  padding: 0 18px;
+}
+
+/* Card chính */
+.card {
+  background: var(--card);
+  padding: 16px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Tiêu đề trang và controls */
+.page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 12px;
+}
+.page-title { display:flex; gap:12px; align-items:center; }
+.controls { display:flex; gap:8px; align-items:center; }
+
+/* Filters (input date, nút nhanh) */
+.filters {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.filters input[type=date],
+.filters input[type=text],
+.filters select,
+.filters button {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #e6e7eb;
+  background: #fff;
+  font-size: 14px;
+}
+
+/* Nút chọn nhanh khoảng thời gian */
+.filters .inline { display:inline-flex; gap:8px; align-items:center; }
+.filters button[data-range] { cursor: pointer; background: transparent; border: 1px solid #e6e7eb; font-weight:700; border-radius:8px; padding:8px 10px; }
+
+/* ----- KPI Grid: tổng doanh thu, số đơn, đơn trung bình ----- */
+.kpi-grid {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.kpi {
+  flex: 1;
+  background: #fbfcfd;
+  padding: 12px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+}
+.kpi h3 { margin: 0; font-size: 18px; }
+.kpi p { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
+
+/* ----- Chart + Detail panel (main layout) ----- */
+.chart-wrap {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  transition: all .18s ease;
+}
+
+/* Vùng biểu đồ (chiếm phần lớn) */
+.chart-wrap > .chart-area {
+  flex: 1 1 auto;
+  min-width: 0;
+  border-radius: 10px;
+  padding: 10px;
+  background: linear-gradient(180deg, #fff, #fbfdff);
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Canvas: rộng 100% và chiều cao do JS điều chỉnh (nếu JS không chạy vẫn có chiều cao tối thiểu) */
+.chart-area canvas {
+  width: 100%;
+  display: block;
+  border: 0;
+  background: transparent;
+  height: 220px; /* fallback height, drawChart sẽ override */
+  max-height: 480px;
+  border-radius: 8px;
+}
+
+/* Panel chi tiết bên phải (bảng danh sách) */
+.chart-wrap > .detail-panel {
+  width: 420px;
+  flex: 0 0 auto;
+  transition: all .18s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Xuất file (nút) ở phần detail */
+.detail-panel .xuathang {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Hộp bảng chi tiết */
+.detail-panel .bang {
+  max-height: 480px;
+  overflow: auto;
+  border-radius: 8px;
+  padding: 6px;
+  background: var(--card);
+  box-shadow: 0 2px 8px rgba(2,6,23,0.04);
+}
+
+/* Bảng chi tiết đơn */
+#bangBaoCao { width: 100%; border-collapse: collapse; font-size: 14px; }
+#bangBaoCao thead th {
+  background: #fbfcfd;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #eef2f7;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+#bangBaoCao tbody td {
+  padding: 10px;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+  background: transparent;
+}
+
+/* Nếu bảng dài: nhãn hiển thị ở cuối */
+#bangBaoCao tbody tr:last-child td { border-bottom: none; }
+
+/* Small text utility (override) */
+.detail-panel .small { font-size: 13px; color: var(--muted); }
+
+/* ----- Empty / no-data state cho biểu đồ ----- */
+.chart-area .no-data {
+  padding: 18px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 13px;
+}
+
+/* ----- Responsive rules ----- */
+@media (max-width: 900px) {
+  .chart-wrap { flex-direction: column; }
+  .chart-wrap > .chart-area { order: 1; }
+  .chart-wrap > .detail-panel { order: 2; width: 100%; margin-top: 12px; }
+  .kpi-grid { flex-direction: column; }
+}
+
+/* RWD nhỏ hơn (điện thoại) */
+@media (max-width: 500px) {
+  .thanh-tren { padding-left: 8px; padding-right: 8px; }
+  .tim-kiem input { padding: 8px; }
+  .kpi { padding: 10px; }
+  .chart-area canvas { height: 180px; }
+  .chart-wrap > .detail-panel { padding: 6px; }
+}
+
+/* ----- Tiny UX improvements ----- */
+/* hover hàng bảng nhẹ */
+#bangBaoCao tbody tr:hover td { background: rgba(11,92,255,0.02); }
+
+/* highlight cho giá trị tổng lớn */
+.kpi h3 { font-weight: 800; }
+
+/* giảm kích thước font ở bảng khi màn rất nhỏ */
+@media (max-width: 360px) {
+  #bangBaoCao { font-size: 13px; }
+  .kpi h3 { font-size: 16px; }
+}
+
+/* ----- Chú thích:
+   - Chiều cao thực của canvas được JS (bieuDo.js) điều chỉnh cho phù hợp.
+   - Nếu muốn gom các CSS chung hơn nữa, có thể chuyển một số phần sang bienChung.css.
+   - Các lớp và id tương thích với adminExport.html đã cung cấp (bieuDo canvas id="bieuDo", bang id="bangBaoCao").
+*/
