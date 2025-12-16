@@ -1,0 +1,158 @@
+            .topbar {
+              background: #0f1724;
+              color: #fff;
+              padding: 6px 16px;
+              font-size: 13px;
+              display: flex;                 
+              justify-content: space-between;
+              align-items: center;
+            }
+
+            .container {
+              max-width: 1200px;
+              margin: 0 auto;
+              padding: 0 16px;
+            }
+
+            .login{
+              margin-left:5px;
+              padding:5px 10px;
+              border-radius:8px;
+              border:0;
+              background:#fcfcfc;
+              color:#000000
+            }
+            .login:hover{
+              background:#340303;
+              color:#ffffff;
+            }
+
+            header {
+              background: #fff;
+              box-shadow: 0 1px 4px rgba(16,24,40,.06);
+              position: sticky;
+              top: 0;
+              z-index: 50;
+            }
+
+            .head-main {
+              display: flex;
+              align-items: center;
+              gap: 16px;
+              padding: 14px 0;
+            }
+
+            .logo {
+              text-decoration: none;
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              font-weight: 700;
+              font-size: 20px;
+              color: #111;
+            }
+
+            .logo .mark {
+              text-decoration:none;
+              background: linear-gradient(90deg,#0000009d,#051017);
+              color:#fff;
+              padding:8px 10px;
+              border-radius:6px;
+            }
+
+            .search {
+                flex: 1;
+                display: flex;
+            }
+            .search input {
+                flex: 1;
+                padding: 12px 14px;
+                border-radius: 8px;
+                border: 1px solid #e6e9ee;
+            }
+            .search button {
+                margin-left: 8px;
+                padding: 12px 14px;
+                border-radius: 8px;
+                border: 0;
+                background: #0f1724;
+                color: #fff;
+            }
+
+            .nav-actions { 
+                display:flex; 
+                gap:10px; 
+                align-items:center;
+            }
+
+            .icon-btn {
+              background: transparent;
+              border: 1px solid #e6e9ee;
+              padding: 8px 10px;
+              border-radius: 8px;
+              cursor: pointer;
+            }
+            .icon-btn:hover { background: #9c9d9e; color:#fff; }
+
+            /* MENU ACCOUNT */
+            .account-wrapper {
+             position: relative;
+            }
+
+          .account-menu {
+            position: absolute;
+            top: 100%;   /* nằm ngay dưới nút */
+            right: 0;    /* căn mép phải với nút */
+            margin-top: 8px;
+
+            background: #fff;
+            border: 1px solid #e6e9ee;
+            border-radius: 10px;
+            width: 180px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            display: none;
+            flex-direction: column;
+            z-index: 200;
+          }
+
+            .account-menu a {
+              padding: 12px;
+              text-decoration:none;
+              color:#111;
+              font-size:14px;
+              border-bottom:1px solid #f1f5f9;
+            }
+            .account-menu a { padding: 12px; text-decoration:none; color:#111; font-size:14px; border-bottom:1px solid #f1f5f9; }
+            .account-menu a:last-child { border-bottom:none; }
+            .account-menu a:hover { background:#f1f5f9; }
+
+            /* Ẩn ô search khi màn nhỏ */
+            @media (max-width: 600px) {
+                .search {
+                    display: none !important;
+                }
+                #searchIcon {
+                    display: inline-flex !important;
+                }
+            }
+
+            /* Search overlay popup */
+            .search-popup {
+                display: none;
+                position: fixed;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90%;
+                background: #fff;
+                padding: 10px;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                z-index: 9999;
+            }
+            .search-popup input {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+            }

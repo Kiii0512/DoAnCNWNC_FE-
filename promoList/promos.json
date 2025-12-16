@@ -1,0 +1,20 @@
+[
+  {
+    "id": "promo-1",
+    "title": "Giảm 10% cho điện thoại mùa lễ",
+    "shortDesc": "Giảm 10% cho tất cả điện thoại từ 20-31/12.",
+    "startDate": "2025-12-20",
+    "endDate": "2025-12-31",
+    "content": "Áp dụng cho các mẫu điện thoại, không áp dụng đồng thời với khuyến mãi khác. Mã: XMAS10",
+    "cta": { "text": "Mua ngay", "link": "../productDetail/productDetail.html" }
+  },
+  {
+    "id": "promo-2",
+    "title": "Mua Laptop tặng balo",
+    "shortDesc": "Tặng balo chính hãng khi mua laptop từ 10 triệu.",
+    "startDate": "2025-12-01",
+    "endDate": "2026-01-31",
+    "content": "Khách hàng mua laptop có giá trên 10 triệu sẽ được tặng 1 balo. Số lượng có hạn.",
+    "cta": { "text": "Xem laptop", "link": "../productDetail/productDetail.html" }
+  }
+]
