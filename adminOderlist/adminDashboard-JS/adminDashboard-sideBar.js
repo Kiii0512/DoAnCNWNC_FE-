@@ -1,6 +1,6 @@
 class SideBar extends HTMLElement {
-    connectedCallback() {
-      this.innerHTML = `
+  connectedCallback() {
+    this.innerHTML = `
         <div class="sidebar">
             <h2>ADMIN</h2>
             <ul class="side-menu">
@@ -12,6 +12,6 @@ class SideBar extends HTMLElement {
             </ul>
         </div>
       `;
-    }
+  }
 }
 customElements.define("side-bar", SideBar);

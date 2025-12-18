@@ -3,16 +3,15 @@ class orderlistcontent extends HTMLElement {
     this.innerHTML = `
     <div class="content">
 
-      <div class="page-title"><h1> Order List</h1></div>
+      <div class="page-title"><h1>Order Management</h1></div>
       <div class="breadcrumb">Home / Orders</div>
 
-      <!-- TOOLS -->
       <div class="tools">
         <div style="display:flex; gap:10px">
-          <input id="searchOrder" type="text" placeholder="Mã order..." />
-          <input id="searchCustomer" type="text" placeholder="Mã khách hàng..." />
+          <input id="searchOrder" type="text" placeholder="Order ID..." />
+          <input id="searchCustomer" type="text" placeholder="Customer ID..." />
           <select id="filterStatus">
-            <option value="">-- Trạng thái --</option>
+            <option value="">All Status</option>
             <option value="Pending">Pending</option>
             <option value="Processing">Processing</option>
             <option value="Completed">Completed</option>
@@ -22,16 +21,15 @@ class orderlistcontent extends HTMLElement {
         <button id="resetFilter">Reset</button>
       </div>
 
-      <!-- TABLE -->
       <div class="table-card">
         <table>
           <thead>
             <tr>
-              <th>Mã Order</th>
-              <th>Mã KH</th>
-              <th>Tên đơn hàng</th>
-              <th>Ngày tạo</th>
-              <th>Trạng thái</th>
+              <th>Order ID</th>
+              <th>Customer ID</th>
+              <th>Order Name</th>
+              <th>Created Date</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -43,10 +41,10 @@ class orderlistcontent extends HTMLElement {
     `;
 
     const orders = [
-      { id: "OD001", mkh: "KH001", name: "Đơn Laptop Dell", date: "2025-12-15", status: "Pending" },
-      { id: "OD002", mkh: "KH002", name: "Đơn iPhone 15", date: "2025-12-16", status: "Processing" },
-      { id: "OD003", mkh: "KH001", name: "Đơn Tai nghe Sony", date: "2025-12-17", status: "Completed" },
-      { id: "OD004", mkh: "KH003", name: "Đơn Bàn phím cơ", date: "2025-12-18", status: "Cancelled" }
+      { id: "OD001", customerId: "KH001", name: "Dell Laptop Order", date: "2025-12-15", status: "Pending" },
+      { id: "OD002", customerId: "KH002", name: "iPhone 15 Order", date: "2025-12-16", status: "Processing" },
+      { id: "OD003", customerId: "KH001", name: "Sony Headphone Order", date: "2025-12-17", status: "Completed" },
+      { id: "OD004", customerId: "KH003", name: "Mechanical Keyboard Order", date: "2025-12-18", status: "Cancelled" }
     ];
 
     const tbody = this.querySelector("#orderTable");
@@ -58,7 +56,7 @@ class orderlistcontent extends HTMLElement {
         tbody.innerHTML += `
           <tr>
             <td>${o.id}</td>
-            <td>${o.mkh}</td>
+            <td>${o.customerId}</td>
             <td>${o.name}</td>
             <td>${o.date}</td>
             <td>
@@ -70,7 +68,8 @@ class orderlistcontent extends HTMLElement {
               </select>
             </td>
             <td class="actions">
-              <i class="edit" data-i="${i}">👁</i>
+              <i class="edit" data-i="${i}" title="View Order">👁</i>
+              <i class="delete" data-i="${i}" title="Delete Order">🗑</i>
             </td>
           </tr>
         `;
@@ -81,7 +80,7 @@ class orderlistcontent extends HTMLElement {
 
     const attachEvents = () => {
 
-      // Change status
+      // Change order status
       this.querySelectorAll(".statusSelect").forEach(sel => {
         sel.onchange = () => {
           const i = sel.dataset.i;
@@ -89,13 +88,28 @@ class orderlistcontent extends HTMLElement {
         };
       });
 
-      // View detail
+      // View order detail
       this.querySelectorAll(".edit").forEach(btn => {
         btn.onclick = () => {
           const o = orders[btn.dataset.i];
           alert(
-            `Order: ${o.id}\nKhách hàng: ${o.mkh}\nTên: ${o.name}\nTrạng thái: ${o.status}`
+            `Order ID: ${o.id}
+Customer ID: ${o.customerId}
+Order Name: ${o.name}
+Status: ${o.status}
+Created Date: ${o.date}`
           );
+        };
+      });
+
+      // Delete order
+      this.querySelectorAll(".delete").forEach(btn => {
+        btn.onclick = () => {
+          const i = btn.dataset.i;
+          if (confirm("Are you sure you want to delete this order?")) {
+            orders.splice(i, 1);
+            render(orders);
+          }
         };
       });
     };
@@ -108,7 +122,7 @@ class orderlistcontent extends HTMLElement {
 
       const filtered = orders.filter(o =>
         o.id.toLowerCase().includes(orderKey) &&
-        o.mkh.toLowerCase().includes(customerKey) &&
+        o.customerId.toLowerCase().includes(customerKey) &&
         (status === "" || o.status === status)
       );
 
@@ -132,3 +146,4 @@ class orderlistcontent extends HTMLElement {
 }
 
 customElements.define("oderlist-content", orderlistcontent);
+

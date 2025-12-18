@@ -1,5 +1,5 @@
 class accountscontent extends HTMLElement {
-  connectedCallback() {     
+  connectedCallback() {
     this.innerHTML = `
     <div class="content">
 
@@ -82,7 +82,7 @@ class accountscontent extends HTMLElement {
       this.querySelectorAll(".delete").forEach(btn => {
         btn.onclick = () => {
           const i = btn.dataset.i;
-          (currentTab === "user" ? users : staffs).splice(i,1);
+          (currentTab === "user" ? users : staffs).splice(i, 1);
           render();
         };
       });

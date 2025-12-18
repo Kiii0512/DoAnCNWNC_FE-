@@ -1,6 +1,6 @@
 class TopHeader extends HTMLElement {
-      connectedCallback() {
-        this.innerHTML = `
+  connectedCallback() {
+    this.innerHTML = `
           
           <header>
             <div class="container head-main">
@@ -57,9 +57,9 @@ class TopHeader extends HTMLElement {
           </div>
         `;
 
-        /* ================= JS ================= */
-        const script = document.createElement("script");
-        script.textContent = `
+    /* ================= JS ================= */
+    const script = document.createElement("script");
+    script.textContent = `
           // ACCOUNT MENU
           const tkBtn = document.getElementById("taikhoan");
           const accountMenu = document.getElementById("accountMenu");
@@ -101,7 +101,7 @@ class TopHeader extends HTMLElement {
             searchBtn.addEventListener("click", ()=> qInput.focus());
           }
         `;
-        this.appendChild(script);
-      }
+    this.appendChild(script);
   }
-  customElements.define("top-header", TopHeader);
+}
+customElements.define("top-header", TopHeader);

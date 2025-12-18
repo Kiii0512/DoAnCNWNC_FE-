@@ -1,21 +1,21 @@
 .sidebar{
-      width:240px;
-      background:var(--card);
-      height:100vh;
-      padding:25px 20px;
-      border-right:1px solid var(--border);
-      position:fixed;
-      top:0;left:0;
-      z-index:60;
-    }
-    .sidebar h2{font-size:20px;font-weight:700;margin-bottom:24px;color:var(--accent-strong)}
-    .side-menu{list-style:none}
-    .side-menu li{margin-bottom:12px}
-    .side-menu a{
-      display:flex;align-items:center;gap:10px;
-      padding:10px 14px;text-decoration:none;color:var(--text);
-      border-radius:8px;font-weight:500;
-    }
-    .side-menu a:hover,.side-menu a.active{
-      background:var(--accent-strong); color:#fff;
-    }
+  width:240px;
+  background:var(--card);
+  height:100vh;
+  padding:25px 20px;
+  border-right:1px solid var(--border);
+  position:fixed;
+  top:0;left:0;
+  z-index:60;
+}
+.sidebar h2{font-size:20px;font-weight:700;margin-bottom:24px;color:var(--accent-strong)}
+.side-menu{list-style:none}
+.side-menu li{margin-bottom:12px}
+.side-menu a{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;text-decoration:none;color:var(--text);
+  border-radius:8px;font-weight:500;
+}
+.side-menu a:hover,.side-menu a.active{
+  background:var(--accent-strong); color:#fff;
+}
