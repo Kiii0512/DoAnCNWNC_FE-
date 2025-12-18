@@ -7,8 +7,8 @@ class SideBar extends HTMLElement {
                 <li><a href="adminDashboard.html">Dashboard</a></li>
                 <li><a href="#">Orders</a></li>
                 <li><a href="#">Products</a></li>
-                <li><a href="#" class="active">Customers</a></li>
-                <li><a href="#">Account</a></li>
+                <li><a href="#">Customers</a></li>
+                <li><a href="#" class="active">Account</a></li>
             </ul>
         </div>
       `;

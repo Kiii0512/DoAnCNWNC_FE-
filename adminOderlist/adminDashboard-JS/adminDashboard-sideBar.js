@@ -8,8 +8,7 @@ class SideBar extends HTMLElement {
                 <li><a href="#" class="active">Orders</a></li>
                 <li><a href="#">Products</a></li>
                 <li><a href="#">Customers</a></li>
-                <li><a href="#">Vendors</a></li>
-                <li><a href="#">Messages</a></li>
+                <li><a href="#">Account</a></li>
             </ul>
         </div>
       `;

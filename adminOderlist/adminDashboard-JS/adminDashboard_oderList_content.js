@@ -1,121 +1,134 @@
-class oderlistcontent extends HTMLElement {
-    connectedCallback() {
-        this.innerHTML = `
-            <div class ="content">
-                    <div class="page-title"><h1>Admin oderlist</h1></div>
-                    <div class="breadcrumb">Home / Dashboard</div>
-                    <div class="filters">
-                        <input type="text" id="timKiem" placeholder="Tìm theo tên, mã, số điện thoại..." style="min-width:280px" />
-                        <select id="locTrangThai" aria-label="Lọc trạng thái">
-                        <option value="">Tất cả trạng thái</option>
-                        <option value="dang-cho">Đang chờ</option>
-                        <option value="da-xac-nhan">Đã xác nhận</option>
-                        <option value="dang-chuan-bi">Đang chuẩn bị</option>
-                        <option value="da-gui">Đã gửi</option>
-                        <option value="da-hoan-thanh">Hoàn thành</option>
-                        <option value="da-huy">Đã hủy</option>
-                        </select>
-                        <select id="soLuongTrang" aria-label="Số dòng">
-                        <option>10</option>
-                        <option>25</option>
-                        <option>50</option>
-                        </select>
-                        <div style="margin-left:auto" class="inline">
-                        <label class="small muted">Chọn:</label>
-                        <button class="btn" id="inChon">In</button>
-                        <button class="btn" id="xuatChon">Xuất</button>
-                        <div class="controls">
-                        <button class="btn">Làm mới</button>
-                        <button class="btn">Xuất Excel</button>
-                        <button class="btn">Bộ lọc</button>
-                        </div>
-                        </div>
-                    </div>
-                    </div>
-                    <div style="overflow:auto">
-                        <table id="bangDon" aria-describedby="Danh sách đơn hàng">
-                        <thead>
-                            <tr>
-                            <th style="width:36px"><input type="checkbox" id="chkTatCa" aria-label="Chọn tất cả"/></th>
-                            <th>Mã đơn</th>
-                            <th>Khách</th>
-                            <th>Thanh toán</th>
-                            <th>Trạng thái</th>
-                            <th>Ngày</th>
-                            <th style="width:190px">Thao tác</th>
-                            </tr>
-                        </thead>
-                        </table>
-                    </div>
-                </div>
+class orderlistcontent extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = `
+    <div class="content">
+
+      <div class="page-title">Order List</div>
+      <div class="breadcrumb">Home / Orders</div>
+
+      <!-- TOOLS -->
+      <div class="tools">
+        <div style="display:flex; gap:10px">
+          <input id="searchOrder" type="text" placeholder="Mã order..." />
+          <input id="searchCustomer" type="text" placeholder="Mã khách hàng..." />
+          <select id="filterStatus">
+            <option value="">-- Trạng thái --</option>
+            <option value="Pending">Pending</option>
+            <option value="Processing">Processing</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+        <button id="resetFilter">Reset</button>
+      </div>
+
+      <!-- TABLE -->
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã Order</th>
+              <th>Mã KH</th>
+              <th>Tên đơn hàng</th>
+              <th>Ngày tạo</th>
+              <th>Trạng thái</th>
+              <th>Chi tiết</th>
+            </tr>
+          </thead>
+          <tbody id="orderTable"></tbody>
+        </table>
+      </div>
+
+    </div>
+    `;
+
+    const orders = [
+      { id: "OD001", mkh: "KH001", name: "Đơn Laptop Dell", date: "2025-12-15", status: "Pending" },
+      { id: "OD002", mkh: "KH002", name: "Đơn iPhone 15", date: "2025-12-16", status: "Processing" },
+      { id: "OD003", mkh: "KH001", name: "Đơn Tai nghe Sony", date: "2025-12-17", status: "Completed" },
+      { id: "OD004", mkh: "KH003", name: "Đơn Bàn phím cơ", date: "2025-12-18", status: "Cancelled" }
+    ];
+
+    const tbody = this.querySelector("#orderTable");
+
+    const render = (data) => {
+      tbody.innerHTML = "";
+
+      data.forEach((o, i) => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${o.id}</td>
+            <td>${o.mkh}</td>
+            <td>${o.name}</td>
+            <td>${o.date}</td>
+            <td>
+              <select class="statusSelect" data-i="${i}">
+                <option ${o.status==="Pending"?"selected":""}>Pending</option>
+                <option ${o.status==="Processing"?"selected":""}>Processing</option>
+                <option ${o.status==="Completed"?"selected":""}>Completed</option>
+                <option ${o.status==="Cancelled"?"selected":""}>Cancelled</option>
+              </select>
+            </td>
+            <td class="actions">
+              <i class="edit" data-i="${i}">👁</i>
+            </td>
+          </tr>
         `;
+      });
 
-        // Dataset
-        const data = [
-            {
-                id: "#Kc025418",
-                customer: "Mendocart",
-                date: "Mar 24, 2022",
-                paymentStatus: "Paid",
-                amount: "$11250",
-                method: "Mastercard",
-                shipStatus: "Shipped"
-            },
-            {
-                id: "#Kc025520",
-                customer: "Margaret Ak",
-                date: "Mar 24, 2022",
-                paymentStatus: "Paid",
-                amount: "$8999",
-                method: "Visa",
-                shipStatus: "Processing"
-            }
-        ];
+      attachEvents();
+    };
 
-        // Render Table
-        const renderTable = () => {
-            const tbody = this.querySelector("#orderTable tbody");
-            tbody.innerHTML = "";
+    const attachEvents = () => {
 
-            data.forEach((item, index) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td><input type="checkbox"></td>
-                        <td>${item.id}</td>
-                        <td>${item.customer}</td>
-                        <td>${item.date}</td>
-                        <td><span class="status-paid">${item.paymentStatus}</span></td>
-                        <td>${item.amount}</td>
-                        <td>${item.method}</td>
-                        <td><span class="status-${item.shipStatus.toLowerCase()}">${item.shipStatus}</span></td>
-                        <td class="actions">
-                            <button class="edit" data-index="${index}">✏️</button>
-                            <button class="delete" data-index="${index}">🗑</button>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            // Gán sự kiện Delete
-            this.querySelectorAll(".delete").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const i = btn.dataset.index;
-                    data.splice(i, 1);
-                    renderTable();
-                });
-            });
-
-            // Gán sự kiện Edit
-            this.querySelectorAll(".edit").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    const i = btn.dataset.index;
-                    alert("Sửa dòng: " + data[i].id);
-                });
-            });
+      // Change status
+      this.querySelectorAll(".statusSelect").forEach(sel => {
+        sel.onchange = () => {
+          const i = sel.dataset.i;
+          orders[i].status = sel.value;
         };
+      });
 
-        renderTable();
-    }
+      // View detail
+      this.querySelectorAll(".edit").forEach(btn => {
+        btn.onclick = () => {
+          const o = orders[btn.dataset.i];
+          alert(
+            `Order: ${o.id}\nKhách hàng: ${o.mkh}\nTên: ${o.name}\nTrạng thái: ${o.status}`
+          );
+        };
+      });
+    };
+
+    // FILTER
+    const applyFilter = () => {
+      const orderKey = this.querySelector("#searchOrder").value.toLowerCase();
+      const customerKey = this.querySelector("#searchCustomer").value.toLowerCase();
+      const status = this.querySelector("#filterStatus").value;
+
+      const filtered = orders.filter(o =>
+        o.id.toLowerCase().includes(orderKey) &&
+        o.mkh.toLowerCase().includes(customerKey) &&
+        (status === "" || o.status === status)
+      );
+
+      render(filtered);
+    };
+
+    ["#searchOrder", "#searchCustomer", "#filterStatus"].forEach(id => {
+      this.querySelector(id).addEventListener("input", applyFilter);
+      this.querySelector(id).addEventListener("change", applyFilter);
+    });
+
+    this.querySelector("#resetFilter").onclick = () => {
+      this.querySelector("#searchOrder").value = "";
+      this.querySelector("#searchCustomer").value = "";
+      this.querySelector("#filterStatus").value = "";
+      render(orders);
+    };
+
+    render(orders);
+  }
 }
 
-customElements.define("oderlist-content", oderlistcontent);
+customElements.define("oderlist-content", orderlistcontent);
