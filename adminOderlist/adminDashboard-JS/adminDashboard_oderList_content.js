@@ -3,7 +3,7 @@ class orderlistcontent extends HTMLElement {
     this.innerHTML = `
     <div class="content">
 
-      <div class="page-title">Order List</div>
+      <div class="page-title"><h1> Order List</h1></div>
       <div class="breadcrumb">Home / Orders</div>
 
       <!-- TOOLS -->
@@ -32,7 +32,7 @@ class orderlistcontent extends HTMLElement {
               <th>Tên đơn hàng</th>
               <th>Ngày tạo</th>
               <th>Trạng thái</th>
-              <th>Chi tiết</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="orderTable"></tbody>
