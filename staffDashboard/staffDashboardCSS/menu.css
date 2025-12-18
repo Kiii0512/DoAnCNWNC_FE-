@@ -1,0 +1,29 @@
+.menu{max-width:var(--container);margin:6px auto 0;border-radius:8px;overflow:visible;position:relative;padding:8px 12px;background:#fff;border:1px solid #e6e7eb;box-shadow:0 1px 6px rgba(2,6,23,0.04);} 
+.menu-nav{max-width:var(--container);margin:0 auto;display:flex;align-items:center;gap:8px;position:relative}
+.scroll-wrap{flex:1; overflow:hidden}
+.scroll-inner{display:flex;gap:10px;align-items:center;white-space:nowrap;transition:transform .22s ease}
+.menu-item{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:8px;text-decoration:none;color:var(--accent);font-weight:700;background:transparent;cursor:pointer;border:1px solid transparent;flex:0 0 auto;position:relative;transition:transform .14s ease, box-shadow .14s ease, background-color .14s ease;} 
+.menu-item:hover{background:linear-gradient(90deg, rgba(11,92,255,0.06), rgba(11,92,255,0.02)); color:var(--primary); transform:translateY(-3px); box-shadow:0 8px 24px rgba(11,92,255,0.06);} 
+.menu-item.active{background:linear-gradient(90deg, rgba(11,92,255,0.10), rgba(11,92,255,0.04)); color:var(--primary); box-shadow:0 12px 30px rgba(2,6,23,0.08);} 
+.menu-item.active::after{ content:''; position:absolute; left:6px; top:8%; bottom:8%; width:4px; border-radius:6px; background:var(--primary); box-shadow:0 6px 16px rgba(11,92,255,0.12); }
+.menu-item[aria-current="page"]{ outline: 3px solid rgba(11,92,255,0.08); outline-offset:2px }
+
+.nav-arrow{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:36px;
+  height:36px;
+  border-radius:8px;
+  background:#fff;
+  border:1px solid rgba(2,6,23,0.08);
+  color:var(--accent);
+  cursor:pointer;
+  margin-left:8px;
+  flex:0 0 auto;
+  box-shadow:0 6px 12px rgba(2,6,23,0.06);
+  transition:transform .14s ease, box-shadow .14s ease, background-color .14s ease, color .14s ease;
+}
+.nav-arrow:hover{ transform:translateY(-2px); background:var(--primary); color:#fff; box-shadow:0 12px 30px rgba(11,92,255,0.12); }
+.nav-arrow[hidden]{ display:none !important; }
+.nav-arrow:focus{ outline:3px solid rgba(11,92,255,0.12); outline-offset:2px; }

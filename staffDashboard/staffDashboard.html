@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Staff Dashboard — Shop68IT1</title>
+
+  <!-- CSS chung + phần header/menu/footer + css riêng của trang -->
+  <link rel="stylesheet" href="staffDashboardCSS/stylesChung.css">
+  <link rel="stylesheet" href="staffDashboardCSS/header.css">
+  <link rel="stylesheet" href="staffDashboardCSS/menu.css">
+  <link rel="stylesheet" href="staffDashboardCSS/stylesRiengCuaStaffDashboard.css">
+  <link rel="stylesheet" href="staffDashboardCSS/footer.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="thanh-tren">
+      <a class="logo" href="../index.html" aria-label="Về trang chủ">
+        <div class="vuong">68</div>
+        <div style="font-weight:700">Shop68IT1</div>
+      </a>
+
+      <div class="tim-kiem" style="position:relative">
+        <div class="search-wrap">
+          <input id="timKiemChung" placeholder="Tìm sản phẩm, đơn, khách..." aria-label="Tìm kiếm" />
+          <button id="nutTimKiem" class="nut-gio" title="Tìm kiếm" aria-label="Tìm kiếm">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="btn-label">Tìm</span>
+          </button>
+        </div>
+
+        <div class="account" style="position:relative">
+          <button id="nutTaiKhoan" class="nut-tk" title="Tài khoản" aria-haspopup="true" aria-expanded="false" aria-controls="accountMenu">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="sr-only">Tài khoản</span>
+          </button>
+
+          <div id="accountMenu" class="account-menu" role="menu" aria-hidden="true">
+            <div class="account-item" role="menuitem" tabindex="0" data-action="profile">Thay đổi thông tin</div>
+            <div class="account-item" role="menuitem" tabindex="0" data-action="logout">Đăng xuất</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Menu -->
+  <div class="menu" role="navigation" aria-label="Main menu">
+    <div class="menu-nav" id="menuNav">
+      <div class="scroll-wrap" id="scrollWrap" tabindex="0" aria-label="Danh mục">
+        <div class="scroll-inner" id="scrollInner" role="menubar">
+          <!-- Chỉ còn 4 mục: products, orders, staff, reports -->
+          <a class="menu-item" href="#products" data-route="products" role="menuitem">Quản lý sản phẩm</a>
+          <a class="menu-item" href="adminOrder.html" data-route="orders" role="menuitem">Quản lý đơn hàng</a>
+          <a class="menu-item" href="#staff" data-route="staff" role="menuitem">Staff Dashboard</a>
+          <a class="menu-item" href="adminExport.html" data-route="reports" role="menuitem">Báo cáo / Export</a>
+        </div>
+      </div>
+
+      <button class="nav-arrow" id="leftArrow" aria-hidden="true" hidden aria-label="Trượt sang trái">◀</button>
+      <button class="nav-arrow" id="rightArrow" aria-label="Trượt sang phải">▶</button>
+    </div>
+  </div>
+
+  <main>
+    <div class="card">
+      <div class="page-head">
+        <div class="page-title">
+          <h2 style="margin:0">Staff Dashboard</h2>
+          <div class="small muted">Tổng quan nhanh cho nhân viên — KPI, liên kết nhanh, và biểu đồ mock</div>
+        </div>
+        <div class="controls">
+          <button class="btn btn-ghost" id="btnLamMoi">Làm mới</button>
+          <button class="btn btn-ghost" id="btnExportCSV">Xuất báo cáo (CSV)</button>
+        </div>
+      </div>
+
+      <div class="kpi-grid" role="region" aria-label="KPI tổng quan">
+        <div class="kpi" id="kpiRevenue">
+          <h3 id="kpiRevenueValue">0₫</h3>
+          <p>Doanh thu (khoảng chọn)</p>
+          <div class="delta" id="kpiRevenueDelta">—</div>
+        </div>
+        <div class="kpi" id="kpiOrders">
+          <h3 id="kpiOrdersValue">0</h3>
+          <p>Đơn hôm nay</p>
+          <div class="delta" id="kpiOrdersDelta">—</div>
+        </div>
+        <div class="kpi" id="kpiTopProd">
+          <h3 id="kpiTopProdValue">—</h3>
+          <p>Sản phẩm bán chạy</p>
+          <div class="delta" id="kpiTopProdDelta">—</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="charts">
+          <div class="chart-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div><strong>Doanh thu theo ngày</strong><div class="small muted">7 - 30 ngày (dựa trên dữ liệu demo)</div></div>
+              <div style="display:flex;gap:6px;align-items:center">
+                <select id="rangeSelect" aria-label="Chọn khoảng thời gian">
+                  <option value="7">7 ngày</option>
+                  <option value="30" selected>30 ngày</option>
+                </select>
+                <button class="btn btn-ghost" id="btnReloadChart">Làm mới</button>
+              </div>
+            </div>
+            <canvas id="revenueChart" aria-label="Biểu đồ doanh thu"></canvas>
+          </div>
+
+          <div class="donut-row" style="margin-top:12px">
+            <div class="chart-card donut-area">
+              <strong>Top sản phẩm</strong>
+              <canvas id="donutChart" style="width:100%;height:180px" aria-label="Biểu đồ top sản phẩm"></canvas>
+            </div>
+
+            <div class="card donut-side" aria-hidden="false">
+              <div style="margin-top:6px">
+                <strong class="small muted">Top sản phẩm (legend)</strong>
+                <div id="donutLegend" class="donut-legend" aria-hidden="false"></div>
+              </div>
+
+              <div style="margin-top:12px">
+                <strong class="small muted">Trạng thái hệ thống</strong>
+                <div style="margin-top:8px"><span class="small muted">Payments API:</span> <strong style="color:var(--success)">Hoạt động</strong></div>
+                <div style="margin-top:6px"><span class="small muted">Orders DB:</span> <strong style="color:#b45309">Chạy demo</strong></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="recent-orders">
+            <h3 style="margin:8px 0">Đơn hàng gần nhất</h3>
+            <div style="overflow:auto">
+              <table id="recentTable" aria-describedby="Đơn hàng gần nhất">
+                <thead>
+                  <tr><th>Mã</th><th>Khách</th><th>Ngày</th><th>Tổng</th><th>Trạng thái</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <aside class="card" aria-label="Tác vụ nhanh & tóm tắt">
+          <h3>Tác vụ nhanh</h3>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+            <button id="btnCreateMockOrder" class="btn btn-primary">Tạo đơn mock</button>
+            <button id="btnClearMock" class="btn btn-ghost">Xóa dữ liệu mock</button>
+            <button id="btnOpenOrders" class="btn">Mở Quản lý đơn</button>
+          </div>
+
+          <div style="margin-top:12px">
+            <h4 class="small muted">Tổng quan</h4>
+            <div style="margin-top:8px">
+              <div class="small muted">Tổng đơn: <strong id="summaryTotalOrders">0</strong></div>
+              <div class="small muted" style="margin-top:6px">Tổng doanh thu: <strong id="summaryTotalRevenue">0₫</strong></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div>
+        <div style="font-weight:800;font-size:18px">SHOP68IT1</div>
+        <div style="opacity:0.9">55 Giải Phóng, Hai Bà Trưng, Hà Nội — Hotline: 1900 1009</div>
+      </div>
+      <div style="text-align:right">
+        <div class="greeting">Staff Dashboard</div>
+        <div class="sub small muted">Bản demo — dữ liệu lưu trong localStorage</div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" style="display:none;position:fixed;right:20px;bottom:20px;background:#111827;color:#fff;padding:10px 14px;border-radius:10px;z-index:200"></div>
+
+  <!-- JS: tải theo thứ tự: helper chung -> menu/header -> chart functions -> logic trang -> footer -->
+  <script src="staffDashboardJS/jsChung.js"></script>
+  <script src="staffDashboardJS/menu.js"></script>
+  <script src="staffDashboardJS/header.js"></script>
+  <script src="staffDashboardJS/jsRiengCuaStaffDashboard.js"></script>
+  <script src="staffDashboardJS/demoStaffDashboard.js"></script>
+  <script src="staffDashboardJS/footer.js"></script>
+</body>
+</html>
