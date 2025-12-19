@@ -1,231 +1,122 @@
-/* ====== Layout & Card ====== */
-main {
-  
-  padding: 20px;
-}
-<<<<<<< Updated upstream
-.inner {
-  width: 100%;
-  max-width: 1200px;
-  justify-content: space-around;
-}
-=======
-
-.card {
-  background: var(--card, #fff);
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.06);
-  margin-bottom: 20px;
+.content {
+  margin-left: 240px;
+  padding: 110px 28px 40px;
+  width: calc(100% - 240px);
 }
 
-/* ====== Page Header ====== */
->>>>>>> Stashed changes
-.page-head {
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 22px;
+}
+
+.tools {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
-}
-.page-title h2 {
-  font-size: 22px;
-  font-weight: 700;
-}
-.page-title .small {
-  font-size: 13px;
-  color: #788;
+  margin-bottom: 16px;
 }
 
-/* ====== Controls ====== */
-.controls {
-  display: flex;
-<<<<<<< Updated upstream
-  gap: 8px;
-  align-items: center;
-
-=======
-  gap: 10px;
->>>>>>> Stashed changes
+.tools input {
+  width: 260px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
 }
 
-/* ====== Buttons ====== */
-.btn {
-<<<<<<< Updated upstream
-  background-color: #111827;
+.tools button {
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: #000308;
   color: #fff;
-  font-weight: 700;
-  padding: 8px 12px;
-=======
   border: none;
-  padding: 8px 14px;
->>>>>>> Stashed changes
-  border-radius: 10px;
   cursor: pointer;
-<<<<<<< Updated upstream
-}
-
-.btn:hover {
-  box-shadow: var(--shadow-soft);
-  transform: translateY(-1px);
-  transition: transform .12s ease, box-shadow .12s ease;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: #fff;
-=======
   font-size: 14px;
->>>>>>> Stashed changes
 }
 
-.btn-ghost {
-  background: #f4f4f6;
-  color: #333;
-}
-.btn-ghost:hover {
-  background: #e8e8ea;
+.tools button:hover {
+  background: #1e40af;
 }
 
-<<<<<<< Updated upstream
-.btn-ghost :hover {
-  background: #d3d5da;
-}
-
-=======
-.btn-primary {
-  background: #0066ff;
-  color: #fff;
-}
-.btn-primary:hover {
-  background: #0056d6;
-}
-
-/* ====== Filters ====== */
->>>>>>> Stashed changes
-.filters {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-}
-.filters select,
-.filters input[type="text"] {
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid #dfe0e2;
+/* ===== Table ===== */
+.table-card {
   background: #fff;
-  font-size: 14px;
+  border-radius: 12px;
+  padding: 10px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-/* ====== Table ====== */
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 15px;
 }
-table thead {
-  background: #f8f9fa;
+
+th,
+td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid #f0f0f0;
 }
-table th,
-table td {
-  padding: 12px 14px;
-  border-bottom: 1px solid #eee;
-  white-space: nowrap;
-}
-table tbody tr:hover {
+
+th {
   background: #fafafa;
-}
-
-/* Badge trạng thái đơn */
-.status-paid,
-.status-dang-cho,
-.status-dang-chuan-bi,
-.status-da-xac-nhan,
-.status-da-gui,
-.status-da-hoan-thanh,
-.status-da-huy {
-  padding: 4px 10px;
-  border-radius: 10px;
-  font-size: 12px;
   font-weight: 600;
-  text-transform: capitalize;
+}
+
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.product-info img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+
+.badge {
   display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
-/* Các màu trạng thái */
-.status-dang-cho { background:#fff3cd; color:#b68a00; }
-.status-da-xac-nhan { background:#e7f1ff; color:#0056d6; }
-.status-dang-chuan-bi { background:#f2f7ff; color:#3766d6; }
-.status-da-gui { background:#e8fff4; color:#0c8a3f; }
-.status-da-hoan-thanh { background:#d7ffe1; color:#0b7a33; }
-.status-da-huy { background:#ffe8e8; color:#cc3b3b; }
-
-/* ====== Drawer (Chi tiết đơn hàng) ====== */
-.drawer {
-  position: fixed;
-  top: 0;
-  right: -420px;
-  width: 420px;
-  height: 100vh;
-  background: #fff;
-  box-shadow: -4px 0 14px rgba(0,0,0,0.1);
-  padding: 22px;
-  transition: 0.28s ease;
-  z-index: 2000;
-  overflow-y: auto;
-}
-.drawer.open {
-  right: 0;
-}
-.drawer h3 {
-  margin: 0 0 10px 0;
-  font-size: 19px;
-  font-weight: 700;
+.badge.active {
+  background: #dcfce7;
+  color: #166534;
 }
 
-.khung-thong-tin {
-  background: #f8f9fc;
-  padding: 12px;
-  border-radius: 12px;
-  line-height: 1.5;
-  font-size: 14px;
+.actions i {
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  margin-right: 4px;
 }
 
-/* List sản phẩm */
-.product-list .item {
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: #f5f6f9;
-  margin-bottom: 8px;
-  font-size: 14px;
+.actions i.edit {
+  color: #2e2214;
 }
 
-/* ====== Toast ====== */
-.toast {
-  position: fixed;
-  bottom: 25px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #333;
-  padding: 10px 18px;
-  border-radius: 10px;
-  color: #fff;
-  font-size: 14px;
-  opacity: 0;
-  pointer-events: none;
-  transition: 0.3s;
-  z-index: 3000;
-}
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(-6px);
+.actions i.delete {
+  color: #f70303;
 }
 
-/* ====== Responsive ====== */
-@media (max-width: 768px) {
-  .drawer {
-    width: 100%;
-    right: -100%;
-  }
+.actions i:hover {
+  background: #f0f0f0;
+}
+
+tr:last-child td {
+  border-bottom: none;
 }
