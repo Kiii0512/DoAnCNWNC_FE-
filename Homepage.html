@@ -4,30 +4,41 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Shop 68IT1</title>
-    <script src="components/AppFooter.js"></script>
-    <script src="components/TopHeader.js"></script>
-    <script src="components/MainNav.js"></script>
-    <script src="components/BannerSlider.js"></script>
-    <script src="components/ProductGrid.js"></script>
-    <script src="components/QuickModal.js"></script>
-    <script src="components/CartPanel.js"></script>
-    <script src="components/AppFooter.js"></script>
 
-  
+  <!-- CSS -->
+  <link rel="stylesheet" href="CSS/globalStyles.css" />
+  <link rel="stylesheet" href="CSS/topheader.css" />
+  <link rel="stylesheet" href="CSS/bannerSlider.css" />
+  <link rel="stylesheet" href="CSS/mainNav.css" />
+  <link rel="stylesheet" href="CSS/cartPanel.css" />
+  <link rel="stylesheet" href="CSS/productGrid.css" />
+  <link rel="stylesheet" href="CSS/quickModal.css" />
+  <link rel="stylesheet" href="CSS/appFooter.css" />
+
+  <!-- JS COMPONENTS (ALL MODULE) -->
+  <script type="module" src="components/topHeader.js"></script>
+  <script type="module" src="components/mainNav.js"></script>
+  <script type="module" src="components/bannerSlider.js"></script>
+  <script type="module" src="components/productGrid.js"></script>
+  <script type="module" src="components/quickModal.js"></script>
+  <script type="module" src="components/cartPanel.js"></script>
+  <script type="module" src="components/appFooter.js"></script>
+
 </head>
 <body>
-    <!-- Các component sẽ render nội dung -->
-  <global-styles></global-styles>
+
+  <!-- COMPONENT RENDER -->
   <top-header></top-header>
   <main-nav></main-nav>
-  <main class="container">  
-  <banner-slider></banner-slider>
-  <product-grid></product-grid>
-  <quick-modal></quick-modal>
-  <cart-panel></cart-panel>
+
+  <main class="container">
+    <banner-slider></banner-slider>
+    <product-grid></product-grid>
+    <quick-modal></quick-modal>
+    <cart-panel></cart-panel>
   </main>
+
   <app-footer></app-footer>
+
 </body>
-
-
 </html>

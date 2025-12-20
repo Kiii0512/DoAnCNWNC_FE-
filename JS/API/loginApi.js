@@ -25,15 +25,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = await response.json();
 
-      // 👉 Lưu JWT
-      localStorage.setItem("token", data.token);
+      //  Lưu JWT
+      localStorage.setItem("accesstoken", data.token);
       localStorage.setItem("username", data.username);
       localStorage.setItem("role", data.role);
 
       alert("Đăng nhập thành công!");
-
-      // 👉 Điều hướng
-      window.location.href = "index.html";
+      window.dispatchEvent(new Event("authChanged"));
+      // Điều hướng
+      window.location.href = "homePage.html";
 
     } catch (error) {
       alert(error.message);

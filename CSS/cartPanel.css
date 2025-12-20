@@ -1,0 +1,6 @@
+        .cart-panel {
+        position: fixed; right: 18px; bottom: 18px; background:#fff; border-radius:12px; padding:12px;
+        border:1px solid #e6e9ee; width:320px; box-shadow:0 6px 20px rgba(16,24,40,.12)
+        }
+        .cart-items { max-height:220px; overflow:auto }
+        .cart-item { display:flex; gap:10px; align-items:center; padding:8px 0; border-bottom:1px solid #f1f5f9 }
