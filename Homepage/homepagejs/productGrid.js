@@ -10,8 +10,6 @@ import {
 
 class productGrid extends HTMLElement {
   connectedCallback() {
-
-    // HTML gốc giữ nguyên
     this.innerHTML = `
       <main class="container">
         <section id="products">
