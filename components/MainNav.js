@@ -3,11 +3,10 @@
       this.innerHTML = `
         <nav class="main-nav">
           <div class="container menu">
-            <a href="#">Điện thoại</a>
-            <a href="#">Laptop</a>
-            <a href="#">PC</a>
-            <a href="#">Phụ kiện</a>
-            <a href="#">Khuyến mãi</a>
+            <a href="/categoryPage/laptop">Laptop</a>
+            <a href="/categoryPage/dien-thoai">Điện thoại</a>
+            <a href="/categoryPage/pc">PC</a>
+            <a href="/categoryPage/phu-kien">Phụ kiện</a>
           </div>
         </nav>
       `;

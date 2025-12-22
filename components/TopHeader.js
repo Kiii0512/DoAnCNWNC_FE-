@@ -2,13 +2,16 @@ class TopHeader extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
       <div class="topbar">
-          <div class="container" style="display:flex;justify-content:space-between;align-items:center;">
-              <div>Giao hàng nhanh — Support: 1900 1009 </div>
-              <div>
-                  <button class="login" id="loginBtn">Đăng nhập</button>
-                  <button class="login" id="registerBtn">Đăng ký</button>
-              </div>
+        <div class="topbar-inner container"
+            style="display:flex; justify-content:center; align-items:center;">
+            
+          <div style="display:flex; align-items:center; gap:5px;">
+            <div>Giao hàng nhanh — Support: 1900 1009</div>
+            <button class="login" id="loginBtn">Đăng nhập</button>
+            <button class="login" id="registerBtn">Đăng ký</button>
           </div>
+
+        </div>
       </div>
 
       <header>
@@ -69,44 +72,91 @@ class TopHeader extends HTMLElement {
     `;
 
     this.initUIEvents(); // chạy đoạn JS U/I thuần
+    this.renderAuthState();
+
+    // Lắng nghe khi login/logout từ trang khác
+    window.addEventListener("authChanged", () => this.renderAuthState());
   }
 
+   renderAuthState() {
+    const token = localStorage.getItem("accesstoken");
+
+    const topbar = this.querySelector(".topbar");
+
+    const loginBtn = this.querySelector("#loginBtn");
+    const registerBtn = this.querySelector("#registerBtn");
+
+    const loginMenu = this.querySelector("#loginMenu");
+    const registerMenu = this.querySelector("#registerMenu");
+    const logoutMenu = this.querySelector("#logoutMenu");
+
+    // Lấy toàn bộ link trong account menu
+    const links = this.querySelectorAll("#accountMenu a");
+    const infoMenu = links[2];   // Thông tin cá nhân
+    const orderMenu = links[3];  // Đơn hàng
+
+    if (token) {
+      // ✅ ĐÃ ĐĂNG NHẬP
+      topbar.style.display = "none";
+
+      loginBtn.style.display = "none";
+      registerBtn.style.display = "none";
+
+      loginMenu.style.display = "none";
+      registerMenu.style.display = "none";
+
+      infoMenu.style.display = "block";
+      orderMenu.style.display = "block";
+      logoutMenu.style.display = "block";
+    } else {
+      // ❌ CHƯA ĐĂNG NHẬP
+      topbar.style.display = "block";
+
+      loginBtn.style.display = "block";
+      registerBtn.style.display = "block";
+
+      loginMenu.style.display = "block";
+      registerMenu.style.display = "block";
+
+      infoMenu.style.display = "none";
+      orderMenu.style.display = "none";
+      logoutMenu.style.display = "none";
+    }
+  }
+
+
   initUIEvents() {
-    // --- ACCOUNT MENU ---
+    // ACCOUNT MENU TOGGLE
     const tkBtn = this.querySelector("#taikhoan");
     const accountMenu = this.querySelector("#accountMenu");
 
-    tkBtn?.addEventListener("click", () => {
+    tkBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
       accountMenu.style.display =
         accountMenu.style.display === "flex" ? "none" : "flex";
     });
 
-    document.addEventListener("click", (e) => {
-      if (!tkBtn.contains(e.target) && !accountMenu.contains(e.target)) {
-        accountMenu.style.display = "none";
-      }
+    document.addEventListener("click", () => {
+      accountMenu.style.display = "none";
     });
 
-    // --- SEARCH POPUP ---
-    const searchIcon = this.querySelector("#searchIcon");
-    const popup = this.querySelector("#searchPopup");
-
-    searchIcon?.addEventListener("click", () => {
-      popup.style.display = popup.style.display === "block" ? "none" : "block";
+    // LOGOUT
+    const logoutMenu = this.querySelector("#logoutMenu");
+    logoutMenu.addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.clear();
+      window.dispatchEvent(new Event("authChanged"));
+      location.href = "/index.html";
     });
 
-    document.addEventListener("click", (e) => {
-      if (!searchIcon?.contains(e.target) && !popup?.contains(e.target)) {
-        popup.style.display = "none";
-      }
-    });
-
-    // --- RESPONSIVE (ẩn search lớn -> hiện icon) ---
+    // RESPONSIVE SEARCH
     const searchBox = this.querySelector(".search");
+    const searchIcon = this.querySelector("#searchIcon");
+
     const checkResponsive = () => {
       if (window.innerWidth < 768) {
         searchBox.style.display = "none";
-        searchIcon.style.display = "block";
+        searchIcon.style.display = "inline-block";
       } else {
         searchBox.style.display = "flex";
         searchIcon.style.display = "none";
@@ -119,3 +169,5 @@ class TopHeader extends HTMLElement {
 }
 
 customElements.define("top-header", TopHeader);
+
+
