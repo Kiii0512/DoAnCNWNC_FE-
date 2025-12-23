@@ -84,8 +84,8 @@
     const hash = location.hash || '';
     let sel = null;
     if(hash){ sel = document.querySelector(`.menu-item[href="${hash}"]`) || document.querySelector(`.menu-item[data-route="${hash.replace('#','')}"]`); }
-    if(!sel) sel = document.querySelector('.menu-item[data-route="orders"]')
-         || document.querySelector('.menu-item[href$="adminOrder.html"]')
+    if(!sel) sel = document.querySelector('.menu-item[data-route="products"]')
+         || document.querySelector('.menu-item[href$="staffProduct.html"]')
          || document.querySelector('.menu-item'); // default to first
     setActiveElement(sel);
   }

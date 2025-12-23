@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Staff — Quản lý sản phẩm</title>
+
+  <!-- CSS phân tách -->
+  <link rel="stylesheet" href="staffProductCSS/stylesChung.css">
+  <link rel="stylesheet" href="staffProductCSS/header.css">
+  <link rel="stylesheet" href="staffProductCSS/menu.css">
+  <link rel="stylesheet" href="staffProductCSS/stylesRiengCuaStaffProduct.css">
+  <link rel="stylesheet" href="staffProductCSS/footer.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="thanh-tren">
+      <a class="logo" href="./" aria-label="Về trang chủ">
+        <div class="vuong">68</div>
+        <div style="font-weight:700">Shop68IT1</div>
+      </a>
+
+      <div class="tim-kiem" style="position:relative">
+        <div class="search-wrap">
+          <input id="timKiemChung" placeholder="Tìm sản phẩm, đơn, khách..." aria-label="Tìm kiếm" />
+          <button id="nutTimKiem" class="nut-gio" title="Tìm kiếm" aria-label="Tìm kiếm">
+            <span class="btn-label">Tìm</span>
+          </button>
+        </div>
+
+        <div class="account" style="position:relative">
+          <button id="nutTaiKhoan" class="nut-tk" title="Tài khoản" aria-haspopup="true" aria-expanded="false" aria-controls="accountMenu">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" width="18" height="18"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 21a8 8 0 0 0-16 0" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="sr-only">Tài khoản</span>
+          </button>
+
+          <div id="accountMenu" class="account-menu" role="menu" aria-hidden="true">
+            <div class="account-item" role="menuitem" tabindex="0" data-action="profile">Thay đổi thông tin</div>
+            <div class="account-item" role="menuitem" tabindex="0" data-action="logout">Đăng xuất</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Menu -->
+  <div class="menu" role="navigation" aria-label="Main menu">
+    <div class="menu-nav" id="menuNav">
+      <div class="scroll-wrap" id="scrollWrap" tabindex="0" aria-label="Danh mục">
+        <div class="scroll-inner" id="scrollInner" role="menubar">
+          <a class="menu-item" href="#admin" data-route="admin">Admin Dashboard<span class="tag">ADMIN</span></a>
+          <a class="menu-item" href="staffProduct.html" data-route="products">Quản lý sản phẩm <span class="tag">PRODUCTS</span></a>
+          <a class="menu-item" href="adminOrder.html" data-route="orders">Quản lý đơn hàng <span class="tag">ORDERS</span></a>
+          <a class="menu-item" href="#accounts" data-route="accounts">Quản lý khách hàng <span class="tag">ACCOUNTS</span></a>
+        </div>
+      </div>
+
+      <button class="nav-arrow" id="leftArrow" aria-hidden="true" hidden aria-label="Trượt sang trái">◀</button>
+      <button class="nav-arrow" id="rightArrow" aria-label="Trượt sang phải">▶</button>
+    </div>
+  </div>
+
+  <!-- Main content (unchanged markup) -->
+  <main>
+    <div class="card">
+      <div class="page-head">
+        <div class="page-title">
+          <h2 style="margin:0">Staff — Checklist & Quản lý sản phẩm</h2>
+          <div class="small muted">Danh sách sản phẩm, tạo / sửa / xóa — ảnh, giá, tồn kho</div>
+        </div>
+        <div class="controls">
+          <button class="btn btn-ghost" id="btnLamMoiSP">Làm mới</button>
+          <button class="btn btn-primary" id="btnTaoMoi">Tạo sản phẩm</button>
+        </div>
+      </div>
+
+      <div class="filters" style="margin-bottom:12px;display:flex;gap:12px;align-items:center">
+        <div style="flex:1;display:flex;gap:12px;align-items:center">
+          <div class="body-search" role="search" aria-label="Tìm sản phẩm trong danh sách" style="display:flex;align-items:center;gap:8px">
+            <div class="icon">🔎</div>
+            <input type="search" id="qSp" placeholder="Tìm theo tên, mã, hoặc từ khóa..." />
+            <button id="clearQSp" class="btn-clear" style="display:none" aria-label="Xóa tìm kiếm">✖</button>
+          </div>
+
+          <div class="segmented" role="tablist" aria-label="Lọc tồn kho">
+            <button data-value="" class="seg-btn active">Tất cả</button>
+            <button data-value="con" class="seg-btn">Còn hàng</button>
+            <button data-value="het" class="seg-btn">Hết hàng</button>
+          </div>
+        </div>
+        <div style="margin-left:auto" class="inline small muted">Total: <span id="totalCount">0</span></div>
+      </div>
+
+      <div style="overflow:auto">
+        <table id="bangSanPham" aria-describedby="Danh sách sản phẩm">
+          <thead>
+            <tr>
+              <th style="width:36px"><input type="checkbox" id="chkAllSP" aria-label="Chọn tất cả"/></th>
+              <th>Hình</th>
+              <th>Mã / Tên</th>
+              <th>Giá</th>
+              <th>Tồn kho</th>
+              <th style="width:220px">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Backdrop -->
+  <div id="backdrop" class="backdrop" hidden></div>
+
+  <!-- Drawer -->
+  <aside class="drawer" id="drawerSP" aria-hidden="true">
+    <button id="btnDongDrawer" class="drawer-close close-x" aria-label="Đóng">✖</button>
+    <div class="drawer-body" role="dialog" aria-modal="true">
+      <h3 id="drawerTitle">Tạo sản phẩm mới</h3>
+
+      <div style="margin-top:8px" class="form-grid">
+        <div>
+          <div class="form-row"><label>Mã</label><input type="text" id="spSku" placeholder="SKU (ví dụ: SP-0001)" /><div id="errSku" class="error" style="display:none"></div></div>
+          <div class="form-row"><label>Tên <span style="color:var(--danger)">*</span></label><input type="text" id="spTen" placeholder="Tên sản phẩm" /><div id="errTen" class="error" style="display:none"></div></div>
+          <div class="form-row"><label>Giá (VNĐ) <span style="color:var(--danger)">*</span></label><input type="number" id="spGia" min="0" step="1" placeholder="Nhập giá" /><div id="errGia" class="error" style="display:none"></div></div>
+          <div class="form-row"><label>Tồn kho</label><input type="number" id="spTon" min="0" step="1" /><div id="errTon" class="error" style="display:none"></div></div>
+
+          <div style="margin-top:12px">
+            <label style="font-weight:700;display:block;margin-bottom:8px">Thông số chi tiết</label>
+            <div class="specs" id="specsBox"></div>
+            <div style="margin-top:8px"><button class="btn btn-ghost" id="btnAddSpec">+ Thêm đề mục</button></div>
+          </div>
+
+          <div style="margin-top:12px">
+            <label style="font-weight:700;display:block;margin-bottom:8px">Màu sắc</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="text" id="colorInput" placeholder="Nhập màu rồi Enter / Thêm" />
+              <button class="btn btn-ghost" id="btnAddColor">Thêm</button>
+            </div>
+            <div class="chips" id="colorsList"></div>
+          </div>
+
+          <div style="margin-top:12px">
+            <label style="font-weight:700;display:block;margin-bottom:8px">Dung lượng / Phiên bản</label>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input type="text" id="capInput" placeholder="Nhập dung lượng (ví dụ: 128GB) rồi Enter / Thêm" />
+              <button class="btn btn-ghost" id="btnAddCap">Thêm</button>
+            </div>
+            <div class="chips" id="capsList"></div>
+          </div>
+
+          <div style="margin-top:12px" class="form-row">
+            <label style="align-self:flex-start">Mô tả</label>
+            <textarea id="spMoTa" rows="3" style="width:100%;border-radius:8px;border:1px solid #e6e7eb;padding:8px"></textarea>
+          </div>
+        </div>
+
+        <div>
+          <label style="display:block;font-weight:700;margin-bottom:8px">Ảnh sản phẩm</label>
+
+          <div class="image-area" id="dropArea" aria-label="Kéo thả ảnh vào đây">
+            <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+              <div style="flex:1">
+                <div style="font-size:13px;color:var(--muted);margin-bottom:6px">URL ảnh chính (tùy chọn)</div>
+                <input type="text" id="spImgMain" placeholder="https://... (ảnh chính)" style="width:100%;padding:8px;border-radius:8px;border:1px solid #e6e7eb" />
+              </div>
+
+              <div style="width:160px">
+                <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Tải ảnh lên (tối đa 4)</div>
+
+                <div class="file-wrap">
+                  <div class="choose-wrapper">
+                    <button type="button" id="btnChooseFiles" class="btn btn-ghost" aria-label="Chọn tệp">Chọn tệp</button>
+                    <input type="file" id="spFiles" accept="image/*" multiple />
+                  </div>
+                  <div id="fileNames" class="file-list"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="main-preview" id="spMainPreview"> <span class="small muted">Xem trước ảnh chính</span> </div>
+
+            <div class="thumb-row" id="spThumbs" aria-hidden="false"></div>
+
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:10px">
+              <button class="btn btn-ghost" id="btnClearImages">Xóa ảnh</button>
+            </div>
+
+            <div class="small muted" style="margin-top:8px">Lưu ý: một ảnh chính + tối đa 3 ảnh phụ. Nếu bạn tải &gt;4 ảnh, chỉ giữ 4 ảnh đầu.</div>
+            <div class="small muted" style="margin-top:6px">Bạn có thể kéo-thả ảnh vào vùng trên để upload; kéo ảnh phụ để sắp xếp lại thứ tự.</div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-ghost" id="btnHuy">Hủy</button>
+        <button class="btn btn-primary" id="btnLuuSP">Lưu</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Detail modal -->
+  <div id="detailModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card card" role="document" aria-labelledby="detailTitle">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3 id="detailTitle" style="margin:0">Chi tiết sản phẩm</h3>
+        <div><button id="btnCloseDetail" class="close-x" aria-label="Đóng">✖</button></div>
+      </div>
+
+      <div class="modal-grid">
+        <div>
+          <div class="detail-img" id="detailImg"> <img src="https://via.placeholder.com/600x400?text=No+Image" alt="Ảnh sản phẩm" /> </div>
+          <div class="thumbs" id="detailThumbs" aria-hidden="false"></div>
+          <div style="margin-top:12px" id="detailDesc" class="small muted"></div>
+        </div>
+
+        <aside>
+          <div class="meta-row" style="margin-bottom:8px"><strong>Mã / SKU</strong><div id="detailSku" class="meta-value"></div></div>
+          <div class="meta-row" style="margin-bottom:8px"><strong>Tên</strong><div id="detailName" class="meta-value"></div></div>
+          <div class="meta-row" style="margin-bottom:8px"><strong>Giá</strong><div id="detailPrice" class="meta-value"></div></div>
+          <div class="meta-row" style="margin-bottom:8px"><strong>Tồn kho</strong><div id="detailStock" class="meta-value"></div></div>
+
+          <div style="margin-top:10px"><strong>Thông số</strong><div id="detailSpecs" class="small muted" style="margin-top:6px"></div></div>
+          <div style="margin-top:10px"><strong>Màu / Dung lượng</strong><div id="detailVariants" class="small muted" style="margin-top:6px"></div></div>
+
+          <div class="modal-actions" style="margin-top:12px">
+            <button id="btnEditFromDetail" class="btn btn-primary">Sửa</button>
+            <button id="btnCloseFromDetail" class="close-x">✖</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div>
+        <div style="font-weight:800;font-size:18px">SHOP68IT1</div>
+        <div style="opacity:0.9">55 Giải Phóng, Hai Bà Trưng, Hà Nội — Hotline: 1900 1009</div>
+      </div>
+      <div style="text-align:right">
+        <div class="greeting">Chào quản lí,</div>
+        <div class="sub small muted">Quản lý sản phẩm — Checklist</div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Scripts (phân tách) -->
+  <script src="staffProductJS/header.js"></script>
+  <script src="staffProductJS/menu.js"></script>
+  <script src="staffProductJS/jsChung.js"></script>
+  <script src="staffProductJS/jsRiengCuaStaffProduct.js"></script>
+  <script src="staffProductJS/footer.js"></script>
+  <script src="staffProductJS/demoStaffProduct.js"></script>
+</body>
+</html>
