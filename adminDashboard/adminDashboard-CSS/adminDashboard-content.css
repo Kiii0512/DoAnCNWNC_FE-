@@ -1,6 +1,8 @@
 /* ================================
    DASHBOARD CONTENT
 ================================ */
+
+/* vùng nội dung chính (sau sidebar) */
 .content {
   margin-left: 240px;
   padding: 110px 28px 40px;
@@ -8,7 +10,7 @@
   min-height: 100vh;
 }
 
-/* wrapper */
+/* wrapper căn giữa */
 .content .inner {
   max-width: 1200px;
   margin: 0 auto;
@@ -17,6 +19,7 @@
 /* ================================
    TITLE & BREADCRUMB
 ================================ */
+
 .page-title h1 {
   font-size: 22px;
   font-weight: 600;
@@ -32,6 +35,8 @@
 /* ================================
    TOP STAT CARDS
 ================================ */
+
+/* grid thống kê */
 .dash-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -39,6 +44,7 @@
   margin-bottom: 26px;
 }
 
+/* card thống kê */
 .dash-card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -53,35 +59,88 @@
 }
 
 /* ================================
-   CHART AREA
+   CHART GRID (2 BIỂU ĐỒ)
 ================================ */
+
+/* grid chứa 2 chart */
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  margin-top: 20px;
+}
+
+/* QUAN TRỌNG:
+   tránh overflow khi dùng grid + canvas */
+.chart-grid > * {
+  min-width: 0;
+}
+
+/* ================================
+   CHART CONTAINER
+================================ */
+
+/* khung chứa mỗi biểu đồ */
 .table-wrapper {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 18px 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+
+  /* KHÔNG fix height cứng */
+  min-height: 340px;
+
+  display: flex;
+  flex-direction: column;
 }
 
+/* tiêu đề chart */
 .dash-title {
   font-size: 15px;
   font-weight: 600;
   margin-bottom: 12px;
+
+  /* không bị co khi canvas lớn */
+  flex-shrink: 0;
 }
 
-/* canvas fix */
-.table-wrapper canvas {
-  width: 100% !important;
-  height: 100% !important;
+/* ================================
+   CHART AREA FIX (QUAN TRỌNG NHẤT)
+================================ */
+
+/* vùng vẽ chart */
+.chart-box {
+  position: relative;   /* bắt buộc cho Chart.js */
+  flex: 1;              /* chiếm toàn bộ chiều cao còn lại */
+  min-height: 240px;
+}
+
+/* canvas chuẩn – KHÔNG dùng !important */
+.chart-box canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* pie chart cần không gian vuông */
+#orderChart {
+  max-width: 260px;
+  margin: 0 auto;
+  aspect-ratio: 1 / 1;
 }
 
 /* ================================
    RESPONSIVE
 ================================ */
+
 @media (max-width: 1024px) {
   .content {
     margin-left: 0;
     width: 100%;
+  }
+
+  .chart-grid {
+    grid-template-columns: 1fr;
   }
 }
 
