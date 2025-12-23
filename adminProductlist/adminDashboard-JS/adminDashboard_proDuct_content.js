@@ -1,198 +1,271 @@
 class productcontent extends HTMLElement {
   connectedCallback() {
+
+    /* ======================================================
+       1. HTML TEMPLATE
+       - Giao diện danh sách sản phẩm
+       - Modal dùng chung cho Add & Edit
+       ====================================================== */
     this.innerHTML = `
-      <div class="content">
-        <div class="page-title">Product List</div>
-        <div class="breadcrumb">Home / Product List</div>
+    <div class="content">
+      <div class="page-title">Product List</div>
+      <div class="breadcrumb">Home / Product List</div>
 
-        <div class="tools">
-          <input id="searchInput" type="text" placeholder="Tìm sản phẩm..." />
-          <button id="addProductBtn">+ Add Product</button>
-        </div>
-
-        <div class="table-card">
-          <table id="productTable">
-            <thead>
-              <tr>
-                <th><input type="checkbox" /></th>
-                <th>Product</th>
-                <th>Category</th>
-                <th>Price</th>
-                <th>Stock</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
+      <!-- TOOLBAR: tìm kiếm + thêm sản phẩm -->
+      <div class="tools">
+        <input id="searchInput" type="text"
+               placeholder="Tìm theo ID, tên, CPU, GPU..." />
+        <button id="addProductBtn">+ Add Product</button>
       </div>
+
+      <div class="table-card">
+
+        <!-- ========== MODAL ADD / EDIT PRODUCT ========== -->
+        <div class="pm-modal" id="pmModal">
+          <div class="pm-box">
+
+            <!-- Header modal -->
+            <div class="pm-header">
+              <span id="pmTitle">Thêm sản phẩm</span>
+              <span class="pm-close">&times;</span>
+            </div>
+
+            <!-- Body modal -->
+            <div class="pm-body">
+
+              <!-- LEFT: upload & preview nhiều ảnh -->
+              <div class="pm-left">
+                <div id="pmImagePreview"></div>
+                <input type="file" id="pmImages" multiple />
+              </div>
+
+              <!-- RIGHT: bảng nhập thông tin sản phẩm -->
+              <div class="pm-right">
+                <table class="pm-table">
+                  <tr><td>ID sản phẩm</td><td><input id="pmId"></td></tr>
+                  <tr><td>Tên</td><td><input id="pmName"></td></tr>
+                  <tr><td>Giá</td><td><input id="pmPrice" type="number"></td></tr>
+                  <tr><td>Số lượng</td><td><input id="pmQuantity" type="number"></td></tr>
+                  <tr><td>CPU</td><td><input id="pmCPU"></td></tr>
+                  <tr><td>Card đồ họa</td><td><input id="pmGPU"></td></tr>
+                  <tr><td>RAM</td><td><input id="pmRAM"></td></tr>
+                  <tr><td>Ổ cứng</td><td><input id="pmStorage"></td></tr>
+                  <tr><td>Kích thước</td><td><input id="pmSize"></td></tr>
+                  <tr><td>Công nghệ màn hình</td><td><input id="pmScreenTech"></td></tr>
+                  <tr><td>Độ phân giải</td><td><input id="pmResolution"></td></tr>
+                  <tr><td>Pin</td><td><input id="pmBattery"></td></tr>
+                  <tr><td>Hệ điều hành</td><td><input id="pmOS"></td></tr>
+                  <tr><td>Cổng giao tiếp</td><td><input id="pmPorts"></td></tr>
+                </table>
+              </div>
+            </div>
+
+            <!-- Footer modal -->
+            <div class="pm-footer">
+              <button class="pm-cancel">Hủy</button>
+              <button id="pmSave">Lưu</button>
+            </div>
+
+          </div>
+        </div>
+        <!-- ========== END MODAL ========== -->
+
+        <!-- TABLE LIST -->
+        <table id="productTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tên</th>
+              <th>CPU</th>
+              <th>GPU</th>
+              <th>Giá</th>
+              <th>Số lượng</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+      </div>
+    </div>
     `;
 
-    // ================================
-    // DATA
-    // ================================
-    const products = [
-      {
-        img: "https://via.placeholder.com/40",
-        name: "iPhone 14 Pro Max",
-        category: "Smartphone",
-        price: 1299,
-        stock: 65,
-        status: "Active",
-        specs: {
-          screen: "6.7 inch OLED",
-          cpu: "Apple A16",
-          ram: "6GB",
-          storage: "256GB",
-          battery: "4323 mAh"
-        }
-      },
-      {
-        img: "https://via.placeholder.com/40",
-        name: "Asus ROG Strix G16",
-        category: "Laptop Gaming",
-        price: 1899,
-        stock: 23,
-        status: "Active",
-        specs: {
-          screen: "16 inch IPS",
-          cpu: "Intel Core i7",
-          ram: "16GB",
-          storage: "1TB SSD",
-          battery: "90Wh"
-        }
-      }
-    ];
+    /* ======================================================
+       2. DATA & STATE
+       ====================================================== */
 
-    // ================================
-    // INPUT SPECS (ADD & EDIT)
-    // ================================
-    const inputSpecs = (old = {}) => {
-      return {
-        screen: prompt("Màn hình:", old.screen || ""),
-        cpu: prompt("CPU:", old.cpu || ""),
-        ram: prompt("RAM:", old.ram || ""),
-        storage: prompt("Bộ nhớ trong:", old.storage || ""),
-        battery: prompt("Pin:", old.battery || "")
-      };
+    // Mảng sản phẩm (đóng vai trò như database tạm)
+    let products = [];
+
+    // Lưu trạng thái modal:
+    // null  -> Add
+    // number -> Edit (index trong mảng)
+    let editingIndex = null;
+
+    /* ======================================================
+       3. CACHE DOM ELEMENTS
+       ====================================================== */
+
+    const tbody = this.querySelector("#productTable tbody");
+    const searchInput = this.querySelector("#searchInput");
+    const pmModal = this.querySelector("#pmModal");
+    const pmTitle = this.querySelector("#pmTitle");
+    const pmImages = this.querySelector("#pmImages");
+    const pmImagePreview = this.querySelector("#pmImagePreview");
+
+    // Hàm rút gọn để lấy value input
+    const val = id => this.querySelector(id).value;
+
+    /* ======================================================
+       4. MODAL HELPERS
+       ====================================================== */
+
+    // Reset modal khi thêm mới
+    const resetModal = () => {
+      editingIndex = null;
+      pmTitle.textContent = "Thêm sản phẩm";
+      pmImages.value = "";
+      pmImagePreview.innerHTML = "";
+      this.querySelectorAll(".pm-right input").forEach(i => i.value = "");
     };
 
-    // ================================
-    // RENDER TABLE
-    // ================================
-    const renderTable = () => {
-      const tbody = this.querySelector("#productTable tbody");
-      tbody.innerHTML = "";
+    // Đổ dữ liệu vào modal khi chỉnh sửa
+    const fillModal = p => {
+      pmTitle.textContent = "Chỉnh sửa sản phẩm";
+      this.querySelector("#pmId").value = p.id;
+      this.querySelector("#pmName").value = p.name;
+      this.querySelector("#pmPrice").value = p.price;
+      this.querySelector("#pmQuantity").value = p.quantity;
+      this.querySelector("#pmCPU").value = p.cpu;
+      this.querySelector("#pmGPU").value = p.gpu;
+      this.querySelector("#pmRAM").value = p.ram;
+      this.querySelector("#pmStorage").value = p.storage;
+      this.querySelector("#pmSize").value = p.size;
+      this.querySelector("#pmScreenTech").value = p.screenTech;
+      this.querySelector("#pmResolution").value = p.resolution;
+      this.querySelector("#pmBattery").value = p.battery;
+      this.querySelector("#pmOS").value = p.os;
+      this.querySelector("#pmPorts").value = p.ports;
+      pmImagePreview.innerHTML =
+        p.images.map(img => `<img src="${img}">`).join("");
+    };
 
-      products.forEach((p, index) => {
+    /* ======================================================
+       5. RENDER TABLE
+       ====================================================== */
+    const renderTable = (list = products) => {
+      tbody.innerHTML = "";
+      list.forEach((p, i) => {
         tbody.innerHTML += `
           <tr>
-            <td><input type="checkbox" /></td>
-
-            <td>
-              <div class="product-info">
-                <img src="${p.img}" />
-                <span class="view-specs" data-index="${index}" style="cursor:pointer">
-                  ${p.name}
-                </span>
-              </div>
-            </td>
-
-            <td>${p.category}</td>
+            <td>${p.id}</td>
+            <td>${p.name}</td>
+            <td>${p.cpu}</td>
+            <td>${p.gpu}</td>
             <td>$${p.price}</td>
-            <td>${p.stock}</td>
-
-            <td>
-              <span class="badge ${p.status === "Active" ? "active" : ""}">
-                ${p.status}
-              </span>
-            </td>
-
+            <td>${p.quantity}</td>
             <td class="actions">
-              <i class="edit" data-index="${index}">✏️</i>
-              <i class="delete" data-index="${index}">🗑</i>
+              <i class="edit" data-i="${i}">✏️</i>
+              <i class="delete" data-i="${i}">🗑</i>
             </td>
           </tr>
         `;
       });
-
-      attachEvents();
+      attachRowEvents();
     };
 
-    // ================================
-    // EVENTS
-    // ================================
-    const attachEvents = () => {
+    /* ======================================================
+       6. TABLE ROW EVENTS
+       ====================================================== */
+    const attachRowEvents = () => {
 
-      // VIEW SPECS
-      this.querySelectorAll(".view-specs").forEach(el => {
-        el.addEventListener("click", () => {
-          const p = products[el.dataset.index];
-          alert(
-`Màn hình: ${p.specs.screen}
-CPU: ${p.specs.cpu}
-RAM: ${p.specs.ram}
-Bộ nhớ: ${p.specs.storage}
-Pin: ${p.specs.battery}`
-          );
-        });
-      });
-
-      // DELETE
-      this.querySelectorAll(".delete").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const i = btn.dataset.index;
-          if (confirm("Xóa sản phẩm này?")) {
-            products.splice(i, 1);
-            renderTable();
-          }
-        });
-      });
-
-      // EDIT
+      // Edit → mở modal & fill dữ liệu
       this.querySelectorAll(".edit").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const i = btn.dataset.index;
+        btn.onclick = () => {
+          editingIndex = btn.dataset.i;
+          fillModal(products[editingIndex]);
+          pmModal.style.display = "flex";
+        };
+      });
 
-          const newName = prompt("Tên sản phẩm:", products[i].name);
-          if (!newName) return;
-
-          products[i].name = newName;
-          products[i].specs = inputSpecs(products[i].specs);
-
+      // Delete → xóa sản phẩm
+      this.querySelectorAll(".delete").forEach(btn => {
+        btn.onclick = () => {
+          products.splice(btn.dataset.i, 1);
           renderTable();
-        });
+        };
       });
     };
 
-    // ================================
-    // ADD PRODUCT
-    // ================================
-    this.querySelector("#addProductBtn").addEventListener("click", () => {
-      const name = prompt("Tên sản phẩm:");
-      if (!name) return;
+    /* ======================================================
+       7. SEARCH (lọc realtime)
+       ====================================================== */
+    searchInput.oninput = () => {
+      const q = searchInput.value.toLowerCase();
+      renderTable(products.filter(p =>
+        p.id.toLowerCase().includes(q) ||
+        p.name.toLowerCase().includes(q) ||
+        p.cpu.toLowerCase().includes(q) ||
+        p.gpu.toLowerCase().includes(q)
+      ));
+    };
 
-      const category = prompt("Danh mục:");
-      const price = Number(prompt("Giá:"));
-      const stock = Number(prompt("Tồn kho:"));
+    /* ======================================================
+       8. MODAL EVENTS
+       ====================================================== */
 
-      const specs = inputSpecs();
+    // Mở modal Add
+    this.querySelector("#addProductBtn").onclick = () => {
+      resetModal();
+      pmModal.style.display = "flex";
+    };
 
-      products.push({
-        img: "https://via.placeholder.com/40",
-        name,
-        category,
-        price,
-        stock,
-        status: "Active",
-        specs
+    // Đóng modal
+    this.querySelector(".pm-close").onclick =
+    this.querySelector(".pm-cancel").onclick = () => {
+      pmModal.style.display = "none";
+    };
+
+    // Upload & preview nhiều ảnh
+    pmImages.onchange = e => {
+      pmImagePreview.innerHTML = "";
+      [...e.target.files].forEach(f => {
+        const url = URL.createObjectURL(f);
+        pmImagePreview.innerHTML += `<img src="${url}">`;
       });
+    };
 
+    // Save → Add hoặc Edit
+    this.querySelector("#pmSave").onclick = () => {
+
+      const data = {
+        id: val("#pmId"),
+        name: val("#pmName"),
+        price: Number(val("#pmPrice")),
+        quantity: Number(val("#pmQuantity")),
+        cpu: val("#pmCPU"),
+        gpu: val("#pmGPU"),
+        ram: val("#pmRAM"),
+        storage: val("#pmStorage"),
+        size: val("#pmSize"),
+        screenTech: val("#pmScreenTech"),
+        resolution: val("#pmResolution"),
+        battery: val("#pmBattery"),
+        os: val("#pmOS"),
+        ports: val("#pmPorts"),
+        images: [...pmImagePreview.querySelectorAll("img")].map(i => i.src)
+      };
+
+      if (editingIndex === null) products.push(data);
+      else products[editingIndex] = data;
+
+      pmModal.style.display = "none";
       renderTable();
-    });
+    };
 
-    // INIT
+    /* ======================================================
+       9. INIT
+       ====================================================== */
     renderTable();
   }
 }
