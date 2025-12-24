@@ -1,5 +1,6 @@
 import {
   loadProductsFromAPI,
+  loadProductsByBrand,
   products
 } from "../JS/API/productApi.js";
 
@@ -16,41 +17,60 @@ class ProductGrid extends HTMLElement {
     if (this._loaded) return;
     this._loaded = true;
 
-    this.innerHTML = `
-      <main class="container">
-        <section id="products">
-          <div class="products-header">
-            <h2 id="title"></h2>
+    const mode = this.getAttribute("mode") || "category";
+    const title = this.getAttribute("title") || "Sản phẩm";
+    const brandId = this.getAttribute("brand-id");
 
+    this.innerHTML = `
+      <section class="product-section">
+        <div class="products-header">
+          <h2>${title}</h2>
+
+          ${
+            mode === "category"
+              ? `
             <div class="sort-box">
-              <label for="sort">Sắp xếp</label>
+              <label>Sắp xếp</label>
               <select id="sort">
                 <option value="default">Mặc định</option>
-                <option value="price-asc">Giá: thấp → cao</option>
-                <option value="price-desc">Giá: cao → thấp</option>
+                <option value="price-asc">Giá ↑</option>
+                <option value="price-desc">Giá ↓</option>
               </select>
             </div>
-          </div>
+          `
+              : `<a class="view-all" href="brand.html?id=${brandId}">Xem tất cả</a>`
+          }
+        </div>
 
-          <div class="grid" id="grid"></div>
-        </section>
-      </main>
+        <div class="grid"></div>
+      </section>
     `;
 
-    this.grid = this.querySelector("#grid");
+    this.grid = this.querySelector(".grid");
     this.sortSelect = this.querySelector("#sort");
 
-    const categoryId = localStorage.getItem("categoryId");
-    const categoryName = localStorage.getItem("categoryName");
-    if (!categoryId) return;
+    /* ===== LOAD DATA ===== */
 
-    this.querySelector("#title").textContent = categoryName || "Danh mục";
+    if (mode === "home") {
+      if (!brandId) return;
+      await loadProductsByBrand(brandId);
+      this.currentList = products.slice(0, 8); // home chỉ lấy 8 sp
+    }
 
-    await loadProductsFromAPI(categoryId);
-    this.currentList = [...products];
+    if (mode === "category") {
+      const categoryId = localStorage.getItem("categoryId");
+      const categoryName = localStorage.getItem("categoryName");
+      if (!categoryId) return;
+
+      this.querySelector("h2").textContent = categoryName || title;
+
+      await loadProductsFromAPI(categoryId);
+      this.currentList = [...products];
+
+      this.sortSelect.addEventListener("change", () => this.sortProducts());
+    }
+
     this.renderCards(this.currentList);
-
-    this.sortSelect.addEventListener("change", () => this.sortProducts());
     this.addEventListener("click", e => this.handleClick(e));
   }
 
@@ -58,15 +78,12 @@ class ProductGrid extends HTMLElement {
     const addBtn = e.target.closest("[data-add]");
     const viewBtn = e.target.closest("[data-view]");
 
-    // thêm giỏ
     if (addBtn) {
       addToCart(addBtn.dataset.add, 1);
       document.dispatchEvent(new Event("cart:update"));
       document.dispatchEvent(new Event("cart:open"));
-      return;
     }
 
-    // mở quick view
     if (viewBtn) {
       document.dispatchEvent(
         new CustomEvent("quickview:open", {

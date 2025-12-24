@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập / Đăng ký</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="CSS/pages/logIn.css">
+  <link
+    href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- JS -->
+  <script src="js/pages/logIn.js" defer></script>
+  <script src="js/API/loginApi.js" defer></script>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- ========== ĐĂNG NHẬP ========== -->
+    <div class="form-box login">
+      <form id="loginForm">
+        <h1>Đăng nhập</h1>
+
+        <div class="input-box">
+          <input
+            type="text"
+            id="loginUsername"
+            name="username"
+            placeholder="Tên đăng nhập"
+            required
+          />
+          <i class="bx bxs-user"></i>
+        </div>
+
+        <div class="input-box">
+          <input
+            type="password"
+            id="loginPassword"
+            name="password"
+            placeholder="Mật khẩu"
+            required
+          />
+          <i class="bx bxs-lock-alt"></i>
+        </div>
+
+        <div class="forgot-link">
+          <a href="#">Quên mật khẩu?</a>
+        </div>
+
+        <button type="submit" class="btn">Đăng nhập</button>
+      </form>
+    </div>
+
+    <!-- ========== ĐĂNG KÝ ========== -->
+    <div class="form-box register">
+      <form id="registerForm">
+        <h1>Đăng ký tài khoản</h1>
+
+        <div class="input-box">
+          <input
+            type="text"
+            id="regUsername"
+            placeholder="Tên đăng nhập"
+            required
+          />
+          <i class="bx bxs-user"></i>
+        </div>
+
+
+        <div class="input-box">
+          <input
+            type="tel"
+            id="regPhone"
+            placeholder="Số điện thoại"
+            required
+          />
+          <i class="bx bx-phone"></i>
+        </div>
+
+        <div class="input-box">
+          <input
+            type="password"
+            id="regPassword"
+            placeholder="Mật khẩu"
+            required
+          />
+          <i class="bx bxs-lock-alt"></i>
+        </div>
+
+        <div class="input-box">
+          <input
+            type="password"
+            id="regConfirmPassword"
+            placeholder="Xác nhận mật khẩu"
+            required
+          />
+          <i class="bx bxs-lock-alt"></i>
+        </div>
+
+        <button type="submit" class="btn">Đăng ký</button>
+      </form>
+    </div>
+
+    <!-- ========== CHUYỂN ĐỔI FORM ========== -->
+    <div class="toggle-box">
+      <div class="toggle-panel toggle-left">
+        <h1>Xin chào!</h1>
+        <p>Bạn chưa có tài khoản?</p>
+        <button class="btn register-btn">Đăng ký</button>
+      </div>
+
+      <div class="toggle-panel toggle-right">
+        <h1>Chào mừng quay lại!</h1>
+        <p>Bạn đã có tài khoản?</p>
+        <button class="btn login-btn">Đăng nhập</button>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

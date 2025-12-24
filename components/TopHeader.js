@@ -1,3 +1,7 @@
+import {
+  callLogoutAPI
+} from "../JS/API/logoutAPI.js";
+
 class TopHeader extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
@@ -126,46 +130,80 @@ class TopHeader extends HTMLElement {
 
 
   initUIEvents() {
-    // ACCOUNT MENU TOGGLE
-    const tkBtn = this.querySelector("#taikhoan");
-    const accountMenu = this.querySelector("#accountMenu");
+      // ACCOUNT MENU TOGGLE
+      const tkBtn = this.querySelector("#taikhoan");
+      const accountMenu = this.querySelector("#accountMenu");
 
-    tkBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      accountMenu.style.display =
-        accountMenu.style.display === "flex" ? "none" : "flex";
-    });
+      tkBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        accountMenu.style.display =
+          accountMenu.style.display === "flex" ? "none" : "flex";
+      });
 
-    document.addEventListener("click", () => {
-      accountMenu.style.display = "none";
-    });
+      document.addEventListener("click", () => {
+        accountMenu.style.display = "none";
+      });
 
-    // LOGOUT
-    const logoutMenu = this.querySelector("#logoutMenu");
-    logoutMenu.addEventListener("click", (e) => {
-      e.preventDefault();
-      localStorage.clear();
-      window.dispatchEvent(new Event("authChanged"));
-      location.href = "/index.html";
-    });
+      // ===== LOGIN / REGISTER (TRÊN + DƯỚI DÙNG CHUNG) =====
+      const loginBtns = [
+        this.querySelector("#loginBtn"),
+        this.querySelector("#loginMenu")
+      ];
 
-    // RESPONSIVE SEARCH
-    const searchBox = this.querySelector(".search");
-    const searchIcon = this.querySelector("#searchIcon");
+      const registerBtns = [
+        this.querySelector("#registerBtn"),
+        this.querySelector("#registerMenu")
+      ];
 
-    const checkResponsive = () => {
-      if (window.innerWidth < 768) {
-        searchBox.style.display = "none";
-        searchIcon.style.display = "inline-block";
-      } else {
-        searchBox.style.display = "flex";
-        searchIcon.style.display = "none";
-      }
-    };
+      loginBtns.forEach(btn => {
+        if (!btn) return;
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          location.href = "/login.html?mode=login";
+        });
+      });
 
-    window.addEventListener("resize", checkResponsive);
-    checkResponsive();
-  }
+      registerBtns.forEach(btn => {
+        if (!btn) return;
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          location.href = "/login.html?mode=register";
+        });
+      });
+
+      // ===== LOGOUT =====
+      const logoutMenu = this.querySelector("#logoutMenu");
+      logoutMenu.addEventListener("click", async (e) => {
+        e.preventDefault();
+
+        await callLogoutAPI();
+
+        localStorage.removeItem("accesstoken");
+        localStorage.removeItem("refreshtoken");
+
+        window.dispatchEvent(new Event("authChanged"));
+        location.href = "/homePage.html";
+      });
+
+      // RESPONSIVE SEARCH
+      const searchBox = this.querySelector(".search");
+      const searchIcon = this.querySelector("#searchIcon");
+
+      const checkResponsive = () => {
+        if (window.innerWidth < 768) {
+          searchBox.style.display = "none";
+          searchIcon.style.display = "inline-block";
+        } else {
+          searchBox.style.display = "flex";
+          searchIcon.style.display = "none";
+        }
+      };
+
+      window.addEventListener("resize", checkResponsive);
+      checkResponsive();
+    }
+
+  
 }
 
 customElements.define("top-header", TopHeader);

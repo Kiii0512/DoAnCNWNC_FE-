@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="CSS/topheader.css" />
   <link rel="stylesheet" href="CSS/mainNav.css" />
   <link rel="stylesheet" href="CSS/productGrid.css" />
+  <link rel="stylesheet" href="CSS/bannerSlider.css" />
   <link rel="stylesheet" href="CSS/quickModal.css" />
   <link rel="stylesheet" href="CSS/cartPanel.css" />
   <link rel="stylesheet" href="CSS/appFooter.css" />
@@ -16,11 +17,12 @@
   <script type="module" src="components/topHeader.js"></script>
   <script type="module" src="components/mainNav.js"></script>
   <script type="module" src="components/ProductGrid.js"></script>
+  <script type="module" src="components/BannerSlider.js"></script>
   <script type="module" src="components/quickModal.js"></script>
   <script type="module" src="components/cartPanel.js"></script>
   <script type="module" src="components/appFooter.js"></script>
 
-  <script type="module" src="JS/pages/category.js"></script>
+  
 </head>
 
 <body>
@@ -28,8 +30,39 @@
   <top-header></top-header>
   <main-nav></main-nav>
 
-  <main class="container">
-    <product-grid></product-grid>
+      <main class="container">
+        <banner-slider></banner-slider>
+
+        <product-grid
+          mode="home"
+          brand-id="BRD0001"
+          title="iPhone nổi bật">
+        </product-grid>
+
+        <product-grid
+          mode="home"
+          brand-id="BRD0002"
+          title="Samsung bán chạy">
+        </product-grid>
+
+        <product-grid
+          mode="home"
+          brand-id="BRD0005"
+          title="ASUS cho dân công nghệ">
+        </product-grid>
+
+        <product-grid
+          mode="home"
+          brand-id="BRD0003"
+          title="Dell văn phòng & doanh nghiệp">
+        </product-grid>
+
+        <product-grid
+          mode="home"
+          brand-id="BRD0007"
+          title="Xiaomi giá tốt">
+        </product-grid>
+
     <quick-modal></quick-modal>
     <cart-panel></cart-panel>
   </main>
