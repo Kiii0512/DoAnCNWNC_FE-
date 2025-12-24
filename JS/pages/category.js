@@ -1,12 +1,6 @@
-class CategoryPage extends HTMLElement {
-  connectedCallback() {
-    const params = new URLSearchParams(location.search);
-    const category = params.get("cate");
+import { loadProductsFromAPI } from "../API/productApi.js";
 
-    this.innerHTML = `
-      <product-grid ${category ? `category="${category}"` : ""}></product-grid>
-    `;
-  }
-}
+const params = new URLSearchParams(window.location.search);
+const categoryId = params.get("categoryId");
 
-customElements.define("category-page", CategoryPage);
+loadProductsFromAPI(categoryId);

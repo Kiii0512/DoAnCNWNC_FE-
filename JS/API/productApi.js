@@ -1,24 +1,24 @@
 const API_URL = "https://localhost:7155/api/products";
 
 export let products = [];
-let cart = [];
 
-// Ảnh mặc định
 const DEFAULT_IMAGE = "/assets/images/no-image.jpg";
 
-/* =============================
-   LOAD PRODUCTS
-============================= */
-export async function loadProductsFromAPI() {
-  try {
-    const res = await fetch(API_URL);
+export async function loadProductsFromAPI(categoryId) {
+  if (!categoryId) {
+    products = [];
+    return;
+  }
 
-    if (!res.ok) {
-      throw new Error("HTTP error " + res.status);
-    }
+  try {
+    const url = `${API_URL}/category/${categoryId}`;
+    console.log("CALL API:", url);
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(res.status);
 
     const json = await res.json();
-    const data = json.data ?? json;
+    const data = json.data ?? [];
 
     products = data.map(p => ({
       id: p.productId,
@@ -27,32 +27,18 @@ export async function loadProductsFromAPI() {
       old: Math.round(Number(p.productPrice) * 1.2),
       img: DEFAULT_IMAGE,
       stock: p.stockQuantity ?? 0,
-      description: p.productDescription ?? "",
       category: p.categoryName ?? "",
-      brand: p.brandName ?? ""
+      brand: p.brandName ?? "",
+      description: p.productDescription ?? ""  // ✅ thêm description
     }));
 
-  } catch (err) {
-    console.error("❌ Load product API error:", err);
+  } catch (e) {
+    console.error("API ERROR:", e);
     products = [];
   }
 }
 
-/* =============================
-   PRODUCT
-============================= */
+
 export function getProductById(id) {
   return products.find(p => p.id == id);
 }
-
-/* =============================
-   CATEGORY FILTER
-============================= */
-export function getProductsByCategory(category) {
-  if (!category) return products;
-
-  return products.filter(
-    p => p.category.toLowerCase() === category.toLowerCase()
-  );
-}
-

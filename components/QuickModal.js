@@ -1,34 +1,78 @@
-class quickModal extends HTMLElement {
-    connectedCallback() {
-      this.innerHTML = `
-        <div class="modal" id="modal">
-          <div class="modal-content">
-            <div>
-              <img id="modalImg" src="" alt="product">
+import { getProductById } from "../JS/API/productApi.js";
+import { addToCart } from "../JS/service/cartService.js";
+
+class QuickModal extends HTMLElement {
+
+  connectedCallback() {
+    this.innerHTML = `
+      <div class="modal" id="modal">
+        <div class="modal-content">
+          <img id="modalImg">
+
+          <div class="modal-info">
+            <h3 id="modalTitle"></h3>
+            <p id="modalDesc"></p>
+
+            <div class="price-wrap">
+              <span id="modalPrice" class="price"></span>
             </div>
-            <div style="flex:1">
-              <h3 id="modalTitle">Title</h3>
-              <p id="modalDesc">Description</p>
-              <div style="margin:10px 0"><span id="modalPrice" class="price">0₫</span> <span id="modalOld" class="old"></span></div>
-              <div style="display:flex;gap:8px;align-items:center">
-                <input type="number" id="qty" value="1" min="1" style="width:80px;padding:8px;border-radius:8px;border:1px solid #e6e9ee">
-                <button class="btn" id="addToCartModal">Thêm vào giỏ</button>
-              </div>
-              <div style="margin-top:14px"><button id="closeModal" class="icon-btn">Đóng</button></div>
+
+            <div class="modal-actions">
+              <input type="number" id="qty" value="1" min="1">
+              <button id="addToCartModal">Thêm vào giỏ</button>
             </div>
+
+            <button id="closeModal">Đóng</button>
           </div>
         </div>
-      `;
+      </div>
+    `;
 
-      // Append modal JS handlers (close on click outside etc.)
-      const script = document.createElement('script');
-      script.textContent = `
-        document.getElementById('closeModal').addEventListener('click', closeModal);
-        document.getElementById('modal').addEventListener('click', e => {
-          if (e.target.id === 'modal') closeModal();
-        });
-      `;
-      this.appendChild(script);
-    }
+    this.modal = this.querySelector("#modal");
+
+    document.addEventListener("quickview:open", e =>
+      this.open(e.detail.id)
+    );
+
+    this.modal.addEventListener("click", e => {
+      if (e.target.id === "modal" || e.target.id === "closeModal") {
+        this.close();
+      }
+    });
+
+    this.querySelector("#addToCartModal")
+      .addEventListener("click", () => this.add());
   }
-  customElements.define('quick-modal', quickModal);
+
+  open(id) {
+    this.product = getProductById(id);
+    if (!this.product) return;
+
+    this.querySelector("#modalImg").src = this.product.img;
+    this.querySelector("#modalTitle").textContent = this.product.title;
+
+    // ✅ DESCRIPTION
+    this.querySelector("#modalDesc").textContent =
+      this.product.description || "Chưa có mô tả cho sản phẩm này.";
+
+    this.querySelector("#modalPrice").textContent =
+      this.product.price.toLocaleString("vi-VN") + "₫";
+
+    this.modal.classList.add("open");
+  }
+
+  close() {
+    this.modal.classList.remove("open");
+  }
+
+  add() {
+    const qty = +this.querySelector("#qty").value || 1;
+    addToCart(this.product.id, qty);
+
+    document.dispatchEvent(new Event("cart:update"));
+    document.dispatchEvent(new Event("cart:open"));
+    this.close();
+  }
+}
+
+customElements.define("quick-modal", QuickModal);
