@@ -47,7 +47,7 @@ class ProductGrid extends HTMLElement {
     `;
 
     this.grid = this.querySelector(".grid");
-    this.sortSelect = this.querySelector("#sort");
+    this.sortSelect = this.querySelector("#sort");  
 
     /* ===== LOAD DATA ===== */
 
