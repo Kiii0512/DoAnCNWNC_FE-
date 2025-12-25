@@ -1,0 +1,1 @@
+customElements.define('app-footer', AppFooter);
