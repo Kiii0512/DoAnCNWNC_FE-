@@ -3,86 +3,70 @@ const API_BASE = 'https://localhost:7155/api';
 /* =========================
    PRODUCTS
 ========================= */
-export async function getProducts(params = {}) {
-  const q = new URLSearchParams(params).toString();
-  const res = await fetch(`${API_BASE}/products${q ? '?' + q : ''}`);
+
+// GET ALL
+export async function getProducts() {
+  const res = await fetch(`${API_BASE}/products`);
   if (!res.ok) throw new Error('Load products failed');
   return (await res.json()).data;
 }
 
+// GET BY ID
 export async function getProductById(id) {
   const res = await fetch(`${API_BASE}/products/${id}`);
   if (!res.ok) throw new Error('Load product failed');
   return (await res.json()).data;
 }
 
+// CREATE (FULL)
+// CREATE FULL PRODUCT (JSON + IMAGES)
 export async function createProduct(payload) {
   const res = await fetch(`${API_BASE}/products`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload)
   });
+
   if (!res.ok) throw new Error('Create product failed');
-  return (await res.json()).data; // { productId }
+  return (await res.json()).data;
 }
 
+// UPDATE (FULL – đúng JSON bạn gửi)
+export async function updateProduct(productId, payload) {
+  const res = await fetch(`${API_BASE}/products/${productId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) throw new Error('Update product failed');
+  return await res.json();
+}
+
+// DELETE
 export async function deleteProduct(id) {
   const res = await fetch(`${API_BASE}/products/${id}`, {
     method: 'DELETE'
   });
+
   if (!res.ok) throw new Error('Delete product failed');
 }
 
-/* =========================
-   VARIATIONS
-========================= */
-export async function createVariation(payload) {
-  const { productId, ...body } = payload;
+//upload image
+export async function uploadImage(file) {
+  const formData = new FormData();
+  formData.append('file', file);
 
-  const res = await fetch(
-    `${API_BASE}/products/${productId}/variations`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    }
-  );
+  const res = await fetch(`${API_BASE}/products/upload`, {
+    method: 'POST',
+    body: formData
+  });
 
-  if (!res.ok) throw new Error('Create variation failed');
-}
+  if (!res.ok) {
+    throw new Error('Upload image failed');
+  }
 
-/* =========================
-   SPECIFICATIONS
-========================= */
-export async function createSpecifications(payload) {
-  const { productId, specifications } = payload;
-
-  const res = await fetch(
-    `${API_BASE}/products/${productId}/specifications`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ specifications })
-    }
-  );
-
-  if (!res.ok) throw new Error('Create specifications failed');
-}
-
-/* =========================
-   IMAGES
-========================= */
-export async function createImages(payload) {
-  const { productId, images } = payload;
-
-  const res = await fetch(
-    `${API_BASE}/products/${productId}/images`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ images })
-    }
-  );
-
-  if (!res.ok) throw new Error('Create images failed');
+  // ⚠️ backend PHẢI trả JSON
+  const json = await res.json();
+  return json.imageUrl;
 }

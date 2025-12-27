@@ -5,8 +5,8 @@ class AppHeader extends HTMLElement {
       <header>
         <div class="thanh-tren">
           <a class="logo" href="./" aria-label="Về trang chủ">
-            <div class="vuong">68</div>
-            <div style="font-weight:700">Shop68IT1</div>
+            <div class="vuong">ES</div>
+            <div style="font-weight:700">Electronic Store</div>
           </a>
 
           <div class="tim-kiem" style="position:relative">

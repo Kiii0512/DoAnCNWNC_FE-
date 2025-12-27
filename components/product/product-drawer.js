@@ -1,258 +1,449 @@
-import {
-  createProduct,
-  createVariation,
-  createSpecifications,
-  createImages
-} from '../../JS/API/productAPI.js';
-
+import { createProduct } from '../../JS/API/productAPI.js';
+import { buildVariations, buildProductPayload } from '../../JS/pages/productBuilder.js';
+import { getCategories } from '../../JS/API/categoryAPI.js';
+import { getBrands } from '../../JS/API/brandAPI.js';
+import { getAttributes } from '../../JS/API/attributeAPI.js';
 import { showToast } from '../../utils/toast.js';
-import { productState, resetProductState } from './product-state.js';
 
+/* =========================
+   STATE
+========================= */
+const state = {
+  attributes: [],
+  selected: [],
+  values: {},
+  variations: {},
+  specs: [],
+  images: {
+    main: '',     // URL ảnh chính (bắt buộc)
+    subs: []      // URL ảnh phụ (0–3)
+  }
+};
+
+function resetState() {
+  state.selected = [];
+  state.values = {};
+  state.variations = {};
+  state.specs = [];
+  state.images = { main: '', subs: [] };
+}
+
+/* =========================
+   COMPONENT
+========================= */
 class ProductDrawer extends HTMLElement {
   connectedCallback() {
-    this.cacheDom();
-    this.bindEvents();
+    this.render();
+    this.cache();
+    this.bind();
   }
 
-  /* ==========================
-     CACHE DOM (FIX GỐC)
-  ========================== */
-  cacheDom() {
-    const $ = (id) => this.querySelector(id);
+  /* ========================= RENDER ========================= */
+  render() {
+    this.innerHTML = `
+      <div id="backdrop" class="backdrop" hidden></div>
 
-    this.drawer = $('#drawerSP');
+      <aside class="drawer" id="drawer">
+        <button id="close">✖</button>
+        <h3>Tạo sản phẩm</h3>
+        <div class="drawer-content">
+            <input id="name" placeholder="Tên sản phẩm" />
+            <select id="category"></select>
+            <select id="brand"></select>
+
+            <!-- SPECIFICATIONS -->
+            <div class="block">
+              <label>Thông số kỹ thuật</label>
+              <div id="specBox"></div>
+              <button id="btnAddSpec" class="btn btn-ghost">+ Thêm thông số</button>
+            </div>
+
+            <!-- ATTRIBUTES -->
+            <div class="block">
+              <label>Thuộc tính biến thể</label>
+              <div id="attrBoxes"></div>
+              <button id="btnAddAttr" class="btn btn-ghost">+ Thêm thuộc tính</button>
+            </div>
+
+            <!-- VARIATIONS -->
+            <div class="block">
+              <label>Biến thể (giá & tồn kho)</label>
+              <div id="variationBox"></div>
+            </div>
+
+            <!-- IMAGES -->
+            <div class="block">
+              <label>Ảnh sản phẩm (URL)</label>
+
+              <div class="form-row">
+                <label>Ảnh chính</label>
+                <input id="imgMain" placeholder="https://..." />
+                <img id="previewMain" class="img-preview">
+              </div>
+
+              <div class="form-row">
+                <label>Ảnh phụ (Enter để thêm, tối đa 3)</label>
+                <input id="imgSub" placeholder="https://..." />
+                <div id="imgList" class="img-preview-list"></div>
+              </div>
+            </div>
+        </div>
+
+        <button id="save" class="btn btn-primary">Lưu</button>
+      </aside>
+    `;
+  }
+
+  /* ========================= CACHE ========================= */
+  cache() {
+    const $ = id => this.querySelector(id);
+
+    this.drawer = $('#drawer');
     this.backdrop = $('#backdrop');
 
-    // form fields
-    this.spTen = $('#spTen');
-    this.spGia = $('#spGia');
-    this.spTon = $('#spTon');
-    this.spMoTa = $('#spMoTa');
+    this.name = $('#name');
+    this.category = $('#category');
+    this.brand = $('#brand');
 
-    // specs / colors / caps
-    this.specsBox = $('#specsBox');
-    this.colorsList = $('#colorsList');
-    this.capsList = $('#capsList');
-
-    // buttons
-    this.btnSave = $('#btnLuuSP');
-    this.btnCancel = $('#btnHuy');
-    this.btnClose = $('#btnDongDrawer');
+    this.specBox = $('#specBox');
     this.btnAddSpec = $('#btnAddSpec');
-    this.btnAddColor = $('#btnAddColor');
-    this.btnAddCap = $('#btnAddCap');
 
-    // inputs
-    this.colorInput = $('#colorInput');
-    this.capInput = $('#capInput');
+    this.attrBoxes = $('#attrBoxes');
+    this.variationBox = $('#variationBox');
+
+    this.imgMain = $('#imgMain');
+    this.imgSub = $('#imgSub');
+    this.previewMain = $('#previewMain');
+    this.imgList = $('#imgList');
+
+    this.btnAddAttr = $('#btnAddAttr');
+    this.saveBtn = $('#save');
+    this.closeBtn = $('#close');
   }
 
-  /* ==========================
-     EVENTS (CHỐNG NULL)
-  ========================== */
-  bindEvents() {
-    if (!this.btnSave) {
-      console.error('ProductDrawer: DOM chưa render xong');
-      return;
-    }
+  /* ========================= EVENTS ========================= */
+  bind() {
+    this.closeBtn.onclick = () => this.close();
+    this.saveBtn.onclick = () => this.save();
+    this.btnAddAttr.onclick = () => this.addAttributeBox();
+    this.btnAddSpec.onclick = () => this.addSpec();
+    this.backdrop.onclick = () => this.close();
+    document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') this.close();
+   }); 
+    // MAIN IMAGE URL (bắt buộc)
+    this.imgMain.oninput = e => {
+      const url = e.target.value.trim();
+      state.images.main = url;
+      this.previewMain.src = url || '/images/no-image.png';
+    };
 
-    this.btnSave.addEventListener('click', () => this.save());
-    this.btnCancel?.addEventListener('click', () => this.close());
-    this.btnClose?.addEventListener('click', () => this.close());
-    this.backdrop?.addEventListener('click', () => this.close());
+    // SUB IMAGE URL (Enter để thêm, 0–3)
+    this.imgSub.onkeydown = e => {
+      if (e.key !== 'Enter') return;
+      e.preventDefault();
 
-    this.btnAddSpec?.addEventListener('click', () => this.addSpec());
-    this.btnAddColor?.addEventListener('click', () => this.addColor());
-    this.btnAddCap?.addEventListener('click', () => this.addCap());
+      const url = e.target.value.trim();
+      if (!url) return;
+
+      // Tổng ảnh tối đa = 4 (1 chính + 3 phụ)
+      if (state.images.subs.length >= 3) {
+        showToast('Tối đa 4 ảnh (1 chính + 3 phụ)');
+        return;
+      }
+
+      state.images.subs.push(url);
+      e.target.value = '';
+      this.renderImages();
+    };
   }
 
-  /* ==========================
-     OPEN / CLOSE
-  ========================== */
-  open() {
-    resetProductState();
-    this.resetForm();
-
-    this.drawer?.classList.add('open');
-    if (this.backdrop) this.backdrop.hidden = false;
+  /* ========================= OPEN / CLOSE ========================= */
+  async open() {
+    resetState();
+    await this.loadCombos();
+    await this.loadAttributes();
+    this.addAttributeBox();
+    this.drawer.classList.add('open');
+    this.backdrop.hidden = false;
   }
 
   close() {
-    this.drawer?.classList.remove('open');
-    if (this.backdrop) this.backdrop.hidden = true;
+    this.drawer.classList.remove('open');
+    this.backdrop.hidden = true;
   }
 
-  resetForm() {
-    if (!this.spTen) return;
+  /* ========================= LOAD ========================= */
+  async loadCombos() {
+    const [cats, brands] = await Promise.all([
+      getCategories(),
+      getBrands()
+    ]);
 
-    this.spTen.value = '';
-    this.spGia.value = '';
-    this.spTon.value = 1;
-    this.spMoTa.value = '';
+    this.category.innerHTML = cats.map(c =>
+      `<option value="${c.categoryId}">${c.categoryName}</option>`
+    ).join('');
 
-    this.renderSpecs();
-    this.renderColors();
-    this.renderCaps();
+    this.brand.innerHTML = brands.map(b =>
+      `<option value="${b.brandId}">${b.brandName}</option>`
+    ).join('');
   }
 
-  /* ==========================
-     SPECS
-  ========================== */
+  async loadAttributes() {
+    state.attributes = await getAttributes();
+  }
+
+  /* ========================= SPEC ========================= */
   addSpec() {
-    productState.specs.push({ k: '', v: '' });
+    state.specs.push({ k: '', v: '' });
     this.renderSpecs();
   }
 
   renderSpecs() {
-    if (!this.specsBox) return;
-    this.specsBox.innerHTML = '';
-
-    productState.specs.forEach((s, i) => {
+    this.specBox.innerHTML = '';
+    state.specs.forEach((s, i) => {
       const row = document.createElement('div');
-      row.className = 'spec-row';
       row.innerHTML = `
-        <input placeholder="Thuộc tính" value="${s.k}">
+        <input placeholder="Tên" value="${s.k}">
         <input placeholder="Giá trị" value="${s.v}">
-        <button class="btn btn-ghost">✖</button>
+        <button>✖</button>
       `;
       row.querySelectorAll('input')[0].oninput = e => s.k = e.target.value;
       row.querySelectorAll('input')[1].oninput = e => s.v = e.target.value;
       row.querySelector('button').onclick = () => {
-        productState.specs.splice(i, 1);
+        state.specs.splice(i, 1);
         this.renderSpecs();
       };
-      this.specsBox.appendChild(row);
+      this.specBox.appendChild(row);
     });
   }
 
-  /* ==========================
-     COLORS
-  ========================== */
-  addColor() {
-    const v = this.colorInput?.value.trim();
-    if (!v || productState.colors.includes(v)) return;
-    productState.colors.push(v);
-    this.colorInput.value = '';
-    this.renderColors();
-  }
+  /* ========================= ATTR + VAR ========================= */
+  addAttributeBox() {
+  // 🔒 lấy toàn bộ attributeId đã dùng (kể cả chưa commit)
+  const usedAttrIds = [
+    ...state.selected.map(a => a.attributeId),
+    ...[...this.attrBoxes.querySelectorAll('.attr-box')]
+        .map(b => b.dataset.attrId)
+        .filter(Boolean)
+        .map(Number)
+  ];
 
-  renderColors() {
-    if (!this.colorsList) return;
-    this.colorsList.innerHTML = '';
+  const available = state.attributes.filter(
+    a => !usedAttrIds.includes(a.attributeId)
+  );
 
-    productState.colors.forEach((c, i) => {
-      const chip = document.createElement('div');
-      chip.className = 'chip';
-      chip.innerHTML = `${c} <button>✖</button>`;
-      chip.querySelector('button').onclick = () => {
-        productState.colors.splice(i, 1);
-        this.renderColors();
-      };
-      this.colorsList.appendChild(chip);
-    });
-  }
+  const box = document.createElement('div');
+  box.className = 'attr-box';
+  box.dataset.attrId = '';
+  box.innerHTML = `
+    <select>
+      <option value="">-- Chọn thuộc tính --</option>
+      ${available.map(a =>
+        `<option value="${a.attributeId}">${a.name}</option>`
+      ).join('')}
+    </select>
+    <input placeholder="Nhập giá trị, Enter để thêm" disabled>
+    <div class="chips"></div>
+  `;
 
-  /* ==========================
-     CAPS
-  ========================== */
-  addCap() {
-    const v = this.capInput?.value.trim();
-    if (!v || productState.caps.includes(v)) return;
-    productState.caps.push(v);
-    this.capInput.value = '';
-    this.renderCaps();
-  }
+  const select = box.querySelector('select');
+  const input  = box.querySelector('input');
+  const chips  = box.querySelector('.chips');
 
-  renderCaps() {
-    if (!this.capsList) return;
-    this.capsList.innerHTML = '';
+  let currentAttr = null;
+  let committed = false; // 🔑 đã “chốt” attribute hay chưa
 
-    productState.caps.forEach((c, i) => {
-      const chip = document.createElement('div');
-      chip.className = 'chip';
-      chip.innerHTML = `${c} <button>✖</button>`;
-      chip.querySelector('button').onclick = () => {
-        productState.caps.splice(i, 1);
-        this.renderCaps();
-      };
-      this.capsList.appendChild(chip);
-    });
-  }
+  // 👉 CHỌN ATTRIBUTE (chưa commit)
+  select.onchange = () => {
+    const attrId = Number(select.value);
+    if (!attrId) return;
 
-  /* ==========================
-     SAVE FLOW (GIỮ NGUYÊN LOGIC)
-  ========================== */
-  async save() {
-    try {
-      const categoryId = 'CAT_001';
-      const brandId = 'BRD_001';
+    // 🔒 kiểm tra trùng với các box khác
+    const exists = [...this.attrBoxes.querySelectorAll('.attr-box')]
+      .some(b => b !== box && Number(b.dataset.attrId) === attrId);
 
-      const product = await createProduct({
-        productName: this.spTen.value.trim(),
-        productDescription: this.spMoTa.value.trim(),
-        categoryId,
-        brandId
-      });
+    if (exists) {
+      showToast('Thuộc tính đã được chọn');
+      select.value = '';
+      return;
+    }
 
-      const productId = product.productId;
+    currentAttr = state.attributes.find(a => a.attributeId === attrId);
+    if (!currentAttr) return;
 
-      if (productState.colors.length && productState.caps.length) {
-        for (const c of productState.colors) {
-          for (const cap of productState.caps) {
-            await createVariation({
-              productId,
-              price: Number(this.spGia.value),
-              stockQuantity: Number(this.spTon.value),
-              options: [
-                { optionName: 'Color', optionValue: c },
-                { optionName: 'Capacity', optionValue: cap }
-              ]
-            });
-          }
-        }
-      } else {
-        await createVariation({
-          productId,
-          price: Number(this.spGia.value),
-          stockQuantity: Number(this.spTon.value),
-          options: []
-        });
-      }
+    box.dataset.attrId = attrId; // 🔑 GIỮ CHỖ
+    input.disabled = false;
+  };
 
-      if (productState.specs.length) {
-        await createSpecifications({
-          productId,
-          specifications: productState.specs.map(s => ({
-            specKey: s.k,
-            specValue: s.v
-          }))
-        });
-      }
+  // 👉 NHẬP VALUE → LÚC NÀY MỚI COMMIT
+   input.onkeydown = e => {
+    if (e.key !== 'Enter' || !currentAttr) return;
+    e.preventDefault();
 
-      if (productState.images.main || productState.images.thumbs.length) {
-        const imgs = [];
-        if (productState.images.main)
-          imgs.push({ imageUrl: productState.images.main, isMain: true });
+    const v = input.value.trim();
+    if (!v) return;
 
-        productState.images.thumbs.forEach(u =>
-          imgs.push({ imageUrl: u, isMain: false })
+    if (!committed) {
+      committed = true;
+      select.disabled = true;
+
+      state.selected.push(currentAttr);
+      state.values[currentAttr.attributeId] = [];
+    }
+
+    const list = state.values[currentAttr.attributeId];
+    if (list.includes(v)) return;
+
+    list.push(v);
+    input.value = '';
+
+    this.renderAttributeChips(chips, currentAttr);
+    this.renderVariations();
+  };
+
+  this.attrBoxes.appendChild(box);
+}
+
+
+
+  renderVariations() {
+  this.variationBox.innerHTML = '';
+  state.variations = {};
+
+  if (!state.selected.length) return;
+
+  // 🔒 luôn theo thứ tự attribute đã chọn
+  const attrOrder = state.selected.map(a => a.attributeId);
+
+  // nếu có attr nào chưa có value → chưa render
+  if (attrOrder.some(id => !state.values[id]?.length)) return;
+
+  // build cartesian product
+  const combos = attrOrder.reduce(
+    (acc, attrId) =>
+      acc.flatMap(arr =>
+        state.values[attrId].map(v => [...arr, { attrId, value: v }])
+      ),
+    [[]]
+  );
+
+  combos.forEach(combo => {
+    // key ổn định
+    const key = combo.map(x => x.value).join('|');
+
+    state.variations[key] ??= { price: 0, stock: 0 };
+
+    const label = combo
+      .map(x => {
+        const attr = state.selected.find(a => a.attributeId === x.attrId);
+        return `${attr.name}: ${x.value}`;
+      })
+      .join(' - ');
+
+    const row = document.createElement('div');
+    row.className = 'variation-row';
+    row.innerHTML = `
+      <span>${label}</span>
+      <input type="number" placeholder="Giá">
+      <input type="number" placeholder="Tồn kho">
+    `;
+
+    const [p, s] = row.querySelectorAll('input');
+    p.oninput = e => state.variations[key].price = +e.target.value;
+    s.oninput = e => state.variations[key].stock = +e.target.value;
+
+    this.variationBox.appendChild(row);
+  });
+}
+
+renderAttributeChips(chips, attr) {
+  chips.innerHTML = '';
+
+  const list = state.values[attr.attributeId] || [];
+
+  list.forEach(v => {
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.innerHTML = `
+      ${v}
+      <button type="button">✖</button>
+    `;
+
+    chip.querySelector('button').onclick = () => {
+      state.values[attr.attributeId] =
+      state.values[attr.attributeId].filter(x => x !== v);
+
+      // nếu attribute không còn value → xoá attribute luôn
+      if (state.values[attr.attributeId].length === 0) {
+        delete state.values[attr.attributeId];
+        state.selected = state.selected.filter(
+          a => a.attributeId !== attr.attributeId
         );
 
-        await createImages({ productId, images: imgs });
+        const box = chips.closest('.attr-box');
+        box.dataset.attrId = ''; // 🔓 giải phóng
+        box.remove();
       }
+
+      this.renderVariations();
+      this.renderAttributeChips(chips, attr);
+    };
+
+    chips.appendChild(chip);
+  });
+}
+
+
+  /* ========================= IMAGES ========================= */
+  renderImages() {
+    this.imgList.innerHTML = '';
+    state.images.subs.forEach((url, i) => {
+      const img = document.createElement('img');
+      img.src = url;
+      img.className = 'img-preview';
+      img.onerror = () => img.src = '/images/no-image.png';
+      img.onclick = () => {
+        state.images.subs.splice(i, 1);
+        this.renderImages();
+      };
+      this.imgList.appendChild(img);
+    });
+  }
+
+  /* ========================= SAVE ========================= */
+  async save() {
+    try {
+      const variations = buildVariations(state);
+
+      if (!variations.length) {
+        showToast('Chưa có biến thể');
+        return;
+      }
+
+      if (!state.images.main) {
+        showToast('Chưa nhập link ảnh chính');
+        return;
+      }
+
+      const product = {
+        ...buildProductPayload(this, state, variations),
+        images: [
+          { imageUrl: state.images.main, isMain: true },
+          ...state.images.subs.map(u => ({ imageUrl: u, isMain: false }))
+        ]
+      };
+
+      await createProduct(product);
 
       showToast('Tạo sản phẩm thành công');
       this.close();
-
-      this.dispatchEvent(
-        new CustomEvent('product-created', { bubbles: true })
-      );
-
     } catch (e) {
       console.error(e);
-      showToast('Lỗi khi lưu sản phẩm');
+      showToast('Lỗi tạo sản phẩm');
     }
   }
 }
 
 customElements.define('product-drawer', ProductDrawer);
+export default ProductDrawer;

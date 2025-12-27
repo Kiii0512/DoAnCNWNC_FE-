@@ -6,11 +6,15 @@
   <title>Staff — Quản lý sản phẩm</title>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="./CSS/stylesChung.css">
   <link rel="stylesheet" href="./CSS/header.css">
   <link rel="stylesheet" href="./CSS/menu.css">
-  <link rel="stylesheet" href="./CSS/stylesRiengCuaStaffProduct.css">
+  <link rel="stylesheet" href="./CSS/global.css">
+  <link rel="stylesheet" href="./CSS/product/product-table.css">
+  <link rel="stylesheet" href="./CSS/product/product-page.css">
+  <link rel="stylesheet" href="./CSS/product/product-drawer.css">
   <link rel="stylesheet" href="./CSS/footer.css">
+  <link rel="stylesheet" href="./CSS/product/detail-drawer.css">
+  <link rel="stylesheet" href="./CSS/product/filter-panel.css">
 </head>
 
 <body>
@@ -22,99 +26,27 @@
   <app-menu></app-menu>
 
   <!-- Page -->
-  <main>
-    <product-page></product-page>
-
-    <!-- =========================
-         PRODUCT DRAWER (CÁCH 1)
-         TOÀN BỘ HTML NẰM TRONG COMPONENT
-    ========================== -->
-    <product-drawer>
-
-      <!-- Backdrop -->
-      <div id="backdrop" class="backdrop" hidden></div>
-
-      <!-- Drawer -->
-      <aside class="drawer" id="drawerSP" aria-hidden="true">
-        <button id="btnDongDrawer" class="drawer-close close-x" aria-label="Đóng">✖</button>
-
-        <div class="drawer-body" role="dialog" aria-modal="true">
-          <h3>Tạo / Sửa sản phẩm</h3>
-
-          <div class="form-grid">
-
-            <!-- LEFT -->
-            <div>
-              <div class="form-row">
-                <label>Tên sản phẩm *</label>
-                <input id="spTen" type="text" />
-              </div>
-
-              <div class="form-row">
-                <label>Giá (VNĐ)</label>
-                <input id="spGia" type="number" min="0" />
-              </div>
-
-              <div class="form-row">
-                <label>Tồn kho</label>
-                <input id="spTon" type="number" min="0" />
-              </div>
-
-              <div class="form-row">
-                <label>Mô tả</label>
-                <textarea id="spMoTa" rows="3"></textarea>
-              </div>
-
-              <!-- Specs -->
-              <div class="block">
-                <label>Thông số</label>
-                <div id="specsBox"></div>
-                <button id="btnAddSpec" class="btn btn-ghost">+ Thêm thông số</button>
-              </div>
-
-              <!-- Colors -->
-              <div class="block">
-                <label>Màu sắc</label>
-                <input id="colorInput" type="text" />
-                <button id="btnAddColor" class="btn btn-ghost">Thêm</button>
-                <div id="colorsList" class="chips"></div>
-              </div>
-
-              <!-- Capacities -->
-              <div class="block">
-                <label>Dung lượng</label>
-                <input id="capInput" type="text" />
-                <button id="btnAddCap" class="btn btn-ghost">Thêm</button>
-                <div id="capsList" class="chips"></div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Actions -->
-          <div class="drawer-actions">
-            <button id="btnHuy" class="btn btn-ghost">Hủy</button>
-            <button id="btnLuuSP" class="btn btn-primary">Lưu</button>
-          </div>
-        </div>
-      </aside>
-
-    </product-drawer>
-    <!-- ===== END PRODUCT DRAWER ===== -->
-
+  <main id="app">
   </main>
-
+  <product-detail-drawer></product-detail-drawer>
+  <product-drawer></product-drawer>
+  <filter-panel></filter-panel>
   <!-- Footer -->
   <app-footer></app-footer>
 
   <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <!-- SCRIPTS (ES MODULE ONLY) -->
+  <!-- Scripts -->
   <script type="module" src="./components/app-header.js"></script>
   <script type="module" src="./components/app-menu.js"></script>
+  <script type="module" src="./JS/router/staff-router.js"></script>
+
+  <!-- ✅ PRODUCT COMPONENTS (ĐƯỜNG DẪN ĐÚNG) -->
   <script type="module" src="./components/product/product-page.js"></script>
-  <script type="module" src="./components/product/product-drawer.js"></script>
+  <script type="module" src="./components/product/product-table.js"></script>
+  <script type="module" src="./components/product/product-detail-drawer.js"></script>
+
   <script type="module" src="./components/app-footer.js"></script>
 
 </body>

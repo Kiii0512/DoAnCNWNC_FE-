@@ -1,43 +1,179 @@
-/* Header */
-header{background:#fff;color:#111;padding:12px 18px;border-bottom:1px solid #e6e7eb;position:sticky;top:0;z-index:60}
-.thanh-tren{max-width:var(--container);margin:0 auto;display:flex;gap:18px;align-items:center}
-.logo{display:flex;align-items:center;gap:12px;text-decoration:none;flex:0 0 auto}
-.vuong{width:42px;height:42px;border-radius:8px;background:linear-gradient(135deg,#ff8a65,#ffb563);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff}
-.tim-kiem{flex:1;display:flex;align-items:center;min-width:0}
-.tim-kiem input{flex:1;padding:10px 14px;border-radius:999px;border:1px solid #e6e7eb;min-width:0}
-.tim-kiem .search-wrap{display:flex;align-items:center;gap:8px;width:100%}
-.nut-gio, .nut-tk{margin-left:12px;padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--accent);font-weight:600;border:1px solid transparent;display:inline-flex;align-items:center;gap:8px;flex:0 0 auto}
-.nut-gio svg, .nut-tk svg{width:18px;height:18px;flex-shrink:0;transition:stroke .22s ease, fill .22s ease}
-.nut-gio{background:transparent;transition:transform .12s ease,box-shadow .12px ease,background-color .12s ease,color .12s ease}
-.nut-gio:hover{background:linear-gradient(180deg,rgba(11,92,255,0.06),rgba(11,92,255,0.03));color:var(--primary);transform:translateY(-3px);box-shadow:0 6px 18px rgba(11,92,255,0.06)}
-.nut-gio:active{transform:translateY(-1px) scale(.995);box-shadow:0 4px 12px rgba(11,92,255,0.06)}
-.nut-gio:focus{outline:3px solid rgba(11,92,255,0.12);outline-offset:2px}
-.nut-tk{transition:background-color .22s ease,color .22s ease,transform .22s ease}
-.nut-tk:hover{background:#111827;color:#fff;transform:translateY(-2px)}
+/* ===== HEADER ===== */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
 
-.account { display:inline-flex; align-items:center; margin-left:12px; position:relative; }
-.account-menu{
-  position:absolute;
-  top:calc(100% + 8px);
-  right:0;
-  min-width:180px;
-  background:var(--card);
-  border-radius:10px;
-  box-shadow:0 10px 30px rgba(2,6,23,0.12);
-  padding:6px;
-  display:none;
-  z-index:160;
-  border:1px solid rgba(2,6,23,0.04);
+.thanh-tren {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
-.account-menu[aria-hidden="false"], .account:hover .account-menu, .account:focus-within .account-menu {
-  display:block;
+
+/* ===== LOGO ===== */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #111827;
 }
-.account-item{
-  padding:8px 10px;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:700;
-  color:var(--accent);
+
+.logo .vuong {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #4f46e5;
+  color: #fff;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.account-item:focus,
-.account-item:hover{ background:#f3f4f6; outline:none; }
+
+/* ===== SEARCH ===== */
+.tim-kiem {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.search-wrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 520px;
+  background: #f3f4f6;
+  border-radius: 999px;
+  padding: 4px;
+}
+
+.search-wrap input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 14px;
+  outline: none;
+}
+
+.nut-gio {
+  border: none;
+  background: #4f46e5;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.nut-gio:hover {
+  background: #4338ca;
+}
+
+/* ===== ACCOUNT ===== */
+.account {
+  position: relative;
+  margin-left: 12px;
+}
+
+.nut-tk {
+  border: none;
+  background: #f3f4f6;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.nut-tk:hover {
+  background: #e5e7eb;
+}
+
+/* ===== ACCOUNT MENU ===== */
+.account-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 180px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+
+.account-menu[aria-hidden="true"] {
+  display: none;
+}
+
+.account-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.account-item:hover,
+.account-item:focus {
+  background: #f3f4f6;
+  outline: none;
+}
+
+/* ===== SEARCH OVERLAY (MOBILE) ===== */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-inner {
+  background: #fff;
+  width: 90%;
+  max-width: 420px;
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.search-inner input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+.search-inner button {
+  border-radius: 8px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .search-wrap input {
+    display: none;
+  }
+
+  .search-wrap {
+    max-width: 44px;
+    justify-content: center;
+  }
+
+  .btn-label {
+    display: none;
+  }
+}

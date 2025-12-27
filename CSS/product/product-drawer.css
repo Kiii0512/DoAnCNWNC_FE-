@@ -1,0 +1,258 @@
+/* ===============================
+   BACKDROP
+================================ */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45); /* slate-900 */
+  z-index: 9990;
+}
+
+/* ===============================
+   DRAWER
+================================ */
+.drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 520px;               
+  max-width: 100%;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: -12px 0 32px rgba(0,0,0,0.18);
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+}
+
+.drawer.open {
+  transform: translateX(0);
+}
+
+/* ===============================
+   HEADER
+================================ */
+.drawer h3 {
+  margin: 0;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.drawer #close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  color: #374151;
+}
+
+/* ===============================
+   CONTENT (SCROLL)
+================================ */
+.drawer-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px 24px;
+}
+
+/* ===============================
+   INPUTS / SELECTS
+================================ */
+.drawer input,
+.drawer select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.drawer input:focus,
+.drawer select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+
+/* ===============================
+   BLOCK
+================================ */
+.block {
+  margin-bottom: 18px;
+}
+
+.block > label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+/* ===============================
+   SPECIFICATIONS (2 INPUT / ROW)
+================================ */
+#specBox > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+#specBox button {
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  cursor: pointer;
+  color: #ef4444;
+}
+
+/* ===============================
+   ATTR BOX
+================================ */
+.attr-box {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  background: #fafafa;
+}
+
+/* ===============================
+   CHIPS
+================================ */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.chip {
+  background: #eef2ff;
+  color: #3730a3;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chip button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+  color: #4338ca;
+}
+
+/* ===============================
+   VARIATIONS
+================================ */
+.variation-row {
+  display: grid;
+  grid-template-columns: 1fr 120px 120px;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.variation-row span {
+  font-size: 13px;
+  color: #111827;
+}
+
+/* ===============================
+   IMAGES
+================================ */
+.form-row {
+  margin-bottom: 12px;
+}
+
+.img-preview {
+  width: 100%;
+  max-height: 160px;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  margin-top: 6px;
+}
+
+.img-preview-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.img-preview-list img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: #4f46e5;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #4338ca;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #4f46e5;
+}
+
+/* ===============================
+   SAVE BUTTON (BOTTOM)
+================================ */
+#save {
+  margin: 12px 20px;
+  align-self: stretch;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 520px) {
+  .drawer {
+    width: 100%;
+  }
+
+  .variation-row {
+    grid-template-columns: 1fr;
+  }
+
+  #specBox > div {
+    grid-template-columns: 1fr;
+  }
+}

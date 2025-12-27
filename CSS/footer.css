@@ -1,3 +1,34 @@
-/* footer overrides (if cần thêm) */
-footer .greeting{font-weight:700}
-footer .sub{opacity:0.9}
+/* ===== FOOTER ===== */
+.footer {
+  background: #0f172a;            /* slate-900 */
+  color: #cbd5e1;                 /* slate-300 */
+  font-size: 14px;
+
+  width: 100%;
+  margin-top: auto;               /* 🔥 đẩy footer xuống đáy nếu dùng flex layout */
+}
+
+.footer .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+/* ===== OPTIONAL: subtle top border ===== */
+.footer {
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .footer .container {
+    font-size: 13px;
+    padding: 12px 14px;
+  }
+}

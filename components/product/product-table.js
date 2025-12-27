@@ -13,7 +13,6 @@ class ProductTable extends HTMLElement {
   async connectedCallback() {
     if (this._loaded) return;
     this._loaded = true;
-
     await this.load();
   }
 
@@ -21,7 +20,6 @@ class ProductTable extends HTMLElement {
     try {
       const res = await getProducts();
 
-      // ✅ BẮT BUỘC normalize dữ liệu
       this.products = Array.isArray(res)
         ? res
         : Array.isArray(res?.data)
@@ -42,70 +40,103 @@ class ProductTable extends HTMLElement {
   }
 
   render() {
-    this.innerHTML = `
-      <div style="overflow:auto">
-        <table id="bangSanPham">
-          <thead>
-            <tr>
-              <th>Hình</th>
-              <th>Mã / Tên</th>
-              <th>Giá</th>
-              <th>Tồn kho</th>
-              <th>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${
-              this.products.length === 0
-                ? `
-                  <tr>
-                    <td colspan="5" class="small muted" style="text-align:center">
-                      Chưa có sản phẩm nào
-                    </td>
-                  </tr>
-                `
-                : this.products.map(p => `
-                  <tr>
-                    <td>
-                      <img
-                        class="thumb"
-                        src="${esc(p.thumbnailUrl || '')}"
-                        alt="${esc(p.productName || '')}"
-                        onerror="this.src='https://via.placeholder.com/120x80?text=No+Image'"
-                      >
-                    </td>
-                    <td>
-                      <strong>${esc(p.productId)}</strong>
-                      <div class="small muted">${esc(p.productName)}</div>
-                    </td>
-                    <td>${dinhVND(p.productPrice)}</td>
-                    <td>${p.productStockQuantity ?? 0}</td>
-                    <td>
-                      <button
-                        class="btn btn-ghost btn-detail"
-                        data-id="${p.productId}">
-                        Chi tiết
-                      </button>
-                      <button
-                        class="btn btn-ghost btn-delete"
-                        data-id="${p.productId}">
-                        Xóa
-                      </button>
-                    </td>
-                  </tr>
-                `).join('')
-            }
-          </tbody>
-        </table>
+  this.innerHTML = `
+    <div class="table-wrapper">
+      <table id="bangSanPham">
+        <thead>
+          <tr>
+            <th>Hình</th>
+            <th>Mã / Tên</th>
+            <th>Danh mục / Hãng</th>
+            <th>Giá</th>
+            <th>Tồn kho</th>
+            <th>Trạng thái</th> <!-- 🔴 THÊM -->
+            <th>Thao tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${
+            this.products.length === 0
+              ? `
+                <tr>
+                  <td colspan="7" class="small muted" style="text-align:center">
+                    Chưa có sản phẩm nào
+                  </td>
+                </tr>
+              `
+              : this.products.map(p => {
+                  const thumb =
+                    p.images?.find(i => i.isMain)?.imageUrl ||
+                    p.thumbnailUrl ||
+                    '';
 
-        <div class="small muted" style="margin-top:8px">
-          Total: ${this.products.length}
-        </div>
+                  const active = p.isActive !== false; // mặc định true
+
+                  return `
+                    <tr class="${active ? '' : 'row-inactive'}">
+                      <td>
+                        <img
+                          class="thumb"
+                          src="${esc(thumb)}"
+                          alt="${esc(p.productName || '')}"
+                          onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg'"
+                        >
+                      </td>
+                      <td>
+                        <strong>${esc(p.productId)}</strong>
+                        <div class="small muted">${esc(p.productName)}</div>
+                      </td>
+                      <td>
+                        <div>${esc(p.categoryName ?? '')}</div>
+                        <div class="small muted">${esc(p.brandName ?? '')}</div>
+                      </td>
+                      <td>${dinhVND(p.productPrice)}</td>
+                      <td>${p.totalStock ?? 0}</td>
+
+                      <!-- 🔴 CỘT ACTIVE -->
+                      <td>
+                        <span class="status-badge ${active ? 'active' : 'inactive'}">
+                          ${active ? 'ACTIVE' : 'INACTIVE'}
+                        </span>
+                      </td>
+
+                      <td>
+                        <button
+                          class="btn btn-ghost btn-detail btn-allow"
+                          data-id="${p.productId}">
+                          Chi tiết
+                        </button>
+
+
+                        ${
+                          active
+                            ? `
+                              <button
+                                class="btn btn-ghost btn-delete"
+                                data-id="${p.productId}">
+                                Xóa
+                              </button>
+                            `
+                            : `
+                              <span class="small muted">Đã ẩn</span>
+                            `
+                        }
+                      </td>
+                    </tr>
+                  `;
+                }).join('')
+          }
+        </tbody>
+      </table>
+
+      <div class="small muted" style="margin-top:8px">
+        Total: ${this.products.length}
       </div>
-    `;
+    </div>
+  `;
 
-    this.bindActions();
-  }
+  this.bindActions();
+}
 
   bindActions() {
     // ❌ Xóa
@@ -124,18 +155,20 @@ class ProductTable extends HTMLElement {
       };
     });
 
-    // 👁 Chi tiết → page xử lý
+    // 👁 Chi tiết
+    const detailDrawer = document.querySelector('product-detail-drawer');
+
     this.querySelectorAll('.btn-detail').forEach(btn => {
       btn.onclick = () => {
-        this.dispatchEvent(
-          new CustomEvent('product-view', {
-            detail: { productId: btn.dataset.id },
-            bubbles: true
-          })
-        );
+        if (!detailDrawer) {
+          console.error('❌ product-detail-drawer chưa tồn tại trong DOM');
+          return;
+        }
+        detailDrawer.open(btn.dataset.id);
       };
     });
   }
 }
 
 customElements.define('product-table', ProductTable);
+export default ProductTable;
