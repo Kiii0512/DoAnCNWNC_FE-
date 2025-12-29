@@ -18,8 +18,31 @@ export async function getProductById(id) {
   return (await res.json()).data;
 }
 
-// CREATE (FULL)
-// CREATE FULL PRODUCT (JSON + IMAGES)
+// SEARCH (DTO: ProductSearchRequest)
+export async function searchProducts({
+  CategoryIds = [],
+  BrandIds = [],
+  Keyword = '',
+  Status = 'all' // all | active | inactive
+}) {
+  const params = new URLSearchParams();
+
+  CategoryIds.forEach(id => params.append('CategoryIds', id));
+  BrandIds.forEach(id => params.append('BrandIds', id));
+
+  if (Keyword) params.append('Keyword', Keyword);
+  if (Status && Status !== 'all') params.append('Status', Status);
+
+  const url = `${API_BASE}/products/search?${params.toString()}`;
+  console.log('🔍 SEARCH PRODUCTS:', url);
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Search products failed');
+
+  return (await res.json()).data;
+}
+
+// CREATE 
 export async function createProduct(payload) {
   const res = await fetch(`${API_BASE}/products`, {
     method: 'POST',
@@ -31,17 +54,29 @@ export async function createProduct(payload) {
   return (await res.json()).data;
 }
 
-// UPDATE (FULL – đúng JSON bạn gửi)
-export async function updateProduct(productId, payload) {
-  const res = await fetch(`${API_BASE}/products/${productId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+// UPDATE 
+export async function updateProductFull(payload) {
+  if (!payload.productId) {
+    throw new Error('Missing productId');
+  }
 
-  if (!res.ok) throw new Error('Update product failed');
+  const res = await fetch(
+    `${API_BASE}/products/${payload.productId}`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }
+  );
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err || 'Update product failed');
+  }
+
   return await res.json();
 }
+
 
 // DELETE
 export async function deleteProduct(id) {
@@ -50,23 +85,4 @@ export async function deleteProduct(id) {
   });
 
   if (!res.ok) throw new Error('Delete product failed');
-}
-
-//upload image
-export async function uploadImage(file) {
-  const formData = new FormData();
-  formData.append('file', file);
-
-  const res = await fetch(`${API_BASE}/products/upload`, {
-    method: 'POST',
-    body: formData
-  });
-
-  if (!res.ok) {
-    throw new Error('Upload image failed');
-  }
-
-  // ⚠️ backend PHẢI trả JSON
-  const json = await res.json();
-  return json.imageUrl;
 }

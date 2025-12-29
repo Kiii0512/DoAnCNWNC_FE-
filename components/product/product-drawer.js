@@ -1,32 +1,27 @@
-import { createProduct } from '../../JS/API/productAPI.js';
-import { buildVariations, buildProductPayload } from '../../JS/pages/productBuilder.js';
+import { createProduct, updateProductFull } from '../../JS/API/productAPI.js';
 import { getCategories } from '../../JS/API/categoryAPI.js';
 import { getBrands } from '../../JS/API/brandAPI.js';
 import { getAttributes } from '../../JS/API/attributeAPI.js';
 import { showToast } from '../../utils/toast.js';
 
-/* =========================
-   STATE
-========================= */
-const state = {
-  attributes: [],
-  selected: [],
-  values: {},
-  variations: {},
-  specs: [],
-  images: {
-    main: '',     // URL ảnh chính (bắt buộc)
-    subs: []      // URL ảnh phụ (0–3)
-  }
-};
+import { state, resetState } from '../../JS/pages/product/productState.js';
+import {
+  
+  buildUpdateProductPayload
+} from '../../JS/pages/product/productBuilder.js';
+import {
+  renderSpecs,
+  renderVariations,
+  renderImages,
+  renderAttributeChips,
+  renderAttributeBoxFromState
+} from '../../JS/pages/renderers/ProductRenderer.js';
 
-function resetState() {
-  state.selected = [];
-  state.values = {};
-  state.variations = {};
-  state.specs = [];
-  state.images = { main: '', subs: [] };
-}
+let editMode = false;
+let editingProductId = null;
+
+// ✅ reset nhưng GIỮ snapshot
+resetState(true);
 
 /* =========================
    COMPONENT
@@ -36,9 +31,14 @@ class ProductDrawer extends HTMLElement {
     this.render();
     this.cache();
     this.bind();
+
+    // wrapper để giữ API cũ
+    this.renderSpecs = () => renderSpecs(this, state);
+    this.renderVariations = () => renderVariations(this, state, editMode);
+    this.renderImages = () => renderImages(this, state);
   }
 
-  /* ========================= RENDER ========================= */
+  /* ========================= RENDER (STATIC HTML) ========================= */
   render() {
     this.innerHTML = `
       <div id="backdrop" class="backdrop" hidden></div>
@@ -46,47 +46,44 @@ class ProductDrawer extends HTMLElement {
       <aside class="drawer" id="drawer">
         <button id="close">✖</button>
         <h3>Tạo sản phẩm</h3>
+
         <div class="drawer-content">
-            <input id="name" placeholder="Tên sản phẩm" />
-            <select id="category"></select>
-            <select id="brand"></select>
+          <input id="name" placeholder="Tên sản phẩm" />
+          <select id="category"></select>
+          <select id="brand"></select>
 
-            <!-- SPECIFICATIONS -->
-            <div class="block">
-              <label>Thông số kỹ thuật</label>
-              <div id="specBox"></div>
-              <button id="btnAddSpec" class="btn btn-ghost">+ Thêm thông số</button>
+          <div class="block">
+            <label>Thông số kỹ thuật</label>
+            <div id="specBox"></div>
+            <button id="btnAddSpec" class="btn btn-ghost">+ Thêm thông số</button>
+          </div>
+
+          <div class="block">
+            <label>Thuộc tính biến thể</label>
+            <div id="attrBoxes"></div>
+            <button id="btnAddAttr" class="btn btn-ghost">+ Thêm thuộc tính</button>
+          </div>
+
+          <div class="block">
+            <label>Biến thể (giá & tồn kho)</label>
+            <div id="variationBox"></div>
+          </div>
+
+          <div class="block">
+            <label>Ảnh sản phẩm (URL)</label>
+
+            <div class="form-row">
+              <label>Ảnh chính</label>
+              <input id="imgMain" placeholder="https://..." />
+              <img id="previewMain" class="img-preview">
             </div>
 
-            <!-- ATTRIBUTES -->
-            <div class="block">
-              <label>Thuộc tính biến thể</label>
-              <div id="attrBoxes"></div>
-              <button id="btnAddAttr" class="btn btn-ghost">+ Thêm thuộc tính</button>
+            <div class="form-row">
+              <label>Ảnh phụ (Enter để thêm, tối đa 3)</label>
+              <input id="imgSub" placeholder="https://..." />
+              <div id="imgList" class="img-preview-list"></div>
             </div>
-
-            <!-- VARIATIONS -->
-            <div class="block">
-              <label>Biến thể (giá & tồn kho)</label>
-              <div id="variationBox"></div>
-            </div>
-
-            <!-- IMAGES -->
-            <div class="block">
-              <label>Ảnh sản phẩm (URL)</label>
-
-              <div class="form-row">
-                <label>Ảnh chính</label>
-                <input id="imgMain" placeholder="https://..." />
-                <img id="previewMain" class="img-preview">
-              </div>
-
-              <div class="form-row">
-                <label>Ảnh phụ (Enter để thêm, tối đa 3)</label>
-                <input id="imgSub" placeholder="https://..." />
-                <div id="imgList" class="img-preview-list"></div>
-              </div>
-            </div>
+          </div>
         </div>
 
         <button id="save" class="btn btn-primary">Lưu</button>
@@ -106,8 +103,6 @@ class ProductDrawer extends HTMLElement {
     this.brand = $('#brand');
 
     this.specBox = $('#specBox');
-    this.btnAddSpec = $('#btnAddSpec');
-
     this.attrBoxes = $('#attrBoxes');
     this.variationBox = $('#variationBox');
 
@@ -116,6 +111,7 @@ class ProductDrawer extends HTMLElement {
     this.previewMain = $('#previewMain');
     this.imgList = $('#imgList');
 
+    this.btnAddSpec = $('#btnAddSpec');
     this.btnAddAttr = $('#btnAddAttr');
     this.saveBtn = $('#save');
     this.closeBtn = $('#close');
@@ -124,66 +120,185 @@ class ProductDrawer extends HTMLElement {
   /* ========================= EVENTS ========================= */
   bind() {
     this.closeBtn.onclick = () => this.close();
-    this.saveBtn.onclick = () => this.save();
-    this.btnAddAttr.onclick = () => this.addAttributeBox();
-    this.btnAddSpec.onclick = () => this.addSpec();
     this.backdrop.onclick = () => this.close();
+    this.saveBtn.onclick = () => this.save();
+    this.btnAddSpec.onclick = () => this.addSpec();
+    this.btnAddAttr.onclick = () => this.addAttributeBox();
+
     document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') this.close();
-   }); 
-    // MAIN IMAGE URL (bắt buộc)
+      if (e.key === 'Escape') this.close();
+    });
+
     this.imgMain.oninput = e => {
       const url = e.target.value.trim();
       state.images.main = url;
       this.previewMain.src = url || '/images/no-image.png';
     };
 
-    // SUB IMAGE URL (Enter để thêm, 0–3)
     this.imgSub.onkeydown = e => {
       if (e.key !== 'Enter') return;
       e.preventDefault();
 
-      const url = e.target.value.trim();
-      if (!url) return;
-
-      // Tổng ảnh tối đa = 4 (1 chính + 3 phụ)
       if (state.images.subs.length >= 3) {
         showToast('Tối đa 4 ảnh (1 chính + 3 phụ)');
         return;
       }
 
-      state.images.subs.push(url);
+      const url = e.target.value.trim();
+      if (!url) return;
+
+      state.images.subs.push({ imageUrl: url, isDeleted: false });
       e.target.value = '';
       this.renderImages();
     };
   }
 
-  /* ========================= OPEN / CLOSE ========================= */
+  /* ========================= OPEN CREATE ========================= */
   async open() {
+    editMode = false;
+    editingProductId = null;
     resetState();
+
     await this.loadCombos();
     await this.loadAttributes();
-    this.addAttributeBox();
+
+    
+
     this.drawer.classList.add('open');
     this.backdrop.hidden = false;
   }
 
-  close() {
-    this.drawer.classList.remove('open');
-    this.backdrop.hidden = true;
+  /* ========================= OPEN EDIT ========================= */
+  async openEdit(product) {
+    // ===== PRODUCT =====
+    state.original.product = {
+      productName: product.productName,
+      productDescription: product.productDescription,
+      categoryId: product.categoryId,
+      brandId: product.brandId
+    };
+
+    // ===== VARIATIONS =====
+    state.original.variations = {};
+    (product.variations ?? []).forEach(v => {
+      state.original.variations[v.variationId] =
+        JSON.parse(JSON.stringify(v));
+    });
+
+    // ===== SPECIFICATIONS =====
+    state.original.specs = {};
+    (product.specifications ?? []).forEach(s => {
+      state.original.specs[s.specificationId] =
+        JSON.parse(JSON.stringify(s));
+    });
+
+    // ===== IMAGES =====
+    state.original.images = {};
+    (product.images ?? []).forEach(i => {
+      state.original.images[i.imageId] =
+        JSON.parse(JSON.stringify(i));
+    });
+
+
+
+    editMode = true;
+    editingProductId = product.productId;
+    resetState();
+
+    this.attrBoxes.innerHTML = '';
+    this.variationBox.innerHTML = '';
+
+    await this.loadCombos();
+    await this.loadAttributes();
+
+    this.name.value = product.productName ?? '';
+    this.category.value = product.categoryId ?? '';
+    this.brand.value = product.brandId ?? '';
+
+    // SPEC
+    state.specs = (product.specifications ?? []).map(s => ({
+      specificationId: s.specificationId,
+      k: s.specKey,
+      v: s.specValue,
+      isDeleted: false
+    }));
+    this.renderSpecs();
+
+    // ATTR + VALUES
+    (product.variations ?? []).forEach(v => {
+      (v.options ?? []).forEach(o => {
+        if (!state.values[o.attributeId]) {
+          const attr = state.attributes.find(a => a.attributeId === o.attributeId);
+          if (attr) state.selected.push(attr);
+          state.values[o.attributeId] = [];
+        }
+        state.values[o.attributeId].push(o.value);
+      });
+    });
+
+    state.selected = [...new Map(state.selected.map(a => [a.attributeId, a])).values()];
+    Object.keys(state.values).forEach(
+      k => state.values[k] = [...new Set(state.values[k])]
+    );
+
+    state.selected.forEach(attr =>
+      renderAttributeBoxFromState(this, state, attr)
+    );
+
+    (product.variations ?? []).forEach(v => {
+      const key = state.selected
+        .map(a => v.options.find(o => o.attributeId === a.attributeId)?.value ?? '')
+        .join('|');
+
+      state.variations[key] = {
+        variationId: v.variationId,
+        price: v.price,
+        stock: v.stockQuantity
+      };
+    });
+
+    // ================= FIX: rebuild state.selected cho EDIT =================
+    state.selected = [];
+
+    (product.variations ?? []).forEach(v => {
+      (v.options ?? []).forEach(o => {
+        if (!state.selected.some(a => a.attributeId === o.attributeId)) {
+          const attr = state.attributes.find(
+            a => a.attributeId === o.attributeId
+          );
+          if (attr) state.selected.push(attr);
+        }
+      });
+    });
+
+    this.renderVariations();
+
+    const main = product.images?.find(i => i.isMain);
+    state.images.main = main?.imageUrl ?? '';
+    state.images.mainId = main?.imageId ?? null;
+
+    state.images.subs = (product.images ?? [])
+      .filter(i => !i.isMain)
+      .map(i => ({
+        imageId: i.imageId,
+        imageUrl: i.imageUrl,
+        isDeleted: false
+      }));
+
+    this.imgMain.value = state.images.main;
+    this.previewMain.src = state.images.main || '/images/no-image.png';
+    this.renderImages();
+
+    this.drawer.classList.add('open');
+    this.backdrop.hidden = false;
   }
 
-  /* ========================= LOAD ========================= */
+  /* ========================= LOAD DATA ========================= */
   async loadCombos() {
-    const [cats, brands] = await Promise.all([
-      getCategories(),
-      getBrands()
-    ]);
-
+    const [cats, brands] = await Promise.all([getCategories(), getBrands()]);
     this.category.innerHTML = cats.map(c =>
       `<option value="${c.categoryId}">${c.categoryName}</option>`
     ).join('');
-
     this.brand.innerHTML = brands.map(b =>
       `<option value="${b.brandId}">${b.brandName}</option>`
     ).join('');
@@ -195,47 +310,26 @@ class ProductDrawer extends HTMLElement {
 
   /* ========================= SPEC ========================= */
   addSpec() {
-    state.specs.push({ k: '', v: '' });
+    state.specs.push({ k: '', v: '', isDeleted: false });
     this.renderSpecs();
   }
 
-  renderSpecs() {
-    this.specBox.innerHTML = '';
-    state.specs.forEach((s, i) => {
-      const row = document.createElement('div');
-      row.innerHTML = `
-        <input placeholder="Tên" value="${s.k}">
-        <input placeholder="Giá trị" value="${s.v}">
-        <button>✖</button>
-      `;
-      row.querySelectorAll('input')[0].oninput = e => s.k = e.target.value;
-      row.querySelectorAll('input')[1].oninput = e => s.v = e.target.value;
-      row.querySelector('button').onclick = () => {
-        state.specs.splice(i, 1);
-        this.renderSpecs();
-      };
-      this.specBox.appendChild(row);
-    });
-  }
-
-  /* ========================= ATTR + VAR ========================= */
+  /* ========================= ATTRIBUTE ========================= */
   addAttributeBox() {
-  // 🔒 lấy toàn bộ attributeId đã dùng (kể cả chưa commit)
-  const usedAttrIds = [
-    ...state.selected.map(a => a.attributeId),
-    ...[...this.attrBoxes.querySelectorAll('.attr-box')]
-        .map(b => b.dataset.attrId)
-        .filter(Boolean)
-        .map(Number)
-  ];
-
+  const usedAttrIds = state.selected.map(a => a.attributeId);
   const available = state.attributes.filter(
     a => !usedAttrIds.includes(a.attributeId)
   );
 
+  if (!available.length) {
+    showToast('Không còn thuộc tính để thêm');
+    return;
+  }
+
   const box = document.createElement('div');
   box.className = 'attr-box';
   box.dataset.attrId = '';
+
   box.innerHTML = `
     <select>
       <option value="">-- Chọn thuộc tính --</option>
@@ -252,32 +346,22 @@ class ProductDrawer extends HTMLElement {
   const chips  = box.querySelector('.chips');
 
   let currentAttr = null;
-  let committed = false; // 🔑 đã “chốt” attribute hay chưa
+  let committed = false;
 
-  // 👉 CHỌN ATTRIBUTE (chưa commit)
+  // 👉 USER CHỌN ATTRIBUTE
   select.onchange = () => {
     const attrId = Number(select.value);
     if (!attrId) return;
 
-    // 🔒 kiểm tra trùng với các box khác
-    const exists = [...this.attrBoxes.querySelectorAll('.attr-box')]
-      .some(b => b !== box && Number(b.dataset.attrId) === attrId);
-
-    if (exists) {
-      showToast('Thuộc tính đã được chọn');
-      select.value = '';
-      return;
-    }
-
     currentAttr = state.attributes.find(a => a.attributeId === attrId);
     if (!currentAttr) return;
 
-    box.dataset.attrId = attrId; // 🔑 GIỮ CHỖ
+    box.dataset.attrId = attrId;
     input.disabled = false;
   };
 
-  // 👉 NHẬP VALUE → LÚC NÀY MỚI COMMIT
-   input.onkeydown = e => {
+  // 👉 USER NHẬP VALUE → LÚC NÀY MỚI COMMIT
+  input.onkeydown = e => {
     if (e.key !== 'Enter' || !currentAttr) return;
     e.preventDefault();
 
@@ -292,156 +376,107 @@ class ProductDrawer extends HTMLElement {
       state.values[currentAttr.attributeId] = [];
     }
 
-    const list = state.values[currentAttr.attributeId];
-    if (list.includes(v)) return;
+    if (!state.values[currentAttr.attributeId].includes(v)) {
+      state.values[currentAttr.attributeId].push(v);
+      renderAttributeChips(this, state, chips, currentAttr);
+      this.renderVariations();
+    }
 
-    list.push(v);
     input.value = '';
-
-    this.renderAttributeChips(chips, currentAttr);
-    this.renderVariations();
   };
 
   this.attrBoxes.appendChild(box);
 }
 
-
-
-  renderVariations() {
-  this.variationBox.innerHTML = '';
-  state.variations = {};
-
-  if (!state.selected.length) return;
-
-  // 🔒 luôn theo thứ tự attribute đã chọn
-  const attrOrder = state.selected.map(a => a.attributeId);
-
-  // nếu có attr nào chưa có value → chưa render
-  if (attrOrder.some(id => !state.values[id]?.length)) return;
-
-  // build cartesian product
-  const combos = attrOrder.reduce(
-    (acc, attrId) =>
-      acc.flatMap(arr =>
-        state.values[attrId].map(v => [...arr, { attrId, value: v }])
-      ),
-    [[]]
-  );
-
-  combos.forEach(combo => {
-    // key ổn định
-    const key = combo.map(x => x.value).join('|');
-
-    state.variations[key] ??= { price: 0, stock: 0 };
-
-    const label = combo
-      .map(x => {
-        const attr = state.selected.find(a => a.attributeId === x.attrId);
-        return `${attr.name}: ${x.value}`;
-      })
-      .join(' - ');
-
-    const row = document.createElement('div');
-    row.className = 'variation-row';
-    row.innerHTML = `
-      <span>${label}</span>
-      <input type="number" placeholder="Giá">
-      <input type="number" placeholder="Tồn kho">
-    `;
-
-    const [p, s] = row.querySelectorAll('input');
-    p.oninput = e => state.variations[key].price = +e.target.value;
-    s.oninput = e => state.variations[key].stock = +e.target.value;
-
-    this.variationBox.appendChild(row);
-  });
-}
-
-renderAttributeChips(chips, attr) {
-  chips.innerHTML = '';
-
-  const list = state.values[attr.attributeId] || [];
-
-  list.forEach(v => {
-    const chip = document.createElement('span');
-    chip.className = 'chip';
-    chip.innerHTML = `
-      ${v}
-      <button type="button">✖</button>
-    `;
-
-    chip.querySelector('button').onclick = () => {
-      state.values[attr.attributeId] =
-      state.values[attr.attributeId].filter(x => x !== v);
-
-      // nếu attribute không còn value → xoá attribute luôn
-      if (state.values[attr.attributeId].length === 0) {
-        delete state.values[attr.attributeId];
-        state.selected = state.selected.filter(
-          a => a.attributeId !== attr.attributeId
-        );
-
-        const box = chips.closest('.attr-box');
-        box.dataset.attrId = ''; // 🔓 giải phóng
-        box.remove();
-      }
-
-      this.renderVariations();
-      this.renderAttributeChips(chips, attr);
-    };
-
-    chips.appendChild(chip);
-  });
-}
-
-
-  /* ========================= IMAGES ========================= */
-  renderImages() {
-    this.imgList.innerHTML = '';
-    state.images.subs.forEach((url, i) => {
-      const img = document.createElement('img');
-      img.src = url;
-      img.className = 'img-preview';
-      img.onerror = () => img.src = '/images/no-image.png';
-      img.onclick = () => {
-        state.images.subs.splice(i, 1);
-        this.renderImages();
-      };
-      this.imgList.appendChild(img);
-    });
-  }
-
   /* ========================= SAVE ========================= */
   async save() {
     try {
-      const variations = buildVariations(state);
+      if (!editMode) {
+        // ================= CREATE =================
+        const variations = Object.values(state.variations)
+          .filter(v => Array.isArray(v.options) && v.options.length > 0)
+          .map(v => ({
+            price: Number(v.price),
+            stockQuantity: Number(v.stock),
+            options: v.options.map(o => ({
+              attributeId: o.attributeId,
+              optionValue: o.optionValue
+            }))
+          }));
 
-      if (!variations.length) {
-        showToast('Chưa có biến thể');
-        return;
+        if (!variations.length) {
+          showToast('Phải có ít nhất 1 biến thể');
+          return;
+        }
+
+        const specifications = state.specs
+          .filter(s => !s.isDeleted && s.k && s.v)
+          .map(s => ({
+            specKey: s.k,
+            specValue: s.v
+          }));
+
+        const images = [];
+
+        if (state.images.main) {
+          images.push({ imageUrl: state.images.main, isMain: true });
+        }
+
+        state.images.subs
+          .filter(i => !i.isDeleted && i.imageUrl)
+          .forEach(i => {
+            images.push({ imageUrl: i.imageUrl, isMain: false });
+          });
+
+        const payload = {
+          productName: this.name.value.trim(),
+          productDescription: 'Mô tả sản phẩm',
+          categoryId: this.category.value,
+          brandId: this.brand.value,
+          variations,
+          specifications,
+          images
+        };
+
+        await createProduct(payload);
+        showToast('Tạo sản phẩm thành công');
       }
 
-      if (!state.images.main) {
-        showToast('Chưa nhập link ảnh chính');
-        return;
+      // ================= UPDATE =================
+      else {
+        const payload = buildUpdateProductPayload(
+          editingProductId,
+          {
+            name: this.name.value.trim(),
+            description: this.description?.value ?? '',
+            categoryId: this.category.value,
+            brandId: this.brand.value
+          },
+          state
+        );
+
+        // 🚫 Không có gì thay đổi
+        if (Object.keys(payload).length === 1) {
+          showToast('Không có thay đổi');
+          return;
+        }
+
+        await updateProductFull(payload);
+        showToast('Cập nhật sản phẩm thành công');
       }
 
-      const product = {
-        ...buildProductPayload(this, state, variations),
-        images: [
-          { imageUrl: state.images.main, isMain: true },
-          ...state.images.subs.map(u => ({ imageUrl: u, isMain: false }))
-        ]
-      };
-
-      await createProduct(product);
-
-      showToast('Tạo sản phẩm thành công');
       this.close();
+      this.dispatchEvent(new CustomEvent('product-saved', { bubbles: true }));
+
     } catch (e) {
       console.error(e);
-      showToast('Lỗi tạo sản phẩm');
+      showToast(e.message || 'Lỗi lưu sản phẩm');
     }
+  }
+
+  close() {
+    this.drawer.classList.remove('open');
+    this.backdrop.hidden = true;
   }
 }
 

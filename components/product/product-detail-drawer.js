@@ -27,18 +27,42 @@ class ProductDetailDrawer extends HTMLElement {
           <!-- BASIC -->
           <section class="detail-section">
             <h4>Thông tin chung</h4>
-            <div class="kv"><span>Mã</span><strong id="pid"></strong></div>
-            <div class="kv"><span>Tên</span><strong id="pname"></strong></div>
-            <div class="kv"><span>Danh mục</span><strong id="pcate"></strong></div>
-            <div class="kv"><span>Hãng</span><strong id="pbrand"></strong></div>
-            <div class="kv"><span>Giá</span><strong id="pprice"></strong></div>
-            <div class="kv"><span>Tồn kho</span><strong id="pstock"></strong></div>
+
+            <div class="kv">
+              <span>Mã</span>
+              <strong id="pid"></strong>
+            </div>
+
+            <div class="kv">
+              <span>Tên</span>
+              <strong id="pname"></strong>
+            </div>
+
+            <div class="kv">
+              <span>Danh mục</span>
+              <strong id="pcate"></strong>
+            </div>
+
+            <div class="kv">
+              <span>Hãng</span>
+              <strong id="pbrand"></strong>
+            </div>
+
+            <div class="kv">
+              <span>Giá</span>
+              <strong id="pprice"></strong>
+            </div>
+
+            <div class="kv">
+              <span>Tồn kho</span>
+              <strong id="pstock"></strong>
+            </div>
           </section>
 
           <!-- DESC -->
           <section class="detail-section">
             <h4>Mô tả</h4>
-            <p id="pdesc"></p>
+            <div id="pdesc"></div>
           </section>
 
           <!-- VARIATIONS -->
@@ -62,8 +86,9 @@ class ProductDetailDrawer extends HTMLElement {
         </div>
 
         <div class="drawer-actions">
-          <button class="btn btn-ghost" type="button">Sửa</button>
-          <button class="btn btn-primary" type="button">Lưu</button>
+          <button class="btn btn-primary" id="btnEdit" type="button">
+            Sửa
+          </button>
         </div>
       </aside>
     `;
@@ -76,6 +101,7 @@ class ProductDetailDrawer extends HTMLElement {
     this.backdrop = $('.backdrop');
     this.drawer   = $('.detail-drawer');
     this.btnClose = $('.close-btn');
+    this.btnEdit  = $('#btnEdit');
 
     this.pid    = $('#pid');
     this.pname  = $('#pname');
@@ -98,9 +124,21 @@ class ProductDetailDrawer extends HTMLElement {
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') this.close();
     });
+
+    // 👉 YÊU CẦU SỬA → CHUYỂN SANG PRODUCT DRAWER
+    this.btnEdit.onclick = () => {
+      if (!this.product) return;
+
+      this.dispatchEvent(new CustomEvent('product-edit-request', {
+        bubbles: true,
+        detail: this.product
+      }));
+
+      this.close();
+    };
   }
 
-  /* ================= OPEN / CLOSE ================= */
+  /* ================= OPEN ================= */
   async open(productId) {
     if (!productId) return;
 
@@ -109,7 +147,7 @@ class ProductDetailDrawer extends HTMLElement {
 
     try {
       const res = await getProductById(productId);
-      this.product = res; 
+      this.product = res;
 
       if (!this.product) {
         console.error('Product not found');
@@ -122,6 +160,7 @@ class ProductDetailDrawer extends HTMLElement {
     }
   }
 
+  /* ================= CLOSE ================= */
   close() {
     this.backdrop.hidden = true;
     this.drawer.classList.remove('open');
@@ -165,19 +204,25 @@ class ProductDetailDrawer extends HTMLElement {
     this.sBox.innerHTML = '';
     (p.specifications ?? []).forEach(s => {
       const li = document.createElement('li');
-      li.innerHTML = `<span>${s.specKey}</span><strong>${s.specValue}</strong>`;
+      li.innerHTML = `
+        <span>${s.specKey}</span>
+        <strong>${s.specValue}</strong>
+      `;
       this.sBox.appendChild(li);
     });
 
     // IMAGES
     this.iBox.innerHTML = '';
-    (p.images ?? []).forEach(img => {
-      const el = document.createElement('img');
-      el.src = img.imageUrl;
-      el.alt = '';
-      el.onerror = () => el.remove();
-      this.iBox.appendChild(el);
-    });
+
+    (p.images ?? [])
+      .filter(img => Number(img.isActive) === 1)   // 🔑 LỌC ẢNH ACTIVE
+      .forEach(img => {
+        const el = document.createElement('img');
+        el.src = img.imageUrl;
+        el.alt = '';
+        el.onerror = () => el.remove();
+        this.iBox.appendChild(el);
+      });
   }
 }
 

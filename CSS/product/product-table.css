@@ -210,3 +210,103 @@
   pointer-events: auto;
   opacity: 1;
 }
+
+/* ===== PAGINATION (ADMIN PREMIUM) ===== */
+.pagination {
+  --pg-bg: #ffffff;
+  --pg-border: #e5e7eb;
+  --pg-text: #374151;
+  --pg-muted: #9ca3af;
+  --pg-primary: var(--primary, #4f46e5);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+
+  margin: 18px 0 8px;
+  padding: 6px;
+
+  background: linear-gradient(
+    to bottom,
+    #fafafa,
+    #ffffff
+  );
+  border-radius: 14px;
+}
+
+/* ===== BUTTON ===== */
+.page-btn {
+  min-width: 36px;
+  height: 36px;
+  padding: 0 12px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 10px;
+  border: 1px solid var(--pg-border);
+  background: var(--pg-bg);
+  color: var(--pg-text);
+
+  font-size: 16px;
+  font-weight: 500;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.1s ease;
+}
+
+/* ===== HOVER ===== */
+.page-btn:hover:not(:disabled):not(.active) {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+}
+
+/* ===== ACTIVE ===== */
+.page-btn.active {
+  background: var(--pg-primary);
+  border-color: var(--pg-primary);
+  color: #fff;
+
+  box-shadow:
+    0 6px 16px rgba(79, 70, 229, 0.35),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* ===== DISABLED ===== */
+.page-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: #f3f4f6;
+  color: var(--pg-muted);
+  border-color: var(--pg-border);
+}
+
+/* ===== PREV / NEXT ICON ===== */
+.page-btn[data-page] {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.page-btn:first-child,
+.page-btn:last-child {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 0 14px;
+}
+
+/* ===== FOCUS (ACCESSIBILITY) ===== */
+.page-btn:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px rgba(79, 70, 229, 0.25);
+}
+

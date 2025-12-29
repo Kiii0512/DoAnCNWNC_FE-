@@ -38,6 +38,8 @@ class AppHeader extends HTMLElement {
 
     this.setupAccountMenu();
     this.setupMobileSearch();
+    this.setupSearch();
+
   }
 
   /* ===============================
@@ -155,6 +157,28 @@ class AppHeader extends HTMLElement {
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 1500);
   }
+
+  //search function
+  setupSearch() {
+  const input = this.querySelector('#timKiemChung');
+  const btn = this.querySelector('#nutTimKiem');
+  if (!input || !btn) return;
+
+  const fireSearch = () => {
+    const keyword = input.value.trim();
+
+    this.dispatchEvent(new CustomEvent('header-search', {
+      bubbles: true,
+      detail: { keyword }
+    }));
+  };
+
+  btn.addEventListener('click', fireSearch);
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') fireSearch();
+  });
+}
 }
 
 customElements.define('app-header', AppHeader);

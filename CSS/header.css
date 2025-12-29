@@ -177,3 +177,17 @@ header {
     display: none;
   }
 }
+/* ===== FIX HOVER GAP ACCOUNT MENU ===== */
+.account {
+  position: relative;
+}
+
+/* tạo vùng đệm vô hình để chuột không bị rớt */
+.account::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 100%;
+  height: 10px;      /* vùng đệm */
+}

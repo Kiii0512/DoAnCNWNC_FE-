@@ -39,28 +39,46 @@ class FilterPanel extends HTMLElement {
 
         <div class="drawer-content">
 
+          <!-- DANH MỤC -->
           <section class="filter-section">
             <h4>Danh mục</h4>
-            ${
-              this.categories.map(c => `
-                <label class="check">
-                  <input type="checkbox" value="${c.categoryId}">
-                  <span>${c.categoryName}</span>
-                </label>
-              `).join('')
-            }
+            ${this.categories.map(c => `
+              <label class="check">
+                <input type="checkbox" value="${c.categoryId}">
+                <span>${c.categoryName}</span>
+              </label>
+            `).join('')}
           </section>
 
+          <!-- HÃNG -->
           <section class="filter-section">
             <h4>Hãng</h4>
-            ${
-              this.brands.map(b => `
-                <label class="check">
-                  <input type="checkbox" value="${b.brandId}">
-                  <span>${b.brandName}</span>
-                </label>
-              `).join('')
-            }
+            ${this.brands.map(b => `
+              <label class="check">
+                <input type="checkbox" value="${b.brandId}">
+                <span>${b.brandName}</span>
+              </label>
+            `).join('')}
+          </section>
+
+          <!-- TRẠNG THÁI (DTO: string) -->
+          <section class="filter-section">
+            <h4>Trạng thái</h4>
+
+            <label class="check">
+              <input type="radio" name="status" value="all" checked>
+              <span>Tất cả</span>
+            </label>
+
+            <label class="check">
+              <input type="radio" name="status" value="active">
+              <span>Đang hoạt động</span>
+            </label>
+
+            <label class="check">
+              <input type="radio" name="status" value="inactive">
+              <span>Đã ẩn</span>
+            </label>
           </section>
 
         </div>
@@ -90,28 +108,42 @@ class FilterPanel extends HTMLElement {
       if (e.key === 'Escape') this.close();
     });
 
+    // ✅ APPLY FILTER → KHỚP DTO
     this.btnApply.onclick = () => {
-      const categories = [...this.querySelectorAll(
-        '.filter-section:first-of-type input:checked'
+      const CategoryIds = [...this.querySelectorAll(
+        '.filter-section:nth-of-type(1) input:checked'
       )].map(i => i.value);
 
-      const brands = [...this.querySelectorAll(
-        '.filter-section:last-of-type input:checked'
+      const BrandIds = [...this.querySelectorAll(
+        '.filter-section:nth-of-type(2) input:checked'
       )].map(i => i.value);
+
+      const Status =
+        this.querySelector('input[name="status"]:checked')?.value ?? 'all';
 
       this.dispatchEvent(new CustomEvent('filter-apply', {
         bubbles: true,
-        detail: { categories, brands }
+        detail: {
+          CategoryIds,
+          BrandIds,
+          Status
+        }
       }));
 
       this.close();
     };
 
+    // ❌ CLEAR
     this.btnClear.onclick = () => {
       this.querySelectorAll('input[type=checkbox]')
         .forEach(i => i.checked = false);
 
-      this.dispatchEvent(new CustomEvent('filter-clear', { bubbles: true }));
+      this.querySelector('input[name="status"][value="all"]').checked = true;
+
+      this.dispatchEvent(new CustomEvent('filter-clear', {
+        bubbles: true
+      }));
+
       this.close();
     };
   }
