@@ -1,7 +1,8 @@
 import {
   getProducts,
   deleteProduct,
-  searchProducts
+  searchProducts,
+  updateProductFull
 } from '../../JS/API/productAPI.js';
 
 import { dinhVND } from '../../utils/format.js';
@@ -16,7 +17,7 @@ class ProductTable extends HTMLElement {
 
     // 🔴 Pagination state
     this.currentPage = 1;
-    this.pageSize = 10;
+    this.pageSize = 20;
 
     // 🔎 Filter state
     this.isFiltering = false;
@@ -143,6 +144,7 @@ class ProductTable extends HTMLElement {
               <th>Tồn kho</th>
               <th>Trạng thái</th>
               <th>Thao tác</th>
+              <th>Kích hoạt</th>
             </tr>
           </thead>
           <tbody>
@@ -150,7 +152,7 @@ class ProductTable extends HTMLElement {
               paged.length === 0
                 ? `
                   <tr>
-                    <td colspan="7" class="small muted" style="text-align:center">
+                    <td colspan="8" class="small muted" style="text-align:center">
                       ${this.isFiltering ? 'Không có sản phẩm phù hợp' : 'Chưa có sản phẩm nào'}
                     </td>
                   </tr>
@@ -200,17 +202,14 @@ class ProductTable extends HTMLElement {
                             Chi tiết
                           </button>
 
-                          ${
-                            active
-                              ? `
-                                <button
-                                  class="btn btn-ghost btn-delete"
-                                  data-id="${p.productId}">
-                                  Xóa
-                                </button>
-                              `
-                              : `<span class="small muted">Đã ẩn</span>`
-                          }
+                          
+                        </td>
+
+                        <td>
+                          <label class="switch table-switch">
+                            <input type="checkbox" class="switch-input row-active" data-id="${esc(p.productId)}" ${active ? 'checked' : ''}>
+                            <span class="slider"></span>
+                          </label>
                         </td>
                       </tr>
                     `;
@@ -233,27 +232,7 @@ class ProductTable extends HTMLElement {
 
   /* ================= ACTIONS ================= */
   bindActions() {
-    // ❌ DELETE
-    this.querySelectorAll('.btn-delete').forEach(btn => {
-      btn.onclick = async () => {
-        if (!confirm('Xóa sản phẩm này?')) return;
-
-        try {
-          await deleteProduct(btn.dataset.id);
-          showToast('Đã xóa sản phẩm');
-
-          // nếu đang lọc → lọc lại
-          if (this.isFiltering && this.lastSearchDto) {
-            await this.applyFilter(this.lastSearchDto);
-          } else {
-            await this.load();
-          }
-        } catch (e) {
-          console.error(e);
-          showToast('Xóa thất bại');
-        }
-      };
-    });
+    // no delete button (removed per request)
 
     // 👁 DETAIL
     const detailDrawer = document.querySelector('product-detail-drawer');
@@ -265,6 +244,55 @@ class ProductTable extends HTMLElement {
           return;
         }
         detailDrawer.open(btn.dataset.id);
+      };
+    });
+
+    // ACTIVE toggle handler
+    this.querySelectorAll('.row-active').forEach(chk => {
+      chk.onchange = async () => {
+        const id = chk.dataset.id;
+        const newVal = chk.checked;
+        try {
+          await updateProductFull({ productId: id, isActive: newVal });
+          showToast('Cập nhật trạng thái thành công');
+
+          // update row UI in-place
+          const tr = chk.closest('tr');
+          if (tr) {
+            // status badge
+            const status = tr.querySelector('.status-badge');
+            if (status) {
+              status.classList.toggle('active', newVal);
+              status.classList.toggle('inactive', !newVal);
+              status.textContent = newVal ? 'ACTIVE' : 'INACTIVE';
+            }
+
+            // action cell: replace inner HTML so it's deterministic
+            const tds = tr.querySelectorAll('td');
+            const actionTd = tds[6]; // action is second-last column
+            if (actionTd) {
+              const detailBtnHtml = `<button class="btn btn-ghost btn-detail btn-allow" data-id="${id}">Chi tiết</button>`;
+              actionTd.innerHTML = detailBtnHtml;
+
+              // rebind detail button for this row
+              const btn = actionTd.querySelector('.btn-detail');
+              if (btn) {
+                btn.onclick = () => {
+                  if (!detailDrawer) return;
+                  detailDrawer.open(btn.dataset.id);
+                };
+              }
+            }
+
+            // row class
+            if (newVal) tr.classList.remove('row-inactive');
+            else tr.classList.add('row-inactive');
+          }
+        } catch (e) {
+          console.error(e);
+          showToast('Cập nhật trạng thái thất bại');
+          chk.checked = !newVal; // revert
+        }
       };
     });
   }

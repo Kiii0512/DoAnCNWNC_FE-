@@ -49,6 +49,17 @@ class ProductDrawer extends HTMLElement {
 
         <div class="drawer-content">
           <input id="name" placeholder="Tên sản phẩm" />
+          <div class="block">
+            <label>Mô tả</label>
+            <textarea id="description" placeholder="Mô tả sản phẩm"></textarea>
+          </div>
+          <div class="form-row toggle-row">
+            <span class="toggle-label">Kích hoạt</span>
+            <label class="switch">
+              <input type="checkbox" id="isActive" class="switch-input">
+              <span class="slider"></span>
+            </label>
+          </div>
           <select id="category"></select>
           <select id="brand"></select>
 
@@ -99,6 +110,8 @@ class ProductDrawer extends HTMLElement {
     this.backdrop = $('#backdrop');
 
     this.name = $('#name');
+    this.description = $('#description');
+    this.isActive = $('#isActive');
     this.category = $('#category');
     this.brand = $('#brand');
 
@@ -139,7 +152,8 @@ class ProductDrawer extends HTMLElement {
       if (e.key !== 'Enter') return;
       e.preventDefault();
 
-      if (state.images.subs.length >= 3) {
+      const activeSubs = (state.images.subs || []).filter(i => !i.isDeleted).length;
+      if (activeSubs >= 3) {
         showToast('Tối đa 4 ảnh (1 chính + 3 phụ)');
         return;
       }
@@ -162,7 +176,31 @@ class ProductDrawer extends HTMLElement {
     await this.loadCombos();
     await this.loadAttributes();
 
-    
+    // clear UI and state for a fresh create form
+    this.attrBoxes.innerHTML = '';
+    this.variationBox.innerHTML = '';
+    this.specBox.innerHTML = '';
+    this.imgList.innerHTML = '';
+
+    this.name.value = '';
+    if (this.description) this.description.value = '';
+    if (this.isActive) this.isActive.checked = true;
+    this.category.value = '';
+    this.brand.value = '';
+    // clear image input fields
+    if (this.imgMain) this.imgMain.value = '';
+    if (this.imgSub) this.imgSub.value = '';
+
+    state.images = { main: '', mainId: null, subs: [] };
+    this.previewMain.src = '/images/no-image.png';
+
+    this.renderSpecs();
+    this.renderVariations();
+    this.renderImages();
+
+    // ensure active toggle visible for create
+    const toggleRow = this.querySelector('.toggle-row');
+    if (toggleRow) toggleRow.style.display = 'flex';
 
     this.drawer.classList.add('open');
     this.backdrop.hidden = false;
@@ -175,7 +213,8 @@ class ProductDrawer extends HTMLElement {
       productName: product.productName,
       productDescription: product.productDescription,
       categoryId: product.categoryId,
-      brandId: product.brandId
+      brandId: product.brandId,
+      isActive: product.isActive
     };
 
     // ===== VARIATIONS =====
@@ -203,7 +242,8 @@ class ProductDrawer extends HTMLElement {
 
     editMode = true;
     editingProductId = product.productId;
-    resetState();
+    // keep original snapshot for diffing
+    resetState(true);
 
     this.attrBoxes.innerHTML = '';
     this.variationBox.innerHTML = '';
@@ -212,6 +252,10 @@ class ProductDrawer extends HTMLElement {
     await this.loadAttributes();
 
     this.name.value = product.productName ?? '';
+    if (this.description) this.description.value = product.productDescription ?? '';
+    // hide the active control in edit mode (toggle via table only)
+    const toggleRow = this.querySelector('.toggle-row');
+    if (toggleRow) toggleRow.style.display = 'none';
     this.category.value = product.categoryId ?? '';
     this.brand.value = product.brandId ?? '';
 
@@ -228,7 +272,7 @@ class ProductDrawer extends HTMLElement {
     (product.variations ?? []).forEach(v => {
       (v.options ?? []).forEach(o => {
         if (!state.values[o.attributeId]) {
-          const attr = state.attributes.find(a => a.attributeId === o.attributeId);
+          const attr = state.attributes.find(a => Number(a.attributeId) === Number(o.attributeId));
           if (attr) state.selected.push(attr);
           state.values[o.attributeId] = [];
         }
@@ -247,13 +291,19 @@ class ProductDrawer extends HTMLElement {
 
     (product.variations ?? []).forEach(v => {
       const key = state.selected
-        .map(a => v.options.find(o => o.attributeId === a.attributeId)?.value ?? '')
+        .map(a => v.options.find(o => Number(o.attributeId) === Number(a.attributeId))?.value ?? '')
         .join('|');
 
       state.variations[key] = {
         variationId: v.variationId,
         price: v.price,
-        stock: v.stockQuantity
+        stock: v.stockQuantity,
+        options: (v.options ?? []).map(o => ({
+          optionId: o.optionId ?? null,
+          attributeId: o.attributeId,
+          optionValue: o.value,
+          isDeleted: false
+        }))
       };
     });
 
@@ -262,9 +312,9 @@ class ProductDrawer extends HTMLElement {
 
     (product.variations ?? []).forEach(v => {
       (v.options ?? []).forEach(o => {
-        if (!state.selected.some(a => a.attributeId === o.attributeId)) {
+        if (!state.selected.some(a => Number(a.attributeId) === Number(o.attributeId))) {
           const attr = state.attributes.find(
-            a => a.attributeId === o.attributeId
+            a => Number(a.attributeId) === Number(o.attributeId)
           );
           if (attr) state.selected.push(attr);
         }
@@ -353,7 +403,7 @@ class ProductDrawer extends HTMLElement {
     const attrId = Number(select.value);
     if (!attrId) return;
 
-    currentAttr = state.attributes.find(a => a.attributeId === attrId);
+    currentAttr = state.attributes.find(a => Number(a.attributeId) === Number(attrId));
     if (!currentAttr) return;
 
     box.dataset.attrId = attrId;
@@ -430,9 +480,10 @@ class ProductDrawer extends HTMLElement {
 
         const payload = {
           productName: this.name.value.trim(),
-          productDescription: 'Mô tả sản phẩm',
+          productDescription: this.description?.value.trim() ?? '',
           categoryId: this.category.value,
           brandId: this.brand.value,
+          isActive: this.isActive?.checked ?? true,
           variations,
           specifications,
           images
@@ -450,7 +501,8 @@ class ProductDrawer extends HTMLElement {
             name: this.name.value.trim(),
             description: this.description?.value ?? '',
             categoryId: this.category.value,
-            brandId: this.brand.value
+            brandId: this.brand.value,
+            isActive: this.isActive?.checked ?? true
           },
           state
         );

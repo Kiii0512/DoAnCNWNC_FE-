@@ -62,7 +62,7 @@ class ProductDetailDrawer extends HTMLElement {
           <!-- DESC -->
           <section class="detail-section">
             <h4>Mô tả</h4>
-            <div id="pdesc"></div>
+            <textarea id="pdesc" readonly></textarea>
           </section>
 
           <!-- VARIATIONS -->
@@ -179,7 +179,7 @@ class ProductDetailDrawer extends HTMLElement {
     this.pbrand.textContent = p.brandName ?? '';
     this.pprice.textContent = dinhVND(p.productPrice ?? 0);
     this.pstock.textContent = p.totalStock ?? 0;
-    this.pdesc.textContent  = p.productDescription ?? '';
+    this.pdesc.value  = p.productDescription ?? '';
 
     // VARIATIONS
     this.vBox.innerHTML = '';
@@ -214,15 +214,31 @@ class ProductDetailDrawer extends HTMLElement {
     // IMAGES
     this.iBox.innerHTML = '';
 
-    (p.images ?? [])
-      .filter(img => Number(img.isActive) === 1)   // 🔑 LỌC ẢNH ACTIVE
-      .forEach(img => {
-        const el = document.createElement('img');
-        el.src = img.imageUrl;
-        el.alt = '';
-        el.onerror = () => el.remove();
-        this.iBox.appendChild(el);
-      });
+    console.debug('product-detail: images array =', p.images);
+
+    (p.images ?? []).forEach((img, idx) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'detail-img-wrap';
+
+      const el = document.createElement('img');
+      // defensive: try multiple possible url keys
+      const src = img.imageUrl || img.url || img.image || img.path || '';
+      console.debug(`product-detail: image[${idx}] src =`, src, 'raw=', img);
+      el.src = src || 'https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg';
+      el.alt = img.alt ?? '';
+      el.onerror = () => { el.src = 'https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg'; };
+
+      wrap.appendChild(el);
+
+      if (img.isMain) {
+        const badge = document.createElement('span');
+        badge.className = 'main-badge';
+        badge.textContent = 'MAIN';
+        wrap.appendChild(badge);
+      }
+
+      this.iBox.appendChild(wrap);
+    });
   }
 }
 

@@ -17,9 +17,11 @@ export function buildVariations(state) {
 export function buildProductPayload(ctx, state, variations) {
   return {
     productName: ctx.name.value.trim(),
-    productDescription: '',
+    productDescription: ctx.description?.value?.trim() ?? '',
     categoryId: ctx.category.value,
     brandId: ctx.brand.value,
+    isActive: ctx.isActive?.checked ?? true,
+    // isFeatured removed — only isActive supported
     variations,
     specifications: state.specs.map(s => ({
       specKey: s.k,
@@ -51,6 +53,11 @@ export function buildUpdateProductPayload(productId, ui, state) {
 
   if (ui.brandId !== op.brandId)
     payload.brandId = ui.brandId;
+
+  if (typeof ui.isActive !== 'undefined' && ui.isActive !== op.isActive)
+    payload.isActive = ui.isActive;
+
+  // isFeatured removed — no-op
 
   /* ================= VARIATIONS ================= */
   const variations = [];

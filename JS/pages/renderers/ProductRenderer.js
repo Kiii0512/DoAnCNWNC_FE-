@@ -33,7 +33,7 @@ export function renderVariations(ctx, state, isEdit = false) {
     Object.values(state.variations).forEach(v => {
       const label = (v.options || [])
         .map(o => {
-          const attr = state.selected.find(a => a.attributeId === o.attributeId);
+          const attr = state.selected.find(a => Number(a.attributeId) === Number(o.attributeId));
           return `${attr?.name ?? ''}: ${o.optionValue}`;
         })
         .join(' | ');
@@ -99,7 +99,7 @@ export function renderVariations(ctx, state, isEdit = false) {
 
     const label = combo
       .map(x => {
-        const attr = state.selected.find(a => a.attributeId === x.attrId);
+        const attr = state.selected.find(a => Number(a.attributeId) === Number(x.attrId));
         return `${attr?.name ?? ''}: ${x.value}`;
       })
       .join(' | ');
@@ -140,7 +140,7 @@ export function renderAttributeChips(ctx, state, chips, attr) {
       if (state.values[attr.attributeId].length === 0) {
         delete state.values[attr.attributeId];
         state.selected = state.selected.filter(
-          a => a.attributeId !== attr.attributeId
+          a => Number(a.attributeId) !== Number(attr.attributeId)
         );
 
         chips.closest('.attr-box')?.remove();
@@ -158,19 +158,33 @@ export function renderAttributeChips(ctx, state, chips, attr) {
 export function renderImages(ctx, state) {
   ctx.imgList.innerHTML = '';
 
-  state.images.subs
-    .filter(i => !i.isDeleted)
-    .forEach(imgObj => {
+  (state.images.subs || [])
+    .forEach((imgObj, idx) => {
+      if (imgObj.isDeleted) return;
+
+      const wrap = document.createElement('div');
+      wrap.className = 'img-wrapper';
+
       const img = document.createElement('img');
-      img.src = imgObj.imageUrl;
+      img.src = imgObj.imageUrl || '';
       img.className = 'img-preview';
 
-      img.onclick = () => {
-        imgObj.isDeleted = true;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'img-remove';
+      btn.title = 'Xóa ảnh';
+      btn.innerText = '✖';
+
+      btn.onclick = e => {
+        e.stopPropagation();
+        // mark the exact item as deleted and re-render
+        if (state.images.subs[idx]) state.images.subs[idx].isDeleted = true;
         renderImages(ctx, state);
       };
 
-      ctx.imgList.appendChild(img);
+      wrap.appendChild(img);
+      wrap.appendChild(btn);
+      ctx.imgList.appendChild(wrap);
     });
 }
 
