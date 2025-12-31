@@ -1,29 +1,33 @@
+import { searchProducts } from "../API/productAPI.js";
+
 // ==========================
-// HÀM GỌI API BACKEND
+// HÀM GỌI API BACKEND (SỬ DỤNG searchProducts)
 // ==========================
 async function fetchProducts() {
-  const q = document.getElementById("q").value.trim();
+  const keyword = document.getElementById("q").value.trim();
   const category = document.getElementById("filter-category").value;
   const brand = document.getElementById("filter-brand").value;
-  const price = document.getElementById("filter-price").value;
-  const sort = document.getElementById("sort").value;
 
-  // Tách khoảng giá
-  let min = "";
-  let max = "";
-  if (price.includes("-")) {
-    const range = price.split("-");
-    min = range[0];
-    max = range[1];
+  // Build search request with CORRECT lowercase params
+  const request = {
+    keyword: keyword || undefined,
+    status: "active"
+  };
+
+  // Add category filter if selected
+  if (category && category !== "all") {
+    request.categoryId = category;
+  }
+
+  // Add brand filter if selected
+  if (brand && brand !== "all") {
+    request.brandId = brand;
   }
 
   try {
-    const res = await fetch(
-      `http://localhost:3000/api/products?q=${q}&category=${category}&brand=${brand}&min=${min}&max=${max}&sort=${sort}`
-    );
-
-    const data = await res.json();
-    renderProducts(data);
+    // Call the search API
+    const products = await searchProducts(request);
+    renderProducts(products);
   } catch (err) {
     console.error("Lỗi gọi API:", err);
   }
@@ -67,14 +71,13 @@ document.getElementById("q").addEventListener("keyup", (e) => {
 });
 
 // ==========================
-// GỌI API KHI FILTER / SORT
+// GỌI API KHI FILTER
 // ==========================
 document.getElementById("filter-category").addEventListener("change", fetchProducts);
 document.getElementById("filter-brand").addEventListener("change", fetchProducts);
-document.getElementById("filter-price").addEventListener("change", fetchProducts);
-document.getElementById("sort").addEventListener("change", fetchProducts);
 
 // ==========================
 // LẦN ĐẦU LOAD TRANG
 // ==========================
 fetchProducts();
+

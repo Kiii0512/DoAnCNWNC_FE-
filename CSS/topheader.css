@@ -1,158 +1,288 @@
-            .topbar {
-              background: #0f1724;
-              color: #fff;
-              padding: 6px 16px;
-              font-size: 13px;
-              display: flex;                 
-              justify-content: space-between;
-              align-items: center;
-            }
+/* =========================
+   TOP BAR (LOGIN / REGISTER)
+========================= */
 
-            .container {
-              max-width: 1200px;
-              margin: 0 auto;
-              padding: 0 16px;
-            }
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10000;
+  width: 100%;
 
-            .login{
-              margin-left:5px;
-              padding:5px 10px;
-              border-radius:8px;
-              border:0;
-              background:#fcfcfc;
-              color:#000000
-            }
-            .login:hover{
-              background:#340303;
-              color:#ffffff;
-            }
+  background: linear-gradient(180deg, #0f172a, #020617);
+  color: #e5e7eb;
+  font-size: 13px;
+}
 
-            header {
-              background: #fff;
-              box-shadow: 0 1px 4px rgba(16,24,40,.06);
-              position: sticky;
-              top: 0;
-              z-index: 50;
-            }
+.topbar-inner {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-            .head-main {
-              display: flex;
-              align-items: center;
-              gap: 16px;
-              padding: 14px 0;
-            }
+.topbar button.login {
+  margin-left: 10px;
+  padding: 4px 12px;
 
-            .logo {
-              text-decoration: none;
-              display: flex;
-              align-items: center;
-              gap: 10px;
-              font-weight: 700;
-              font-size: 20px;
-              color: #111;
-            }
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: transparent;
+  color: #e5e7eb;
+  font-size: 12px;
 
-            .logo .mark {
-              text-decoration:none;
-              background: linear-gradient(90deg,#0000009d,#051017);
-              color:#fff;
-              padding:8px 10px;
-              border-radius:6px;
-            }
+  cursor: pointer;
+  transition: all .2s ease;
+}
 
-            .search {
-                flex: 1;
-                display: flex;
-            }
-            .search input {
-                flex: 1;
-                padding: 12px 14px;
-                border-radius: 8px;
-                border: 1px solid #e6e9ee;
-            }
-            .search button {
-                margin-left: 8px;
-                padding: 12px 14px;
-                border-radius: 8px;
-                border: 0;
-                background: #0f1724;
-                color: #fff;
-            }
+.topbar button.login:hover {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: #fff;
+}
 
-            .nav-actions { 
-                display:flex; 
-                gap:10px; 
-                align-items:center;
-            }
+/* =========================
+   MAIN HEADER (STICKY)
+========================= */
 
-            .icon-btn {
-              background: transparent;
-              border: 1px solid #e6e9ee;
-              padding: 8px 10px;
-              border-radius: 8px;
-              cursor: pointer;
-            }
-            .icon-btn:hover { background: #9c9d9e; color:#fff; }
+header {
+  position: sticky;
+  top: 38px; /* = height topbar */
+  z-index: 999;
+  width: 100%;
 
-            /* MENU ACCOUNT */
-            .account-wrapper {
-             position: relative;
-            }
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
 
-          .account-menu {
-            position: absolute;
-            top: 100%;   /* nằm ngay dưới nút */
-            right: 0;    /* căn mép phải với nút */
-            margin-top: 8px;
+.head-main {
+  height: 72px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
 
-            background: #fff;
-            border: 1px solid #e6e9ee;
-            border-radius: 10px;
-            width: 180px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-            display: none;
-            flex-direction: column;
-            z-index: 200;
-          }
+/* =========================
+   LOGO (LEFT)
+========================= */
 
-            .account-menu a {
-              padding: 12px;
-              text-decoration:none;
-              color:#111;
-              font-size:14px;
-              border-bottom:1px solid #f1f5f9;
-            }
-            .account-menu a { padding: 12px; text-decoration:none; color:#111; font-size:14px; border-bottom:1px solid #f1f5f9; }
-            .account-menu a:last-child { border-bottom:none; }
-            .account-menu a:hover { background:#f1f5f9; }
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 
-            /* Ẩn ô search khi màn nhỏ */
-            @media (max-width: 600px) {
-                .search {
-                    display: none !important;
-                }
-                #searchIcon {
-                    display: inline-flex !important;
-                }
-            }
+  font-weight: 700;
+  font-size: 18px;
+  color: #111827;
+  cursor: pointer;
 
-            /* Search overlay popup */
-            .search-popup {
-                display: none;
-                position: fixed;
-                top: 10px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 90%;
-                background: #fff;
-                padding: 10px;
-                border-radius: 10px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-                z-index: 9999;
-            }
-            .search-popup input {
-                width: 100%;
-                padding: 12px;
-                border: 1px solid #ccc;
-                border-radius: 8px;
-            }
+  flex-shrink: 0;
+}
+
+.logo .mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+
+  background: linear-gradient(135deg, #2563eb, #22c55e);
+  color: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================
+   SEARCH BAR (CENTER - PRIORITY)
+========================= */
+
+.search {
+  flex: 1 1 auto;          /* ⬅️ chiếm tối đa không gian */
+  min-width: 650px;        /* ⬅️ ép search dài */
+  max-width: 1080px;        /* ⬅️ không quá rộng */
+
+  margin: 0 auto;
+  margin-left: 5px;
+  padding: 6px;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  background: #f1f5f9;
+  border-radius: 999px;
+}
+
+.search input {
+  flex: 1;
+  border: 0;
+  background: transparent;
+
+  padding: 12px 18px;
+  font-size: 15px;
+  outline: none;
+}
+
+.search button {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 0;
+
+  background: #2563eb;
+  color: #fff;
+  font-size: 14px;
+
+  cursor: pointer;
+  transition: background .2s ease;
+}
+
+.search button:hover {
+  background: #1d4ed8;
+}
+
+/* =========================
+   NAV ACTIONS (RIGHT)
+========================= */
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  flex-shrink: 0;
+}
+
+/* =========================
+   ICON BUTTONS
+========================= */
+
+.icon-btn {
+  background: transparent;
+  border: 0;
+  padding: 8px 12px;
+
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1f2937;
+
+  white-space: nowrap;   /* ✅ CHỐNG XUỐNG DÒNG */
+
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  transition: background .2s ease, color .2s ease;
+}
+
+.icon-btn:hover {
+  background: #f1f5f9;
+  color: #2563eb;
+}
+
+/* =========================
+   ACCOUNT MENU
+========================= */
+
+.account-wrapper {
+  position: relative;
+}
+
+.account-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 9999;
+
+  width: 200px;
+  padding: 6px;
+
+  background: #fff;
+  border-radius: 14px;
+  display: none;
+  flex-direction: column;
+
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.12),
+    0 2px 8px rgba(0,0,0,.08);
+}
+
+.account-menu a {
+  padding: 10px 12px;
+  border-radius: 10px;
+
+  text-decoration: none;
+  font-size: 14px;
+  color: #111827;
+
+  transition: background .2s ease, color .2s ease;
+}
+
+.account-menu a:hover {
+  background: #eef2ff;
+  color: #2563eb;
+}
+
+/* =========================
+   SEARCH POPUP (MOBILE)
+========================= */
+
+.search-popup {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0,0,0,.4);
+}
+
+.search-popup input {
+  width: 90%;
+  max-width: 420px;
+
+  padding: 14px 16px;
+  font-size: 16px;
+
+  border-radius: 12px;
+  border: 0;
+  outline: none;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1024px) {
+  .search {
+    min-width: 420px;
+  }
+}
+
+@media (max-width: 768px) {
+  .head-main {
+    gap: 12px;
+  }
+
+  .logo {
+    font-size: 16px;
+  }
+
+  .search {
+    min-width: 0;
+    max-width: none;
+  }
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.logo:hover {
+  opacity: 0.9;
+}

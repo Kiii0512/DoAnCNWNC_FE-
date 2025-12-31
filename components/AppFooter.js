@@ -5,7 +5,7 @@ class appFooter extends HTMLElement {
         <footer style="justify-content:space-between; background-color: black;">
           <div class="container" style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;">
             <div style="min-width:220px">
-              <h3 style="color:white;">Shop68IT1</h3>
+              <h3 style="color:white;">Electronic Store</h3>
               <p style="color:white;">Địa chỉ: 55 Giải phóng, Hà Nội — Hotline: 1900 1009</p>
             </div>
             <div>
