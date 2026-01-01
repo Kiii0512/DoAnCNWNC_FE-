@@ -22,6 +22,7 @@ class ProductGrid extends HTMLElement {
     const mode = this.getAttribute("mode") || "category";
     const title = this.getAttribute("title") || "Sản phẩm";
     const brandId = this.getAttribute("brand-id");
+    this.limit = Number(this.getAttribute('limit')) || 5;
 
     this.innerHTML = `
       <section class="product-section">
@@ -40,7 +41,7 @@ class ProductGrid extends HTMLElement {
               </select>
             </div>
           `
-              : `<a class="view-all" href="brand.html?id=${brandId}">Xem tất cả</a>`
+              : `<a class="view-all" data-view-all>Xem tất cả</a>`
           }
         </div>
         
@@ -59,10 +60,16 @@ class ProductGrid extends HTMLElement {
 
     /* ===== LOAD DATA ===== */
 
-    if (mode === "home") {
+   if (mode === "home") {
       if (!brandId) return;
+
       await loadProductsByBrand(brandId);
-      this.currentList = products.slice(0, 8); // home chỉ lấy 8 sp
+
+      // 👇 chỉ lấy tối đa limit sản phẩm
+      this.currentList = products.slice(0, this.limit);
+
+      // 👇 home không cần pagination
+      this.pageSize = this.limit;
     }
 
     if (mode === "category") {
@@ -104,11 +111,26 @@ class ProductGrid extends HTMLElement {
     // render first page
     this.renderPage();
     this.addEventListener("click", e => this.handleClick(e));
+
+    const viewAllBtn = this.querySelector('[data-view-all]');
+    if (viewAllBtn && brandId) {
+      viewAllBtn.addEventListener('click', () => {
+        // set brand filter cho trang category
+        localStorage.setItem('brandId', brandId);
+        localStorage.setItem('brandName', title);
+
+        // clear category nếu đang có
+        localStorage.removeItem('categoryId');
+        localStorage.removeItem('categoryName');
+
+        window.location.href = 'categoryPage.html';
+      });
+    }
+
   }
 
   handleClick(e) {
     const addBtn = e.target.closest("[data-add]");
-    const viewBtn = e.target.closest("[data-view]");
 
     if (addBtn) {
       addToCart(addBtn.dataset.add, 1);
@@ -116,12 +138,14 @@ class ProductGrid extends HTMLElement {
       document.dispatchEvent(new Event("cart:open"));
     }
 
-    if (viewBtn) {
-      document.dispatchEvent(
-        new CustomEvent("quickview:open", {
-          detail: { id: viewBtn.dataset.view }
-        })
-      );
+    const quickViewBtn = e.target.closest("[data-quick-view]");
+    
+    if (quickViewBtn) {
+      e.preventDefault();
+      const productId = quickViewBtn.dataset.quickView;
+      document.dispatchEvent(new CustomEvent("quickview:open", {
+        detail: { id: productId }
+      }));
     }
   }
 
@@ -137,11 +161,11 @@ class ProductGrid extends HTMLElement {
       <div class="card">
         <img src="${p.img}">
         <h4>${p.title}</h4>
-        <span>${p.price.toLocaleString("vi-VN")}₫</span>
-
-        <div class="actions">
-          <button data-add="${p.id}">Thêm</button>
-          <button data-view="${p.id}">Xem</button>
+        <div class="card-bottom">
+          <span>${p.price.toLocaleString("vi-VN")}₫</span>
+          <button class="btn-quick-view" data-quick-view="${p.id}" title="Xem nhanh">
+            <i class="bx bx-search"></i> Xem
+          </button>
         </div>
       </div>
     `).join("");
@@ -149,6 +173,10 @@ class ProductGrid extends HTMLElement {
 
   renderPage() {
     const total = this.currentList.length || 0;
+     if (total === 0) {
+      this.renderEmptyState();
+      return;
+    }
     const totalPages = Math.max(1, Math.ceil(total / this.pageSize));
     if (this.page > totalPages) this.page = totalPages;
 
@@ -157,7 +185,16 @@ class ProductGrid extends HTMLElement {
     this.renderCards(pageItems);
     this.renderPagination(totalPages);
   }
-
+  renderEmptyState() {
+    this.grid.innerHTML = `
+      <div class="empty-state">
+        
+        <h3>Không tìm thấy sản phẩm</h3>
+        <p>Vui lòng thử từ khóa khác</p>
+      </div>
+    `;
+    if (this.pager) this.pager.innerHTML = '';
+  }
   renderPagination(totalPages) {
     if (!this.pager) return;
     if (totalPages <= 1) {

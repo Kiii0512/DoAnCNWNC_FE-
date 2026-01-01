@@ -30,7 +30,9 @@ class TopHeader extends HTMLElement {
 
           <div class="nav-actions">
             <button class="icon-btn">Yêu thích</button>
-            <button class="icon-btn">Giỏ hàng (<span id="cartCount">0</span>)</button>
+            <a href="cartPage.html" class="icon-btn" style="text-decoration:none;">
+              <i class="bx bx-cart"></i>Giỏ hàng (<span id="cartCount">0</span>)
+            </a>
           </div>
 
           <div class="account-wrapper">
@@ -39,8 +41,8 @@ class TopHeader extends HTMLElement {
             <div id="accountMenu" class="account-menu">
               <a href="#" id="loginMenu">Đăng nhập</a>
               <a href="#" id="registerMenu">Đăng ký</a>
-              <a href="#">Thông tin cá nhân</a>
-              <a href="#">Đơn hàng của tôi</a>
+              <a href="userInfoPage.html" id="infoMenu">Thông tin cá nhân</a>
+              <a href="ordersPage.html" id="orderMenu">Đơn hàng của tôi</a>
               <a href="#" id="logoutMenu">Đăng xuất</a>
             </div>
           </div>
@@ -57,6 +59,14 @@ class TopHeader extends HTMLElement {
   /* ================= AUTH UI ================= */
   renderAuthState() {
     const token = localStorage.getItem("accesstoken");
+    
+    // Debug logging
+    console.log("TopHeader - localStorage contents:", {
+      accesstoken: token,
+      username: localStorage.getItem("username"),
+      role: localStorage.getItem("role"),
+      allKeys: Object.keys(localStorage)
+    });
 
     const topbar = this.querySelector(".topbar");
     const header = this.querySelector("header");

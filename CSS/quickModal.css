@@ -9,7 +9,7 @@
   align-items: center;
   justify-content: center;
   background: rgba(11, 15, 25, 0.45);
-  z-index: 60;
+  z-index: 10000;
 }
 
 .modal.open {
@@ -18,18 +18,59 @@
 
 .modal-content {
   background: #fff;
-  border-radius: 12px;
-  padding: 20px;
+  border-radius: 16px;
+  padding: 24px;
   max-width: 900px;
   width: 96%;
+  max-height: 90vh;
+  overflow-y: auto;
   display: flex;
-  gap: 20px;
+  gap: 32px;
 }
 
-.modal-content img {
-  width: 320px;
-  height: 320px;
+/* =========================
+   MODAL IMAGE SECTION
+========================= */
+
+.modal-image-section {
+  flex: 0 0 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-image-section img#modalImg {
+  width: 100%;
+  height: 380px;
   object-fit: contain;
+  border-radius: 12px;
+  background: #f9fafb;
+}
+
+.modal-thumbnails {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.modal-thumbnails .thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+  background: #f9fafb;
+}
+
+.modal-thumbnails .thumbnail:hover {
+  border-color: #d1d5db;
+}
+
+.modal-thumbnails .thumbnail.active {
+  border-color: #2563eb;
 }
 
 /* =========================
@@ -45,65 +86,328 @@
 
 .modal-info h3 {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
+  line-height: 1.3;
+  color: #111827;
 }
 
-.modal-info p {
-  color: #555;
-  line-height: 1.5;
+.modal-category {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.modal-description {
+  color: #4b5563;
+  line-height: 1.6;
+  font-size: 14px;
+  margin: 0;
 }
 
 .price-wrap {
-  margin: 10px 0;
+  margin: 8px 0;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
 }
 
 .price {
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
 }
 
 /* =========================
-   ACTIONS
+   STOCK INFO
+========================= */
+
+.stock-info {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #d1fae5;
+  color: #059669;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.stock-info.low-stock {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.stock-info.out-of-stock {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.stock-info i {
+  font-size: 16px;
+}
+
+/* =========================
+   VARIATION COMBINATIONS
+========================= */
+
+.variation-group {
+  margin: 16px 0;
+}
+
+.variation-group:last-child {
+  margin-bottom: 0;
+}
+
+.variation-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 10px;
+}
+
+.variation-combinations {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.variation-combo-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.variation-combo-btn:hover:not(:disabled) {
+  border-color: #2563eb;
+  background: #f8fafc;
+}
+
+.variation-combo-btn.active {
+  border-color: #2563eb;
+  background: #eff6ff;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+.variation-combo-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: #f3f4f6;
+}
+
+.variation-combo-btn.out-of-stock:disabled {
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.combo-name {
+  font-weight: 500;
+  color: #111827;
+}
+
+.combo-price {
+  font-weight: 600;
+  color: #dc2626;
+  margin-left: 12px;
+}
+
+.combo-stock {
+  font-size: 12px;
+  color: #dc2626;
+  font-weight: 500;
+  margin-left: 8px;
+}
+
+/* =========================
+   QUANTITY SECTION
+========================= */
+
+.quantity-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.quantity-section label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.quantity-control button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  color: #374151;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quantity-control button:hover:not(:disabled) {
+  background: #2563eb;
+  color: #fff;
+}
+
+.quantity-control button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.quantity-control input {
+  width: 50px;
+  height: 36px;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.quantity-control input:focus {
+  outline: none;
+}
+
+/* Remove spinner from number input */
+.quantity-control input::-webkit-outer-spin-button,
+.quantity-control input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.quantity-control input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* =========================
+   MODAL ACTIONS
 ========================= */
 
 .modal-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+  margin-top: 16px;
 }
 
-.modal-actions input {
-  width: 70px;
-  height: 40px;
-  padding: 0 8px;
+.btn-add-cart {
+  width: 100%;
+  padding: 16px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-add-cart:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.btn-add-cart:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.btn-close {
+  width: 100%;
+  padding: 12px;
+  background: #f3f4f6;
+  color: #374151;
+  border: none;
   border-radius: 8px;
-  border: 1px solid #ccc;
-  text-align: center;
   font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.btn-close:hover {
+  background: #e5e7eb;
 }
 
 /* =========================
-   BUTTON – DÙNG CHUNG
+   RESPONSIVE
 ========================= */
 
-.modal button {
-  height: 40px;
-  padding: 0 14px;
-  border-radius: 8px;
-  border: none;
-  background: #000;
-  color: #fff;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background 0.2s;
+@media (max-width: 768px) {
+  .modal-content {
+    flex-direction: column;
+    padding: 16px;
+    gap: 20px;
+  }
+
+  .modal-image-section {
+    flex: none;
+  }
+
+  .modal-image-section img#modalImg {
+    height: 280px;
+  }
+
+  .modal-thumbnails .thumbnail {
+    width: 50px;
+    height: 50px;
+  }
+
+  .modal-info h3 {
+    font-size: 20px;
+  }
+
+  .price {
+    font-size: 24px;
+  }
 }
 
-.modal button:hover {
-  background: #333;
+@media (max-width: 480px) {
+  .modal-content {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+  }
+
+  .variation-combo-btn {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .combo-price {
+    font-size: 13px;
+  }
 }
 
-/* nút đóng đặt dưới cùng */
-#closeModal {
-  margin-top: auto;
-  align-self: flex-start;
-}

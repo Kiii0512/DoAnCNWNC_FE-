@@ -19,30 +19,39 @@ class bannerSlider extends HTMLElement {
       </section>
     `;
 
-    const script = document.createElement('script');
-    script.textContent = `
-      let slideIndex = 0;
-      const slides = document.querySelectorAll(".slide");
-      const dots = document.querySelectorAll(".dot");
+    this.index = 0;
+    this.slides = this.querySelector(".slides");
+    this.items = this.querySelectorAll(".slide");
+    this.dots = this.querySelectorAll(".dot");
+    this.total = this.items.length;
 
-      function showSlide(index) {
-          if (index >= slides.length) slideIndex = 0;
-          if (index < 0) slideIndex = slides.length - 1;
+    this.querySelector(".next").onclick = () => this.move(1);
+    this.querySelector(".prev").onclick = () => this.move(-1);
 
-          slides.forEach((slide, i) => {
-              slide.style.display = (i === slideIndex) ? "block" : "none";
-              dots[i].classList.toggle("active", i === slideIndex);
-          });
-      }
+    this.dots.forEach((dot, i) => {
+      dot.onclick = () => this.goTo(i);
+    });
 
-      document.querySelector(".next").onclick = () => { slideIndex++; showSlide(slideIndex); };
-      document.querySelector(".prev").onclick = () => { slideIndex--; showSlide(slideIndex); };
-      dots.forEach((dot, i) => dot.onclick = () => { slideIndex = i; showSlide(slideIndex); });
+    this.auto = setInterval(() => this.move(1), 4000);
+    this.update();
+  }
 
-      setInterval(() => { slideIndex++; showSlide(slideIndex); }, 4000);
-      showSlide(slideIndex);
-    `;
-    this.appendChild(script);
+  move(step) {
+    this.index = (this.index + step + this.total) % this.total;
+    this.update();
+  }
+
+  goTo(i) {
+    this.index = i;
+    this.update();
+  }
+
+  update() {
+    this.slides.style.transform = `translateX(-${this.index * 100}%)`;
+    this.dots.forEach((d, i) =>
+      d.classList.toggle("active", i === this.index)
+    );
   }
 }
+
 customElements.define("banner-slider", bannerSlider);

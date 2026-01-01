@@ -127,7 +127,7 @@ header {
   border-radius: 999px;
   border: 0;
 
-  background: #2563eb;
+  background: #000000;
   color: #fff;
   font-size: 14px;
 
@@ -136,7 +136,7 @@ header {
 }
 
 .search button:hover {
-  background: #1d4ed8;
+  background: #000000;
 }
 
 /* =========================

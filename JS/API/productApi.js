@@ -199,3 +199,51 @@ export async function searchProducts(request) {
     return [];
   }
 }
+
+/**
+ * GET PRODUCT WITH VARIATIONS (for Quick View)
+ * Calls GET /api/products/{id}
+ */
+export async function getProductWithVariations(productId) {
+  try {
+    const url = `${API_URL}/${productId}`;
+    console.log("GET PRODUCT WITH VARIATIONS:", url);
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(res.status);
+
+    const json = await res.json();
+    const data = json.data || json;
+
+    // Transform to full product format with variations
+    const product = {
+      id: data.productId,
+      title: data.productName,
+      price: Number(data.productPrice),
+      old: Math.round(Number(data.productPrice) * 1.2),
+      img: data.images?.[0]?.imageUrl || data.imageUrl || DEFAULT_IMAGE,
+      images: data.images || [],
+      stock: data.totalStock || 0,
+      category: data.categoryName ?? "",
+      brand: data.brandName ?? "",
+      description: data.productDescription ?? "",
+      variations: (data.variations || []).map(v => ({
+        variationId: v.variationId,
+        price: Number(v.price),
+        stockQuantity: v.stockQuantity,
+        options: (v.options || []).map(opt => ({
+          optionId: opt.optionId || opt.optionTypeId,
+          name: opt.optionName || opt.optionTypeName || opt.value,
+          value: opt.value,
+          optionType: opt.optionType || opt.type
+        }))
+      }))
+    };
+
+    return product;
+
+  } catch (e) {
+    console.error("GET PRODUCT ERROR:", e);
+    return null;
+  }
+}

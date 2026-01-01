@@ -23,12 +23,35 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error("Sai tài khoản hoặc mật khẩu");
       }
 
-      const data = await response.json();
+      const responseData = await response.json();
+      
+      // Debug: log the full response
+      console.log("Login API response:", responseData);
+      
+      // Handle nested response structure (success: true, data: {...})
+      const data = responseData.data || responseData;
+      
+      // Handle different possible field names for the token
+      const accessToken = data.accessToken || data.access_token || data.token;
+      
+      if (!accessToken) {
+        console.error("No token found in response! Response data:", responseData);
+        throw new Error("Đăng nhập thất bại: Không nhận được token từ server");
+      }
+      
+      console.log("Using token:", accessToken.substring(0, 20) + "...");
 
-      //  Lưu JWT
-      localStorage.setItem("accesstoken", data.token);
-      localStorage.setItem("username", data.username);
-      localStorage.setItem("role", data.role);
+      //  Lưu JWT - verify it's not undefined
+      localStorage.setItem("accesstoken", accessToken);
+      localStorage.setItem("username", data.name || data.userName || data.username || username);
+      localStorage.setItem("role", data.role || data.roles || "user");
+
+      // Verify storage
+      console.log("localStorage after login:", {
+        accesstoken: localStorage.getItem("accesstoken"),
+        username: localStorage.getItem("username"),
+        role: localStorage.getItem("role")
+      });
 
       alert("Đăng nhập thành công!");
       window.dispatchEvent(new Event("authChanged"));
@@ -36,7 +59,9 @@ document.addEventListener("DOMContentLoaded", () => {
       window.location.href = "homePage.html";
 
     } catch (error) {
+      console.error("Login error:", error);
       alert(error.message);
     }
   });
 });
+

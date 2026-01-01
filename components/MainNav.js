@@ -50,7 +50,11 @@ class MainNav extends HTMLElement {
     /* ========== ALL PRODUCTS ========== */
     this.querySelector('#all-products').addEventListener('click', e => {
       e.preventDefault();
-      localStorage.clear();
+      // Only remove filters, keep auth token
+      localStorage.removeItem('categoryId');
+      localStorage.removeItem('categoryName');
+      localStorage.removeItem('brandId');
+      localStorage.removeItem('brandName');
       location.href = 'categoryPage.html';
     });
 

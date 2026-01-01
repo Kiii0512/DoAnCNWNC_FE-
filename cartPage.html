@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giỏ hàng - Electronic Store</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="CSS/globalStyles.css" />
+  <link rel="stylesheet" href="CSS/topheader.css" />
+  <link rel="stylesheet" href="CSS/mainNav.css" />
+  <link rel="stylesheet" href="CSS/pages/cart.css" />
+  <link
+    href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- JS -->
+  <script type="module" src="components/topHeader.js"></script>
+  <script type="module" src="components/mainNav.js"></script>
+  <script type="module" src="JS/pages/cart.js"></script>
+</head>
+
+<body>
+  <div class="sticky-header-wrapper">
+    <top-header></top-header>
+    <main-nav></main-nav>
+  </div>
+
+  <main class="container cart-container">
+    <div class="cart-wrapper">
+      <div class="cart-header">
+        <h1><i class="bx bxs-cart"></i> Giỏ hàng</h1>
+        <p id="cartItemCount">0 sản phẩm</p>
+      </div>
+
+      <div class="cart-content">
+        <!-- Cart Items Section -->
+        <div class="cart-items-section">
+          <div class="cart-actions-bar" id="cartActionsBar" style="display: none;">
+            <label class="select-all-label">
+              <input type="checkbox" id="selectAllCheckbox" />
+              <span>Chọn tất cả (<span id="selectedCount">0</span>)</span>
+            </label>
+            <button class="btn-delete-selected" id="deleteSelectedBtn">
+              <i class="bx bx-trash"></i> Xóa đã chọn
+            </button>
+          </div>
+
+          <div id="cartItemsList" class="cart-items-list">
+            <div class="loading-state">
+              <i class="bx bx-loader-alt bx-spin"></i>
+              <p>Đang tải giỏ hàng...</p>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div id="emptyCart" class="empty-cart" style="display: none;">
+            <i class="bx bx-cart-alt"></i>
+            <h3>Giỏ hàng trống</h3>
+            <p>Bạn chưa có sản phẩm nào trong giỏ hàng</p>
+            <a href="homePage.html" class="btn-continue-shopping">
+              <i class="bx bx-shopping-bag"></i> Tiếp tục mua sắm
+            </a>
+          </div>
+
+          <!-- Continue Shopping Suggestion -->
+          <div class="continue-shopping" id="continueShopping" style="display: none;">
+            <a href="homePage.html">
+              <i class="bx bx-arrow-back"></i> Tiếp tục mua sắm
+            </a>
+          </div>
+        </div>
+
+        <!-- Cart Summary Section -->
+        <div class="cart-summary-section" id="cartSummary">
+          <div class="summary-card">
+            <h2>Tổng quan đơn hàng</h2>
+
+            <div class="summary-row">
+              <span>Tạm tính (<span id="summaryItemCount">0</span> sản phẩm)</span>
+              <span id="summarySubTotal">0 ₫</span>
+            </div>
+
+            <div class="summary-row discount" id="discountRow" style="display: none;">
+              <span>Giảm giá</span>
+              <span id="summaryDiscount">-0 ₫</span>
+            </div>
+
+            <div class="summary-row shipping">
+              <span>Phí vận chuyển</span>
+              <span id="summaryShipping">Miễn phí</span>
+            </div>
+
+            <div class="summary-divider"></div>
+
+            <div class="summary-row total">
+              <span>Tổng cộng</span>
+              <span id="summaryTotal">0 ₫</span>
+            </div>
+
+            <div class="selected-summary" id="selectedSummary" style="display: none;">
+              <span>Đã chọn: <strong id="selectedItemCount">0</strong> sản phẩm</span>
+            </div>
+
+            <button id="checkoutBtn" class="btn-checkout" disabled>
+              <i class="bx bx-credit-card"></i> Thanh toán
+            </button>
+
+            <button id="checkoutSelectedBtn" class="btn-checkout-selected" style="display: none;">
+              <i class="bx bx-credit-card"></i> Thanh toán (<span id="checkoutSelectedCount">0</span> sản phẩm)
+            </button>
+
+            <div class="secure-note">
+              <i class="bx bx-lock-alt"></i>
+              <span>Thanh toán an toàn và bảo mật</span>
+            </div>
+          </div>
+
+          <!-- Promo Code -->
+          <div class="promo-section">
+            <h3>Mã giảm giá</h3>
+            <div class="promo-input-group">
+              <input
+                type="text"
+                id="promoCode"
+                placeholder="Nhập mã giảm giá"
+              />
+              <button id="applyPromoBtn">Áp dụng</button>
+            </div>
+            <p id="promoMessage" class="promo-message"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Remove Confirmation Modal -->
+  <div id="removeModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-icon">
+        <i class="bx bx-trash"></i>
+      </div>
+      <h3>Xóa sản phẩm</h3>
+      <p>Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?</p>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="cancelRemove">Hủy</button>
+        <button class="btn-confirm" id="confirmRemove">Xóa</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+

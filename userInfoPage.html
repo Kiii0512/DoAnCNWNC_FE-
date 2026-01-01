@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thông tin cá nhân - Electronic Store</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="CSS/globalStyles.css" />
+  <link rel="stylesheet" href="CSS/topheader.css" />
+  <link rel="stylesheet" href="CSS/mainNav.css" />
+  <link rel="stylesheet" href="CSS/pages/userInfo.css" />
+  <link
+    href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- JS -->
+  <script type="module" src="components/topHeader.js"></script>
+  <script type="module" src="components/mainNav.js"></script>
+  <script type="module" src="JS/pages/userInfo.js"></script>
+</head>
+
+<body>
+  <div class="sticky-header-wrapper">
+    <top-header></top-header>
+    <main-nav></main-nav>
+  </div>
+
+  <main class="container user-info-container">
+    <div class="user-info-wrapper">
+      <div class="user-info-header">
+        <h1><i class="bx bxs-user"></i> Thông tin cá nhân</h1>
+        <p>Cập nhật thông tin tài khoản của bạn</p>
+      </div>
+
+      <form id="userInfoForm" class="user-info-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="customerId">Mã khách hàng</label>
+            <input
+              type="text"
+              id="customerId"
+              name="customerId"
+              readonly
+              class="readonly-input"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="accountId">Tài khoản ID</label>
+            <input
+              type="text"
+              id="accountId"
+              name="accountId"
+              readonly
+              class="readonly-input"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="customerName">Họ và tên <span class="required">*</span></label>
+          <input
+            type="text"
+            id="customerName"
+            name="customerName"
+            placeholder="Nhập họ và tên"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="customerEmail">Email <span class="required">*</span></label>
+            <input
+              type="email"
+              id="customerEmail"
+              name="customerEmail"
+              placeholder="Nhập email"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="customerPhone">Số điện thoại <span class="required">*</span></label>
+            <input
+              type="tel"
+              id="customerPhone"
+              name="customerPhone"
+              placeholder="Nhập số điện thoại"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="customerAddress">Địa chỉ <span class="required">*</span></label>
+          <textarea
+            id="customerAddress"
+            name="customerAddress"
+            placeholder="Nhập địa chỉ"
+            rows="3"
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="customerDOB">Ngày sinh</label>
+          <input
+            type="date"
+            id="customerDOB"
+            name="customerDOB"
+          />
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-save">
+            <i class="bx bxs-save"></i> Lưu thay đổi
+          </button>
+          <button type="button" class="btn-cancel" id="btnCancel">
+            Hủy
+          </button>
+        </div>
+      </form>
+
+      <!-- Change Password Section -->
+      <div class="change-password-section">
+        <h2><i class="bx bxs-lock-alt"></i> Đổi mật khẩu</h2>
+        <form id="changePasswordForm">
+          <div class="form-group">
+            <label for="currentPassword">Mật khẩu hiện tại</label>
+            <div class="password-input">
+              <input
+                type="password"
+                id="currentPassword"
+                name="currentPassword"
+                placeholder="Nhập mật khẩu hiện tại"
+                required
+              />
+              <button type="button" class="toggle-password" data-target="currentPassword">
+                <i class="bx bxs-hide"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="newPassword">Mật khẩu mới</label>
+              <div class="password-input">
+                <input
+                  type="password"
+                  id="newPassword"
+                  name="newPassword"
+                  placeholder="Nhập mật khẩu mới"
+                  required
+                />
+                <button type="button" class="toggle-password" data-target="newPassword">
+                  <i class="bx bxs-hide"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="confirmPassword">Xác nhận mật khẩu mới</label>
+              <div class="password-input">
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  placeholder="Nhập lại mật khẩu mới"
+                  required
+                />
+                <button type="button" class="toggle-password" data-target="confirmPassword">
+                  <i class="bx bxs-hide"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-change-password">
+              <i class="bx bxs-key"></i> Đổi mật khẩu
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+</body>
+</html>
+
