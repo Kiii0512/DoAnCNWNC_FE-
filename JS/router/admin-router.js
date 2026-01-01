@@ -1,4 +1,4 @@
-// JS/router/staff-router.js
+// JS/router/admin-router.js
 
 function loadRoute(route) {
   const app = document.querySelector('#app');

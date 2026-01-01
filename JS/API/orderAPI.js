@@ -1,83 +1,52 @@
-/* =========================
-   MOCK DATA (FAKE DATABASE)
-========================= */
+const BASE_URL = 'https://localhost:7155';
 
-let ORDERS = [
-  {
-    orderId: 'ORD0001',
-    customerName: 'Nguyễn Văn A',
-    createdAt: '2025-09-10',
-    totalAmount: 28990000,
-    status: 'PENDING',
-    items: [
-      { productName: 'iPhone 15 Pro', qty: 1, price: 28990000 }
-    ]
-  },
-  {
-    orderId: 'ORD0002',
-    customerName: 'Trần Thị B',
-    createdAt: '2025-09-11',
-    totalAmount: 15990000,
-    status: 'SHIPPING',
-    items: [
-      { productName: 'AirPods Pro', qty: 1, price: 15990000 }
-    ]
+function getToken() {
+  return localStorage.getItem('accessToken') || '';
+}
+
+async function request(path, { method = 'GET', body } = {}) {
+  const headers = { 'Content-Type': 'application/json' };
+  const token = getToken();
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined
+  });
+
+  const text = await res.text();
+  let data;
+  try { data = text ? JSON.parse(text) : null; } catch { data = text; }
+
+  if (!res.ok) {
+    const msg = data?.message || data?.Message || `HTTP ${res.status}`;
+    throw new Error(msg);
   }
-];
-
-/* =========================
-   UTILS
-========================= */
-function delay(ms = 300) {
-  return new Promise(res => setTimeout(res, ms));
+  return data;
 }
 
-/* =========================
-   GET ALL ORDERS
-========================= */
 export async function getOrders() {
-  await delay();
-  return JSON.parse(JSON.stringify(ORDERS)); // clone cho an toàn
+  const res = await request('/api/orders');
+  return res?.data ?? res?.Data ?? res;
 }
 
-/* =========================
-   GET ORDER BY ID
-========================= */
-export async function getOrderById(orderId) {
-  await delay();
-  return ORDERS.find(o => o.orderId === orderId) || null;
-}
-
-/* =========================
-   UPDATE ORDER STATUS
-========================= */
-export async function updateOrderStatus(orderId, status) {
-  await delay();
-
-  const order = ORDERS.find(o => o.orderId === orderId);
-  if (!order) throw new Error('Order not found');
-
-  order.status = status;
-
-  return {
-    success: true,
-    message: 'Cập nhật trạng thái thành công'
-  };
-}
-
-/* =========================
-   DELETE / CANCEL ORDER
-========================= */
 export async function deleteOrder(orderId) {
-  await delay();
+  return request(`/api/orders/${encodeURIComponent(orderId)}`, { method: 'DELETE' });
+}
 
-  const idx = ORDERS.findIndex(o => o.orderId === orderId);
-  if (idx === -1) throw new Error('Order not found');
+export async function confirmOrder(orderId) {
+  return request('/api/orders/confirm', { method: 'POST', body: { id: orderId } });
+}
 
-  ORDERS.splice(idx, 1);
+export async function shipOrder(orderId) {
+  return request('/api/orders/ship', { method: 'POST', body: { id: orderId } });
+}
 
-  return {
-    success: true,
-    message: 'Đã xóa đơn hàng'
-  };
+export async function cancelOrder(orderId) {
+  return request('/api/orders/cancel', { method: 'POST', body: { id: orderId } });
+}
+export async function getOrderById(orderId) {
+  const res = await request(`/api/orders/${encodeURIComponent(orderId)}`);
+  return res?.data ?? res?.Data ?? res;
 }

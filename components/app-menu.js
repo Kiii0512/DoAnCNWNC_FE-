@@ -8,7 +8,7 @@ class AppMenu extends HTMLElement {
 
               <!-- b. QUẢN LÝ SẢN PHẨM -->
               <a class="menu-item"
-                 href="#product"
+                 href="adminDashboard.html"
                  data-route="product"
                  title="Thêm mới, sửa, cập nhật giá, hình ảnh, tồn kho">
                 Quản lý sản phẩm
@@ -17,7 +17,7 @@ class AppMenu extends HTMLElement {
 
               <!-- c. QUẢN LÝ ĐƠN HÀNG -->
               <a class="menu-item"
-                 href="#order"
+                 href="adminOrder.html"
                  data-route="order"
                  title="Xác nhận, đóng gói và cập nhật trạng thái đơn hàng">
                 Quản lý đơn hàng
@@ -77,14 +77,22 @@ class AppMenu extends HTMLElement {
     this.updateArrows();
   }
 
-  setActiveFromLocation() {
-    const route = location.hash.replace('#', '');
-    const el =
-      this.items.find(x => x.dataset.route === route) ||
-      this.items[0];
+setActiveFromLocation() {
+  const path = location.pathname.toLowerCase();
 
-    this.setActiveElement(el);
-  }
+  let route = '';
+  if (path.includes('adminorder')) route = 'order';
+  else if (path.includes('adminproduct')) route = 'product';
+  else if (path.includes('adminfeedback')) route = 'feedback';
+  else if (path.includes('adminreport')) route = 'report';
+
+  const el =
+    this.items.find(x => x.dataset.route === route) ||
+    this.items[0];
+
+  this.setActiveElement(el);
+}
+
 
   /* ===============================
      SCROLL LOGIC
@@ -126,11 +134,12 @@ class AppMenu extends HTMLElement {
   this.items.forEach(a => {
     a.setAttribute('tabindex', '0');
 
-    a.onclick = (e) => {
-      e.preventDefault();               // 🔴 CHỐT HẠ
-      location.hash = a.dataset.route;  // ✅ product | order | feedback | report
-      this.setActiveElement(a);
-    };
+a.onclick = () => {
+  this.setActiveElement(a);
+  // để browser tự chuyển trang theo href
+};
+
+
 
     a.onkeydown = (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
