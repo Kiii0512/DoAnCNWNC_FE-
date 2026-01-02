@@ -206,6 +206,16 @@ class DiscountDrawer extends HTMLElement {
   populateForm() {
     if (!this.discount) return;
 
+    // Automatically deactivate expired discounts
+    const now = new Date();
+    const expireDate = new Date(this.discount.expireDate);
+    const isExpired = !isNaN(expireDate.getTime()) && expireDate < now;
+
+    if (isExpired && this.discount.isActive) {
+      console.warn('Discount has expired, automatically deactivating');
+      this.discount.isActive = false;
+    }
+
     this.querySelector('#discountName').value = this.discount.discountName || '';
     this.querySelector('#discountCode').value = this.discount.discountCode || '';
     this.querySelector('#discountDescription').value = this.discount.discountDescription || '';
@@ -223,8 +233,29 @@ class DiscountDrawer extends HTMLElement {
 
   formatDateTime(dateStr) {
     if (!dateStr) return '';
-    const date = new Date(dateStr);
-    return date.toISOString().slice(0, 16);
+
+    try {
+      // Handle different date formats
+      const date = new Date(dateStr);
+
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('Invalid date string:', dateStr);
+        return '';
+      }
+
+      // Format for datetime-local input (YYYY-MM-DDTHH:mm)
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+
+      return `${year}-${month}-${day}T${hours}:${minutes}`;
+    } catch (e) {
+      console.error('Error formatting date:', dateStr, e);
+      return '';
+    }
   }
 
   async handleSubmit(e) {
@@ -241,8 +272,14 @@ class DiscountDrawer extends HTMLElement {
     data.usageLimit = parseInt(data.usageLimit || 0);
     data.isActive = formData.has('isActive');
 
-    // Validation
-    if (!this.validate(data)) return;
+    // Validation with error handling
+    try {
+      if (!this.validate(data)) return;
+    } catch (validationError) {
+      console.error('Validation error:', validationError);
+      showToast(validationError.message || 'Dữ liệu không hợp lệ');
+      return;
+    }
 
     this.$submit.disabled = true;
     this.$submit.textContent = 'Đang xử lý...';
@@ -276,6 +313,7 @@ class DiscountDrawer extends HTMLElement {
 
     let isValid = true;
 
+    // Basic field validation
     if (!data.discountName?.trim()) {
       this.showError('discountName', 'Tên giảm giá là bắt buộc');
       isValid = false;
@@ -291,15 +329,102 @@ class DiscountDrawer extends HTMLElement {
       isValid = false;
     }
 
+    // Comprehensive date-time validation
     const startDate = new Date(data.startDate);
     const expireDate = new Date(data.expireDate);
+    const now = new Date();
 
-    if (startDate >= expireDate) {
-      this.showError('expireDate', 'Ngày hết hạn phải sau ngày bắt đầu');
+    // Check if dates are valid
+    if (!data.startDate || isNaN(startDate.getTime())) {
+      this.showError('startDate', 'Ngày bắt đầu không hợp lệ');
       isValid = false;
     }
 
+    if (!data.expireDate || isNaN(expireDate.getTime())) {
+      this.showError('expireDate', 'Ngày hết hạn không hợp lệ');
+      isValid = false;
+    }
+
+    if (isValid) {
+      // Check if start date is in the past (for both new and update discounts)
+      if (startDate < now) {
+        if (this.isEdit) {
+          throw new Error('Ngày bắt đầu không thể là quá khứ');
+        } else {
+          this.showError('startDate', 'Ngày bắt đầu không thể là quá khứ');
+          isValid = false;
+        }
+      }
+
+      // Check if expire date is after start date
+      if (expireDate <= startDate) {
+        this.showError('expireDate', 'Ngày hết hạn phải sau ngày bắt đầu ít nhất 1 phút');
+        isValid = false;
+      }
+
+      // Check for reasonable date ranges (not too far in the future)
+      const maxFutureDate = new Date();
+      maxFutureDate.setFullYear(maxFutureDate.getFullYear() + 5); // 5 years max
+
+      if (startDate > maxFutureDate) {
+        this.showError('startDate', 'Ngày bắt đầu không thể quá 5 năm trong tương lai');
+        isValid = false;
+      }
+
+      if (expireDate > maxFutureDate) {
+        this.showError('expireDate', 'Ngày hết hạn không thể quá 5 năm trong tương lai');
+        isValid = false;
+      }
+
+      // Check for minimum duration (at least 1 hour for both new and update discounts)
+      const minDuration = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour
+      if (expireDate < minDuration) {
+        if (this.isEdit) {
+          throw new Error('Ngày hết hạn phải ít nhất 1 giờ sau ngày bắt đầu');
+        } else {
+          this.showError('expireDate', 'Thời gian khuyến mãi phải ít nhất 1 giờ');
+          isValid = false;
+        }
+      }
+
+      // Check for leap year and other date edge cases
+      const startYear = startDate.getFullYear();
+      const expireYear = expireDate.getFullYear();
+
+      // Validate February 29th for leap years
+      if (startDate.getMonth() === 1 && startDate.getDate() === 29) {
+        if (!this.isLeapYear(startYear)) {
+          this.showError('startDate', 'Năm ' + startYear + ' không phải năm nhuận');
+          isValid = false;
+        }
+      }
+
+      if (expireDate.getMonth() === 1 && expireDate.getDate() === 29) {
+        if (!this.isLeapYear(expireYear)) {
+          this.showError('expireDate', 'Năm ' + expireYear + ' không phải năm nhuận');
+          isValid = false;
+        }
+      }
+
+      // Check for daylight saving time transitions
+      if (this.hasDSTTransition(startDate) || this.hasDSTTransition(expireDate)) {
+        // Allow but log warning - DST transitions are valid but may cause confusion
+        console.warn('Date includes DST transition - ensure times are correct');
+      }
+    }
+
     return isValid;
+  }
+
+  isLeapYear(year) {
+    return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+  }
+
+  hasDSTTransition(date) {
+    // Simple DST detection - in most locations, clocks change in March and November
+    const month = date.getMonth();
+    const day = date.getDate();
+    return (month === 2 && day >= 8 && day <= 15) || (month === 10 && day >= 1 && day <= 8);
   }
 
   showError(fieldName, message) {
@@ -321,4 +446,4 @@ class DiscountDrawer extends HTMLElement {
 }
 
 customElements.define('discount-drawer', DiscountDrawer);
-export default DiscountDrawer;
+export default DiscountDrawer;  
