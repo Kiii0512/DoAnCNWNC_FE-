@@ -4,18 +4,21 @@ import './order-detail-drawer.js';
 class OrderPage extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
-      <section class="card">
-        <div class="page-head" style="position:relative">
-          <h2>Quản lý đơn hàng</h2>
-        </div>
-
+      <section class="page">
+        <h2>Quản lý đơn hàng</h2>
         <order-table></order-table>
       </section>
-
-      <order-detail-drawer></order-detail-drawer>
     `;
+
+    const table = this.querySelector('order-table');
+
+    document.addEventListener('header-search', (e) => {
+      const keyword = (e?.detail?.keyword ?? '').trim();
+      table?.setKeyword?.(keyword);
+    });
   }
 }
-customElements.define('order-page', OrderPage);
 
+customElements.define('order-page', OrderPage);
 export default OrderPage;
+

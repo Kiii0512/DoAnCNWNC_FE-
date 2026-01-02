@@ -31,6 +31,11 @@ export async function getOrders() {
   return res?.data ?? res?.Data ?? res;
 }
 
+export async function getOrderById(orderId) {
+  const res = await request(`/api/orders/${encodeURIComponent(orderId)}`);
+  return res?.data ?? res?.Data ?? res;
+}
+
 export async function deleteOrder(orderId) {
   return request(`/api/orders/${encodeURIComponent(orderId)}`, { method: 'DELETE' });
 }
@@ -45,8 +50,4 @@ export async function shipOrder(orderId) {
 
 export async function cancelOrder(orderId) {
   return request('/api/orders/cancel', { method: 'POST', body: { id: orderId } });
-}
-export async function getOrderById(orderId) {
-  const res = await request(`/api/orders/${encodeURIComponent(orderId)}`);
-  return res?.data ?? res?.Data ?? res;
 }
