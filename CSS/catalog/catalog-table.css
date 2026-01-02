@@ -1,0 +1,44 @@
+.table-wrap{overflow:auto}
+
+.table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  background:#fff;
+  border:1px solid #eef2f7;
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.table th, .table td{
+  padding:12px 10px;
+  border-bottom:1px solid #eef2f7;
+  vertical-align:top;
+  text-align:left;
+  font-size:14px;
+}
+
+.table thead th{
+  background:#fafafa;
+  font-weight:700;
+}
+
+.table tbody tr:hover{background:#fcfcff}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  border:1px solid #e5e7eb;
+}
+.badge-on{background:#ecfdf5}
+.badge-off{background:#fef2f2}
+
+.btn-sm{
+  padding:6px 10px;
+  font-size:13px;
+}

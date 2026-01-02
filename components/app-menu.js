@@ -8,9 +8,9 @@ class AppMenu extends HTMLElement {
 
               <!-- b. QUẢN LÝ SẢN PHẨM -->
               <a class="menu-item"
-                 href="adminDashboard.html"
-                 data-route="product"
-                 title="Thêm mới, sửa, cập nhật giá, hình ảnh, tồn kho">
+                href="adminDashboard.html"
+                data-route="product"
+                title="Thêm mới, sửa, cập nhật giá, hình ảnh, tồn kho">
                 Quản lý sản phẩm
                 <span class="tag">PRODUCT</span>
               </a>
@@ -23,6 +23,16 @@ class AppMenu extends HTMLElement {
                 Quản lý đơn hàng
                 <span class="tag">ORDER</span>
               </a>
+
+              <!-- d. QUẢN LÝ DANH MỤC & THƯƠNG HIỆU -->
+              <a class="menu-item"
+                href="adminCatalog.html"
+                data-route="catalog"
+                  title="Quản lý danh mục (Category) và thương hiệu (Brand)">
+                Quản lý danh mục & thương hiệu
+                  <span class="tag">CATALOG</span>
+                </a>
+
 
               <!-- d. QUẢN LÝ KHUYẾN MÃI -->
               <a class="menu-item"
@@ -60,9 +70,9 @@ class AppMenu extends HTMLElement {
       </nav>
     `;
 
-    this.wrap  = this.querySelector('.scroll-wrap');
+    this.wrap = this.querySelector('.scroll-wrap');
     this.inner = this.querySelector('.scroll-inner');
-    this.left  = this.querySelector('.nav-arrow.left');
+    this.left = this.querySelector('.nav-arrow.left');
     this.right = this.querySelector('.nav-arrow.right');
     this.items = Array.from(this.querySelectorAll('.menu-item'));
 
@@ -91,10 +101,12 @@ setActiveFromLocation() {
 
   let route = '';
   if (path.includes('adminorder')) route = 'order';
-  else if (path.includes('adminproduct')) route = 'product';
   else if (path.includes('admindiscount')) route = 'discount';
+  else if (path.includes('admincatalog')) route = 'catalog';
+  else if (path.includes('admindashboard')) route = 'product';
   else if (path.includes('adminfeedback')) route = 'feedback';
   else if (path.includes('adminreport')) route = 'report';
+  else if (path.includes('admincatalog')) route = 'catalog';
 
   const el =
     this.items.find(x => x.dataset.route === route) ||
@@ -114,7 +126,7 @@ setActiveFromLocation() {
       this.right.hidden = true;
       return;
     }
-    this.left.hidden  = this.wrap.scrollLeft <= 4;
+    this.left.hidden = this.wrap.scrollLeft <= 4;
     this.right.hidden = this.wrap.scrollLeft >= maxScroll - 4;
   }
 
@@ -132,35 +144,35 @@ setActiveFromLocation() {
      EVENTS
   =============================== */
   bindEvents() {
-  this.left.onclick  = () => this.doScroll('left');
-  this.right.onclick = () => this.doScroll('right');
+    this.left.onclick = () => this.doScroll('left');
+    this.right.onclick = () => this.doScroll('right');
 
-  this.wrap.addEventListener('scroll', () =>
-    requestAnimationFrame(() => this.updateArrows())
-  );
+    this.wrap.addEventListener('scroll', () =>
+      requestAnimationFrame(() => this.updateArrows())
+    );
 
-  window.addEventListener('resize', () => this.updateArrows());
+    window.addEventListener('resize', () => this.updateArrows());
 
-  this.items.forEach(a => {
-    a.setAttribute('tabindex', '0');
+    this.items.forEach(a => {
+      a.setAttribute('tabindex', '0');
 
-a.onclick = () => {
-  this.setActiveElement(a);
-  // để browser tự chuyển trang theo href
-};
+      a.onclick = () => {
+        this.setActiveElement(a);
+        // để browser tự chuyển trang theo href
+      };
 
 
 
-    a.onkeydown = (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        a.click();
-      }
-    };
-  });
+      a.onkeydown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          a.click();
+        }
+      };
+    });
 
-  window.addEventListener('hashchange', () => this.setActiveFromLocation());
-}
+    window.addEventListener('hashchange', () => this.setActiveFromLocation());
+  }
 }
 
 customElements.define('app-menu', AppMenu);
