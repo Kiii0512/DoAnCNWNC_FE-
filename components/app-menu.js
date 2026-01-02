@@ -24,7 +24,16 @@ class AppMenu extends HTMLElement {
                 <span class="tag">ORDER</span>
               </a>
 
-              <!-- d. XỬ LÝ PHẢN HỒI -->
+              <!-- d. QUẢN LÝ KHUYẾN MÃI -->
+              <a class="menu-item"
+                 href="adminDiscount.html"
+                 data-route="discount"
+                 title="Quản lý các chương trình khuyến mãi và giảm giá">
+                Quản lý khuyến mãi
+                <span class="tag">PROMOTION</span>
+              </a>
+
+              <!-- e. XỬ LÝ PHẢN HỒI -->
               <a class="menu-item"
                  href="#feedback"
                  data-route="feedback"
@@ -83,6 +92,7 @@ setActiveFromLocation() {
   let route = '';
   if (path.includes('adminorder')) route = 'order';
   else if (path.includes('adminproduct')) route = 'product';
+  else if (path.includes('admindiscount')) route = 'discount';
   else if (path.includes('adminfeedback')) route = 'feedback';
   else if (path.includes('adminreport')) route = 'report';
 
