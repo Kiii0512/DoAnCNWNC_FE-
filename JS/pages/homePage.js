@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       grid.setAttribute('mode', 'home');
       grid.setAttribute('brand-id', brand.brandId);
       grid.setAttribute('title', `${brand.brandName} nổi bật`);
-      grid.setAttribute('limit', '4'); // 👈 mỗi brand tối đa 4 sp
+      grid.setAttribute('limit', '4'); // mỗi brand tối đa 4 sp
 
       container.appendChild(grid);
     });
