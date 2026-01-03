@@ -1,3 +1,380 @@
+// import employeeAPI from '../../JS/API/employeeAPI.js';
+// import { showToast } from '../../utils/toast.js';
+
+// class EmployeeTable extends HTMLElement {
+//   constructor() {
+//     super();
+//     this.employees = [];
+//   }
+
+//   connectedCallback() {
+//     if (this._inited) return;
+//     this._inited = true;
+
+//     this.renderLayout();
+//     this.bindEvents();
+//     this.load();
+//   }
+
+//   async load() {
+//     try {
+//       this.employees = await employeeAPI.getAll();
+//       this.renderTable();
+//     } catch (err) {
+//       console.error(err);
+//       showToast('Không tải được danh sách nhân viên', 'error');
+//     }
+//   }
+
+//   /* ================= RENDER ================= */
+
+//   renderLayout() {
+//     this.innerHTML = `
+//       <div class="employee-table">
+//         <div class="employee-table__head">
+//           <div>
+//             <h3 class="employee-table__title">Danh sách nhân viên</h3>
+//             <p class="employee-table__hint">Quản lý và theo dõi thông tin nhân viên</p>
+//           </div>
+//           <button class="btn btn--primary act-create">
+//             + Thêm nhân viên
+//           </button>
+//         </div>
+
+//         <div class="employee-table__wrap">
+//           <table>
+//             <thead>
+//               <tr>
+//                 <th>Tên</th>
+//                 <th>SĐT</th>
+//                 <th>Ngày sinh</th>
+//                 <th>Trạng thái</th>
+//                 <th>Hành động</th>
+//               </tr>
+//             </thead>
+//             <tbody class="et-tbody"></tbody>
+//           </table>
+//         </div>
+//       </div>
+//     `;
+//   }
+
+//   renderTable() {
+//     const tbody = this.querySelector('.et-tbody');
+//     if (!tbody) return;
+
+//     if (this.employees.length === 0) {
+//       tbody.innerHTML = `
+//         <tr>
+//           <td colspan="5" class="et-empty">Không có nhân viên</td>
+//         </tr>
+//       `;
+//       return;
+//     }
+
+//     tbody.innerHTML = this.employees.map(e => `
+//       <tr data-id="${e.staffId}">
+//         <td>${e.staffName}</td>
+//         <td>${e.phone}</td>
+//         <td>${this.formatDate(e.staffDOB)}</td>
+//         <td>
+//           <label class="switch">
+//             <input 
+//               type="checkbox" 
+//               class="status-toggle" 
+//               data-id="${e.staffId}"
+//               ${e.isActive ? 'checked' : ''}
+//             >
+//             <span class="slider"></span>
+//           </label>
+//         </td>
+//         <td>
+//           <button class="btn btn--ghost act-edit" data-id="${e.staffId}">
+//             Sửa
+//           </button>
+//         </td>
+//       </tr>
+//     `).join('');
+//   }
+
+//   formatDate(value) {
+//     if (!value) return '';
+//     return new Date(value).toLocaleDateString('vi-VN');
+//   }
+
+//   /* ================= EVENTS ================= */
+
+//   bindEvents() {
+//     // Create
+//     this.querySelector('.act-create')?.addEventListener('click', () => {
+//       document.querySelector('employee-drawer')?.openCreate();
+//     });
+
+//     // Event delegation cho tbody
+//     this.querySelector('.et-tbody')?.addEventListener('click', (e) => {
+//       if (e.target.classList.contains('act-edit')) {
+//         const id = e.target.dataset.id;
+//         document.querySelector('employee-drawer')?.openEdit(id);
+//       }
+//     });
+
+//     // Toggle status
+//     this.querySelector('.et-tbody')?.addEventListener('change', async (e) => {
+//       if (!e.target.classList.contains('status-toggle')) return;
+
+//       const checkbox = e.target;
+//       const staffId = checkbox.dataset.id;
+//       const newStatus = checkbox.checked;
+
+//       const employee = this.employees.find(
+//         e => String(e.staffId) === staffId
+//       );
+
+//       if (!employee) {
+//         checkbox.checked = !newStatus;
+//         showToast('Không tìm thấy nhân viên', 'error');
+//         return;
+//       }
+
+//       checkbox.disabled = true;
+
+//       try {
+//         await employeeAPI.updateStatus(staffId, newStatus);
+//         employee.isActive = newStatus;
+
+//         showToast(
+//           newStatus ? 'Đã kích hoạt nhân viên' : 'Đã vô hiệu hóa nhân viên',
+//           'success'
+//         );
+//       } catch (err) {
+//         console.error(err);
+//         checkbox.checked = !newStatus;
+//         showToast(err.message || 'Cập nhật thất bại', 'error');
+//       } finally {
+//         checkbox.disabled = false;
+//       }
+//     });
+//   }
+// }
+
+// customElements.define('employee-table', EmployeeTable);
+// export default EmployeeTable;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import employeeAPI from '../../JS/API/employeeAPI.js';
+// import { showToast } from '../../utils/toast.js';
+
+// class EmployeeTable extends HTMLElement {
+//   constructor() {
+//     super();
+//     this.employees = [];
+//   }
+
+//   connectedCallback() {
+//     if (this._inited) return;
+//     this._inited = true;
+
+//     this.renderLayout();
+//     this.bindEvents();
+//     this.load();
+//   }
+
+//   async load() {
+//     try {
+//       this.employees = await employeeAPI.getAll();
+//       this.renderTable();
+//     } catch (err) {
+//       console.error(err);
+//       showToast('Không tải được danh sách nhân viên', 'error');
+//     }
+//   }
+
+//   /* ================= RENDER ================= */
+
+//   renderLayout() {
+//     this.innerHTML = `
+//       <div class="employee-table">
+//         <div class="employee-table__head">
+//           <div>
+//             <h3 class="employee-table__title">Danh sách nhân viên</h3>
+//             <p class="employee-table__hint">Quản lý và theo dõi thông tin nhân viên</p>
+//           </div>
+//           <button class="btn btn--primary act-create">
+//             + Thêm nhân viên
+//           </button>
+//         </div>
+
+//         <div class="employee-table__wrap">
+//           <table>
+//             <thead>
+//               <tr>
+//                 <th>Tên</th>
+//                 <th>SĐT</th>
+//                 <th>Ngày sinh</th>
+//                 <th>Trạng thái</th>
+//                 <th>Hành động</th>
+//               </tr>
+//             </thead>
+//             <tbody class="et-tbody"></tbody>
+//           </table>
+//         </div>
+//       </div>
+//     `;
+//   }
+
+//   renderTable() {
+//     const tbody = this.querySelector('.et-tbody');
+//     if (!tbody) return;
+
+//     if (this.employees.length === 0) {
+//       tbody.innerHTML = `
+//         <tr>
+//           <td colspan="5" class="et-empty">Không có nhân viên</td>
+//         </tr>
+//       `;
+//       return;
+//     }
+
+//     tbody.innerHTML = this.employees.map(e => `
+//       <tr data-id="${e.staffId}">
+//         <td>${e.staffName}</td>
+//         <td>${e.phone}</td>
+//         <td>${this.formatDate(e.staffDOB)}</td>
+//         <td>
+//           <label class="switch">
+//             <input 
+//               type="checkbox"
+//               class="status-toggle"
+//               data-id="${e.staffId}"
+//               ${e.isActive ? 'checked' : ''}
+//             >
+//             <span class="slider"></span>
+//           </label>
+//         </td>
+//         <td>
+//           <button class="btn btn--ghost act-edit" data-id="${e.staffId}">
+//             Sửa
+//           </button>
+//         </td>
+//       </tr>
+//     `).join('');
+//   }
+
+//   formatDate(value) {
+//     if (!value) return '';
+//     return new Date(value).toLocaleDateString('vi-VN');
+//   }
+
+//   /* ================= EVENTS ================= */
+
+//   bindEvents() {
+//     // Create
+//     this.querySelector('.act-create')?.addEventListener('click', () => {
+//       document.querySelector('employee-drawer')?.openCreate();
+//     });
+
+//     // Edit (event delegation)
+//     this.querySelector('.et-tbody')?.addEventListener('click', (e) => {
+//       if (e.target.classList.contains('act-edit')) {
+//         const id = e.target.dataset.id;
+//         document.querySelector('employee-drawer')?.openEdit(id);
+//       }
+//     });
+
+//     // ===== SWITCH = SOFT DELETE =====
+//     this.querySelector('.et-tbody')?.addEventListener('change', async (e) => {
+//       if (!e.target.classList.contains('status-toggle')) return;
+
+//       const checkbox = e.target;
+//       const staffId = checkbox.dataset.id;
+//       const isChecked = checkbox.checked;
+
+//       checkbox.disabled = true;
+
+//       try {
+//         if (!isChecked) {
+//           // OFF → SOFT DELETE
+//           await employeeAPI.disable(staffId);
+//           showToast('Đã vô hiệu hóa nhân viên', 'success');
+//         } else {
+//           // ON → RESTORE (nếu backend có)
+//           if (!employeeAPI.restore) {
+//             throw new Error('Chức năng khôi phục chưa hỗ trợ');
+//           }
+//           await employeeAPI.restore(staffId);
+//           showToast('Đã kích hoạt nhân viên', 'success');
+//         }
+
+//         await this.load(); // reload để đồng bộ DB
+//       } catch (err) {
+//         console.error(err);
+//         checkbox.checked = !isChecked; // rollback UI
+//         showToast(err.message || 'Thao tác thất bại', 'error');
+//       } finally {
+//         checkbox.disabled = false;
+//       }
+//     });
+//   }
+// }
+
+// customElements.define('employee-table', EmployeeTable);
+// export default EmployeeTable;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import employeeAPI from '../../JS/API/employeeAPI.js';
 import { showToast } from '../../utils/toast.js';
 
@@ -11,21 +388,24 @@ class EmployeeTable extends HTMLElement {
     if (this._inited) return;
     this._inited = true;
 
-    this.render();
+    this.renderLayout();
+    this.bindEvents();
     this.load();
   }
-
+  
   async load() {
     try {
       this.employees = await employeeAPI.getAll();
       this.renderTable();
-    } catch (e) {
-      console.error(e);
-      showToast('Không tải được danh sách nhân viên');
+    } catch (err) {
+      console.error(err);
+      showToast('Không tải được danh sách nhân viên', 'error');
     }
   }
 
-  render() {
+  /* ================= RENDER ================= */
+
+  renderLayout() {
     this.innerHTML = `
       <div class="employee-table">
         <div class="employee-table__head">
@@ -33,36 +413,27 @@ class EmployeeTable extends HTMLElement {
             <h3 class="employee-table__title">Danh sách nhân viên</h3>
             <p class="employee-table__hint">Quản lý và theo dõi thông tin nhân viên</p>
           </div>
-          <div class="employee-table__tools">
-            <button class="btn btn--primary act-create">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 5v14M5 12h14"/>
-              </svg>
-              Thêm nhân viên
-            </button>
-          </div>
+          <button class="btn btn--primary act-create">
+            + Thêm nhân viên
+          </button>
         </div>
 
         <div class="employee-table__wrap">
-          <table class="employee-table">
+          <table>
             <thead>
               <tr>
-                <th>Tên nhân viên</th>
-                <th>Số điện thoại</th>
+                <th>Tên</th>
+                <th>SĐT</th>
                 <th>Ngày sinh</th>
                 <th>Trạng thái</th>
                 <th>Hành động</th>
               </tr>
             </thead>
-            <tbody class="et-tbody">
-              <!-- Rows will be inserted here -->
-            </tbody>
+            <tbody class="et-tbody"></tbody>
           </table>
         </div>
       </div>
     `;
-
-    this.bindEvents();
   }
 
   renderTable() {
@@ -72,160 +443,94 @@ class EmployeeTable extends HTMLElement {
     if (this.employees.length === 0) {
       tbody.innerHTML = `
         <tr>
-          <td colspan="5" class="et-empty">Không có nhân viên nào</td>
+          <td colspan="5" class="et-empty">Không có nhân viên</td>
         </tr>
       `;
       return;
     }
 
-    tbody.innerHTML = this.employees.map(employee => `
-      <tr data-id="${employee.staffId}">
-        <td>${employee.staffName}</td>
-        <td>${employee.phone}</td>
-        <td>${this.formatDate(employee.staffDOB)}</td>
+    tbody.innerHTML = this.employees.map(e => `
+      <tr data-id="${e.staffId}">
+        <td>${e.staffName}</td>
+        <td>${e.phone}</td>
+        <td>${this.formatDate(e.staffDOB)}</td>
         <td>
           <label class="switch">
-            <input type="checkbox" class="status-toggle" data-id="${employee.staffId}" ${employee.isActive ? 'checked' : ''}>
+            <input 
+              type="checkbox"
+              class="status-toggle"
+              data-id="${e.staffId}"
+              ${e.isActive ? 'checked' : ''}
+            >
             <span class="slider"></span>
           </label>
         </td>
         <td>
-          <button class="btn btn--ghost act-edit" data-id="${employee.staffId}">Sửa</button>
+          <button class="btn btn--ghost act-edit" data-id="${e.staffId}">
+            Sửa
+          </button>
         </td>
       </tr>
     `).join('');
-
-    this.bindRowEvents();
   }
 
-  formatDate(dateString) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('vi-VN');
+  formatDate(value) {
+    if (!value) return '';
+    return new Date(value).toLocaleDateString('vi-VN');
   }
+
+  /* ================= EVENTS ================= */
 
   bindEvents() {
-    // No search input in this table, but keeping for consistency
-  }
-
-  bindRowEvents() {
-    // Create button
-    const createBtn = this.querySelector('.act-create');
-    if (createBtn) {
-      createBtn.onclick = () => {
-        const drawer = document.querySelector('employee-drawer');
-        if (drawer) drawer.openCreate();
-      };
-    }
-
-    // Edit buttons
-    this.querySelectorAll('.act-edit').forEach(btn => {
-      btn.onclick = () => {
-        const staffId = btn.dataset.id;
-        const drawer = document.querySelector('employee-drawer');
-        if (drawer) drawer.openEdit(staffId);
-      };
+    // Create
+    this.querySelector('.act-create')?.addEventListener('click', () => {
+      document.querySelector('employee-drawer')?.openCreate();
     });
 
-    // Delete buttons
-    this.querySelectorAll('.act-delete').forEach(btn => {
-      btn.onclick = async () => {
-        const staffId = btn.dataset.id;
-        if (confirm('Bạn có chắc chắn muốn xóa nhân viên này?')) {
-          try {
-            await employeeAPI.delete(staffId);
-            showToast('Đã xóa nhân viên thành công');
-            await this.load();
-          } catch (e) {
-            console.error(e);
-            showToast('Xóa nhân viên thất bại');
-          }
-        }
-      };
+    // Edit
+    this.querySelector('.et-tbody')?.addEventListener('click', (e) => {
+      if (e.target.classList.contains('act-edit')) {
+        document.querySelector('employee-drawer')
+          ?.openEdit(e.target.dataset.id);
+      }
     });
 
-    // Status toggle
-    this.querySelectorAll('.status-toggle').forEach(checkbox => {
-      checkbox.onchange = async () => {
-        const staffId = checkbox.dataset.id;
-        const newStatus = checkbox.checked;
+    // Toggle status
+    this.querySelector('.et-tbody')?.addEventListener('change', async (e) => {
+      if (!e.target.classList.contains('status-toggle')) return;
 
-        // Disable the checkbox during API call to prevent multiple clicks
-        checkbox.disabled = true;
+      const checkbox = e.target;
+      const staffId = checkbox.dataset.id;
+      const isActive = checkbox.checked;
 
-        try {
-          const employee = this.employees.find(e => e.staffId === staffId);
-          if (!employee) {
-            showToast('Không tìm thấy nhân viên');
-            checkbox.disabled = false;
-            return;
-          }
+      const employee = this.employees.find(
+        e => String(e.staffId) === staffId
+      );
 
-          // For status toggle, we need to update the employee
-          // Since the API doesn't have a separate toggle endpoint, we'll use update
-          const updatedEmployee = { ...employee, isActive: newStatus };
-          await employeeAPI.update(staffId, {
-            staffId: updatedEmployee.staffId,
-            staffName: updatedEmployee.staffName,
-            phone: updatedEmployee.phone,
-            staffDOB: updatedEmployee.staffDOB.split('T')[0], // Format date for backend DateOnly
-            isActive: newStatus  // Include the status change
-          });
+      if (!employee) {
+        checkbox.checked = !isActive;
+        showToast('Không tìm thấy nhân viên', 'error');
+        return;
+      }
 
-          showToast(newStatus ? 'Đã kích hoạt nhân viên' : 'Đã vô hiệu hóa nhân viên');
-          await this.load();
-        } catch (e) {
-          console.error(e);
-          showToast(e?.message || 'Cập nhật thất bại');
-          // Revert the checkbox state on error
-          checkbox.checked = !newStatus;
-        } finally {
-          // Re-enable the checkbox
-          checkbox.disabled = false;
-        }
-      };
+      checkbox.disabled = true;
+
+      try {
+        await employeeAPI.updateStatus(staffId, isActive);
+        employee.isActive = isActive;
+
+        showToast(
+          isActive ? 'Đã kích hoạt nhân viên' : 'Đã vô hiệu hóa nhân viên',
+          'success'
+        );
+      } catch (err) {
+        console.error('Error updating status:', err);
+        checkbox.checked = !isActive;
+        showToast(err.message || 'Cập nhật trạng thái thất bại', 'error');
+      } finally {
+        checkbox.disabled = false;
+      }
     });
-  }
-
-  filterEmployees(query) {
-    const filtered = this.employees.filter(employee =>
-      employee.staffName.toLowerCase().includes(query.toLowerCase()) ||
-      employee.phone.toLowerCase().includes(query.toLowerCase())
-    );
-    this.renderFilteredTable(filtered);
-  }
-
-  renderFilteredTable(filteredEmployees) {
-    const tbody = this.querySelector('.et-tbody');
-    if (!tbody) return;
-
-    if (filteredEmployees.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="5" class="et-empty">Không tìm thấy nhân viên nào</td>
-        </tr>
-      `;
-      return;
-    }
-
-    tbody.innerHTML = filteredEmployees.map(employee => `
-      <tr data-id="${employee.staffId}">
-        <td>${employee.staffName}</td>
-        <td>${employee.phone}</td>
-        <td>${this.formatDate(employee.staffDOB)}</td>
-        <td>
-          <label class="switch">
-            <input type="checkbox" class="status-toggle" data-id="${employee.staffId}" ${employee.isActive ? 'checked' : ''}>
-            <span class="slider"></span>
-          </label>
-        </td>
-        <td>
-          <button class="btn btn--ghost act-edit" data-id="${employee.staffId}">Sửa</button>
-        </td>
-      </tr>
-    `).join('');
-
-    this.bindRowEvents();
   }
 }
 

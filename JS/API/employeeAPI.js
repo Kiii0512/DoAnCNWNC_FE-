@@ -1,120 +1,118 @@
-import { API_BASE_URL } from '../config.js';
+export const API_BASE_URL = 'https://localhost:7155/api';
+
+function authHeaders() {
+  const token = localStorage.getItem('accesstoken');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
 class EmployeeAPI {
   constructor() {
     this.baseURL = `${API_BASE_URL}/admin/accounts`;
   }
 
-  async getAll() {
-    try {
-      const response = await fetch(`${this.baseURL}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add authorization header if needed
-        },
-      });
+  /* =========================
+     🔁 STATUS TOGGLE
+     Backend: PUT /accounts/{id}/status?isActive=true/false
+     ========================= */
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+  /**
+   * Toggle trạng thái nhân viên (active/inactive)
+   */
+  async updateStatus(id, isActive) {
+    const response = await fetch(`${this.baseURL}/${id}/status?isActive=${isActive}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders()
       }
+    });
 
-      const result = await response.json();
-      return result.data || [];
-    } catch (error) {
-      console.error('Error fetching employees:', error);
-      throw error;
+    if (!response.ok) {
+      let message = isActive ? 'Kích hoạt nhân viên thất bại' : 'Vô hiệu hóa nhân viên thất bại';
+      try {
+        const err = await response.json();
+        message = err.message || message;
+      } catch {}
+      throw new Error(message);
     }
+
+    return response.json();
+  }
+
+  /* =========================
+     📥 READ
+     ========================= */
+
+  async getAll() {
+    const response = await fetch(this.baseURL, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders()
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result.data || [];
   }
 
   async getById(id) {
-    try {
-      const response = await fetch(`${this.baseURL}/${id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add authorization header if needed
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    const response = await fetch(`${this.baseURL}/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders()
       }
+    });
 
-      const result = await response.json();
-      return result.data;
-    } catch (error) {
-      console.error('Error fetching employee:', error);
-      throw error;
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
     }
+
+    const result = await response.json();
+    return result.data;
   }
 
+  /* =========================
+     ✏️ CREATE / UPDATE
+     ========================= */
+
   async create(employeeData) {
-    try {
-      const response = await fetch(`${this.baseURL}/create-staff`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add authorization header if needed
-        },
-        body: JSON.stringify(employeeData),
-      });
+    const response = await fetch(`${this.baseURL}/create-staff`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders()
+      },
+      body: JSON.stringify(employeeData)
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('Error creating employee:', error);
-      throw error;
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
     }
+
+    return response.json();
   }
 
   async update(id, employeeData) {
-    try {
-      const response = await fetch(`${this.baseURL}/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add authorization header if needed
-        },
-        body: JSON.stringify(employeeData),
-      });
+    const response = await fetch(`${this.baseURL}/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders()
+      },
+      body: JSON.stringify(employeeData)
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('Error updating employee:', error);
-      throw error;
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
     }
-  }
 
-  async delete(id) {
-    try {
-      const response = await fetch(`${this.baseURL}/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add authorization header if needed
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('Error deleting employee:', error);
-      throw error;
-    }
+    return response.json();
   }
 }
 

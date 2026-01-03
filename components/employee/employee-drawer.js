@@ -14,33 +14,33 @@ class EmployeeDrawer extends HTMLElement {
     this._inited = true;
 
     this.innerHTML = `
-      <div class="employee-drawer__overlay" id="overlay">
-        <div class="employee-drawer__panel" id="panel">
-          <div class="employee-drawer__header">
+      <div class="od-overlay" id="overlay" hidden>
+        <div class="od-drawer" id="panel">
+          <div class="od-head">
             <div>
-              <h2 class="employee-drawer__title" id="drawerTitle">Thêm nhân viên</h2>
-              <p class="employee-drawer__subtitle" id="drawerSubtitle">
+              <h2 id="drawerTitle">Thêm nhân viên</h2>
+              <p id="drawerSubtitle" class="drawer-subtitle">
                 Điền thông tin nhân viên mới
               </p>
             </div>
-            <button class="employee-drawer__close" id="closeBtn">
+            <button id="closeBtn">
               ✕
             </button>
           </div>
 
-          <div class="employee-drawer__body">
-            <form class="employee-form" id="employeeForm">
-              <div class="form-group">
+          <div class="od-body">
+            <form class="od-form" id="employeeForm">
+              <div class="od-field">
                 <label for="staffName">Tên nhân viên *</label>
                 <input id="staffName" name="staffName" required />
               </div>
 
-              <div class="form-group">
+              <div class="od-field">
                 <label for="phone">Số điện thoại *</label>
                 <input id="phone" name="phone" required />
               </div>
 
-              <div class="form-group">
+              <div class="od-field">
                 <label for="staffDOB">Ngày sinh *</label>
                 <input type="date" id="staffDOB" name="staffDOB" required />
               </div>
@@ -55,9 +55,9 @@ class EmployeeDrawer extends HTMLElement {
             </form>
           </div>
 
-          <div class="employee-drawer__actions">
-            <button id="cancelBtn">Hủy</button>
-            <button id="saveBtn">Lưu</button>
+          <div class="od-actions">
+            <button id="cancelBtn" class="btn btn--secondary">Hủy</button>
+            <button id="saveBtn" class="btn btn--primary">Lưu</button>
           </div>
         </div>
       </div>
@@ -114,26 +114,30 @@ class EmployeeDrawer extends HTMLElement {
 
     try {
       this.employee = await employeeAPI.getById(staffId);
-      if (!this.employee) return showToast('Không tìm thấy nhân viên');
+      if (!this.employee) {
+        showToast('Không tìm thấy nhân viên', 'error');
+        return;
+      }
 
       this.populateForm();
       this.show();
     } catch (e) {
-      showToast('Không tải được thông tin nhân viên');
+      console.error('Error loading employee:', e);
+      showToast(e.message || 'Không tải được thông tin nhân viên', 'error');
     }
   }
 
   show() {
     this._open = true;
-    this.$overlay.classList.add('employee-drawer__overlay--visible');
-    this.$panel.classList.add('employee-drawer__panel--visible');
+    this.$overlay.removeAttribute('hidden');
+    this.$panel.setAttribute('aria-hidden', 'false');
     document.body.classList.add('no-scroll');
   }
 
   close() {
     this._open = false;
-    this.$overlay.classList.remove('employee-drawer__overlay--visible');
-    this.$panel.classList.remove('employee-drawer__panel--visible');
+    this.$overlay.setAttribute('hidden', '');
+    this.$panel.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('no-scroll');
   }
 
@@ -157,6 +161,12 @@ class EmployeeDrawer extends HTMLElement {
     const data = Object.fromEntries(formData);
 
     // Convert isActive to boolean (backend expects boolean, not string)
+    data.isActive = data.isActive === 'on';
+
+    // Validate form data before submitting
+    if (!this.validate(data)) {
+      return; // Stop if validation fails
+    }
 
     this.$submit.disabled = true;
 
@@ -175,7 +185,7 @@ class EmployeeDrawer extends HTMLElement {
       document.querySelector('employee-table')?.load();
       this.close();
     } catch (e) {
-      showToast('Thao tác thất bại');
+      showToast(e.message || 'Thao tác thất bại');
     } finally {
       this.$submit.disabled = false;
     }
@@ -190,8 +200,8 @@ class EmployeeDrawer extends HTMLElement {
       ok = false;
     }
 
-    if (!/^(\+84|84|0)[3|5|7|8|9][0-9]{8}$/.test(data.phone || '')) {
-      this.showError('phone', 'Số điện thoại không hợp lệ');
+    if (!/^[0-9]{10}$/.test(data.phone || '')) {
+      this.showError('phone', 'Số điện thoại phải có đúng 10 chữ số');
       ok = false;
     }
 
@@ -204,17 +214,17 @@ class EmployeeDrawer extends HTMLElement {
   }
 
   showError(id, msg) {
-    const field = this.querySelector(`#${id}`).closest('.form-group');
-    field.classList.add('form-group--error');
+    const field = this.querySelector(`#${id}`).closest('.od-field');
+    field.classList.add('od-field--error');
     const err = document.createElement('div');
-    err.className = 'field-error';
+    err.className = 'od-error';
     err.textContent = msg;
     field.appendChild(err);
   }
 
   clearErrors() {
-    this.querySelectorAll('.form-group--error').forEach(e => e.classList.remove('form-group--error'));
-    this.querySelectorAll('.field-error').forEach(e => e.remove());
+    this.querySelectorAll('.od-field--error').forEach(e => e.classList.remove('od-field--error'));
+    this.querySelectorAll('.od-error').forEach(e => e.remove());
   }
 }
 
