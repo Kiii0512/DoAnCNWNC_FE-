@@ -63,9 +63,10 @@ class AppMenu extends HTMLElement {
 
               <!-- e. BÁO CÁO DOANH THU -->
               <a class="menu-item"
-                 href="#report"
-                 data-route="report"
-                 title="Xem báo cáo doanh thu">
+                href="adminReport.html"
+                data-route="report"
+                title="Xem báo cáo doanh thu">
+
                 Báo cáo doanh thu
                 <span class="tag">REPORT</span>
               </a>

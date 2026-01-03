@@ -17,7 +17,7 @@ class CategoryTable extends HTMLElement {
 
   render() {
     const rows = (this.categories || []).map(c => {
-      const checked = c.isActive === false ? '' : 'checked';
+        const checked = c.isActive ? 'checked' : '';
       return `
         <tr>
           <td class="col-id">${c.categoryId ?? ''}</td>

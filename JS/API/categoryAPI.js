@@ -35,10 +35,17 @@ export async function updateCategory(payload) {
 }
 
 export async function setCategoryActive(category, isActive) {
-  return updateCategory({
-    categoryId: category.categoryId,
-    categoryName: category.categoryName,
-    categoryDescription: category.categoryDescription,
-    isActive
+  const res = await fetch(`${API_BASE}/categories/status`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      categoryId: category.categoryId,
+      isActive: isActive
+    })
   });
+
+  const json = await readJson(res);
+  if (!res.ok) throw new Error(json?.message || 'Update category status failed');
+  return json;
 }
+
