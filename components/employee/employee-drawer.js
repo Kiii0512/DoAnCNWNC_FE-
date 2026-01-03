@@ -19,30 +19,30 @@ class EmployeeDrawer extends HTMLElement {
           <div class="employee-drawer__header">
             <div>
               <h2 class="employee-drawer__title" id="drawerTitle">Thêm nhân viên</h2>
-              <p class="employee-drawer__subtitle" id="drawerSubtitle">Điền thông tin nhân viên mới</p>
+              <p class="employee-drawer__subtitle" id="drawerSubtitle">
+                Điền thông tin nhân viên mới
+              </p>
             </div>
             <button class="employee-drawer__close" id="closeBtn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 6L6 18M6 6l12 12"/>
-              </svg>
+              ✕
             </button>
           </div>
 
           <div class="employee-drawer__body">
             <form class="employee-form" id="employeeForm">
               <div class="form-group">
-                <label class="form-label" for="staffName">Tên nhân viên *</label>
-                <input type="text" class="form-input" id="staffName" name="staffName" required>
+                <label for="staffName">Tên nhân viên *</label>
+                <input id="staffName" name="staffName" required />
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="phone">Số điện thoại *</label>
-                <input type="tel" class="form-input" id="phone" name="phone" required>
+                <label for="phone">Số điện thoại *</label>
+                <input id="phone" name="phone" required />
               </div>
 
               <div class="form-group">
-                <label class="form-label" for="staffDOB">Ngày sinh *</label>
-                <input type="date" class="form-input" id="staffDOB" name="staffDOB" required>
+                <label for="staffDOB">Ngày sinh *</label>
+                <input type="date" id="staffDOB" name="staffDOB" required />
               </div>
 
               <div class="status-toggle-group">
@@ -56,13 +56,8 @@ class EmployeeDrawer extends HTMLElement {
           </div>
 
           <div class="employee-drawer__actions">
-            <button class="btn btn--secondary" id="cancelBtn">Hủy</button>
-            <button class="btn btn--primary" id="saveBtn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 13l4 4L19 7"/>
-              </svg>
-              Lưu
-            </button>
+            <button id="cancelBtn">Hủy</button>
+            <button id="saveBtn">Lưu</button>
           </div>
         </div>
       </div>
@@ -77,17 +72,24 @@ class EmployeeDrawer extends HTMLElement {
     this.$subtitle = this.querySelector('#drawerSubtitle');
     this.$form = this.querySelector('#employeeForm');
 
+    /* ================= FIX QUAN TRỌNG ================= */
+    // ❗ Chặn click trong panel không bubble ra overlay
+    this.$panel.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    // Click nền mờ → đóng drawer
+    this.$overlay.addEventListener('click', () => this.close());
+    /* ================================================== */
+
     this.$close.onclick = () => this.close();
-    this.$overlay.onclick = () => this.close();
     this.$cancel.onclick = () => this.close();
     this.$submit.onclick = (e) => this.handleSubmit(e);
 
-    // Prevent form submission on Enter key to allow typing
-    this.$form.onkeydown = (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-      }
-    };
+    // Không submit khi bấm Enter
+    this.$form.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') e.preventDefault();
+    });
 
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && this._open) this.close();
@@ -112,16 +114,11 @@ class EmployeeDrawer extends HTMLElement {
 
     try {
       this.employee = await employeeAPI.getById(staffId);
-
-      if (!this.employee) {
-        showToast('Không tìm thấy nhân viên');
-        return;
-      }
+      if (!this.employee) return showToast('Không tìm thấy nhân viên');
 
       this.populateForm();
       this.show();
     } catch (e) {
-      console.error(e);
       showToast('Không tải được thông tin nhân viên');
     }
   }
@@ -146,19 +143,11 @@ class EmployeeDrawer extends HTMLElement {
   }
 
   populateForm() {
-    if (!this.employee) return;
-
     this.querySelector('#staffName').value = this.employee.staffName || '';
     this.querySelector('#phone').value = this.employee.phone || '';
-    this.querySelector('#staffDOB').value = this.formatDate(this.employee.staffDOB);
-    this.clearErrors();
-  }
-
-  formatDate(dateString) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return '';
-    return date.toISOString().split('T')[0];
+    this.querySelector('#staffDOB').value =
+      this.employee.staffDOB?.split('T')[0] || '';
+    this.querySelector('#isActive').checked = this.employee.isActive ?? true;
   }
 
   async handleSubmit(e) {
@@ -167,111 +156,65 @@ class EmployeeDrawer extends HTMLElement {
     const formData = new FormData(this.$form);
     const data = Object.fromEntries(formData);
 
-    // Validation
-    if (!this.validate(data)) return;
+    // Convert isActive to boolean (backend expects boolean, not string)
 
     this.$submit.disabled = true;
-    this.$submit.textContent = 'Đang xử lý...';
 
     try {
       if (this.isEdit) {
-        // Update request includes staffId
-        const updateData = {
+        await employeeAPI.update(this.employee.staffId, {
           staffId: this.employee.staffId,
-          staffName: data.staffName,
-          phone: data.phone,
-          staffDOB: data.staffDOB
-        };
-        await employeeAPI.update(this.employee.staffId, updateData);
+          ...data
+        });
         showToast('Đã cập nhật nhân viên');
       } else {
-        // Create request
-        const createData = {
-          phone: data.phone,
-          staffName: data.staffName,
-          staffDOB: data.staffDOB
-        };
-        await employeeAPI.create(createData);
-        showToast('Đã thêm nhân viên mới');
+        await employeeAPI.create(data);
+        showToast('Đã thêm nhân viên');
       }
 
-      // Refresh table
-      const table = document.querySelector('employee-table');
-      if (table) table.load();
-
+      document.querySelector('employee-table')?.load();
       this.close();
     } catch (e) {
-      console.error(e);
-      showToast(e?.message || 'Thao tác thất bại');
+      showToast('Thao tác thất bại');
     } finally {
       this.$submit.disabled = false;
-      this.$submit.textContent = this.isEdit ? 'Cập nhật' : 'Thêm';
     }
   }
 
   validate(data) {
     this.clearErrors();
-    let isValid = true;
+    let ok = true;
 
-    // Name validation
     if (!data.staffName?.trim()) {
-      this.showError('staffName', 'Tên nhân viên là bắt buộc');
-      isValid = false;
-    } else if (data.staffName.trim().length < 2) {
-      this.showError('staffName', 'Tên nhân viên phải có ít nhất 2 ký tự');
-      isValid = false;
+      this.showError('staffName', 'Tên nhân viên bắt buộc');
+      ok = false;
     }
 
-    // Phone validation
-    if (!data.phone?.trim()) {
-      this.showError('phone', 'Số điện thoại là bắt buộc');
-      isValid = false;
-    } else if (!/^(\+84|84|0)[3|5|7|8|9][0-9]{8}$/.test(data.phone.trim())) {
+    if (!/^(\+84|84|0)[3|5|7|8|9][0-9]{8}$/.test(data.phone || '')) {
       this.showError('phone', 'Số điện thoại không hợp lệ');
-      isValid = false;
+      ok = false;
     }
 
-    // Date of birth validation
     if (!data.staffDOB) {
-      this.showError('staffDOB', 'Ngày sinh là bắt buộc');
-      isValid = false;
-    } else {
-      const dob = new Date(data.staffDOB);
-      const today = new Date();
-      const age = today.getFullYear() - dob.getFullYear();
-      if (age < 18) {
-        this.showError('staffDOB', 'Nhân viên phải từ 18 tuổi trở lên');
-        isValid = false;
-      } else if (age > 65) {
-        this.showError('staffDOB', 'Tuổi nhân viên không được vượt quá 65');
-        isValid = false;
-      }
+      this.showError('staffDOB', 'Ngày sinh bắt buộc');
+      ok = false;
     }
 
-    return isValid;
+    return ok;
   }
 
-  showError(fieldName, message) {
-    const field = this.querySelector(`#${fieldName}`).closest('.form-group');
+  showError(id, msg) {
+    const field = this.querySelector(`#${id}`).closest('.form-group');
     field.classList.add('form-group--error');
-    let errorEl = field.querySelector('.field-error');
-    if (!errorEl) {
-      errorEl = document.createElement('div');
-      errorEl.className = 'field-error';
-      errorEl.style.cssText = `
-        color: #ef4444;
-        font-size: 12px;
-        margin-top: 4px;
-        display: block;
-      `;
-      field.appendChild(errorEl);
-    }
-    errorEl.textContent = message;
+    const err = document.createElement('div');
+    err.className = 'field-error';
+    err.textContent = msg;
+    field.appendChild(err);
   }
 
   clearErrors() {
-    this.querySelectorAll('.form-group--error').forEach(el => el.classList.remove('form-group--error'));
-    this.querySelectorAll('.field-error').forEach(el => el.remove());
+    this.querySelectorAll('.form-group--error').forEach(e => e.classList.remove('form-group--error'));
+    this.querySelectorAll('.field-error').forEach(e => e.remove());
   }
 }
 

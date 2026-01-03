@@ -149,10 +149,15 @@ class EmployeeTable extends HTMLElement {
       checkbox.onchange = async () => {
         const staffId = checkbox.dataset.id;
         const newStatus = checkbox.checked;
+
+        // Disable the checkbox during API call to prevent multiple clicks
+        checkbox.disabled = true;
+
         try {
           const employee = this.employees.find(e => e.staffId === staffId);
           if (!employee) {
             showToast('Không tìm thấy nhân viên');
+            checkbox.disabled = false;
             return;
           }
 
@@ -163,7 +168,8 @@ class EmployeeTable extends HTMLElement {
             staffId: updatedEmployee.staffId,
             staffName: updatedEmployee.staffName,
             phone: updatedEmployee.phone,
-            staffDOB: updatedEmployee.staffDOB
+            staffDOB: updatedEmployee.staffDOB.split('T')[0], // Format date for backend DateOnly
+            isActive: newStatus  // Include the status change
           });
 
           showToast(newStatus ? 'Đã kích hoạt nhân viên' : 'Đã vô hiệu hóa nhân viên');
@@ -173,6 +179,9 @@ class EmployeeTable extends HTMLElement {
           showToast(e?.message || 'Cập nhật thất bại');
           // Revert the checkbox state on error
           checkbox.checked = !newStatus;
+        } finally {
+          // Re-enable the checkbox
+          checkbox.disabled = false;
         }
       };
     });
