@@ -1,4 +1,4 @@
-import { getCustomerInfo, updateCustomerInfo, changePassword } from "../API/customerApi.js";
+import { getCustomerInfo, updateCustomerInfo, changePassword, createCustomerInfo } from "../API/customerApi.js";
 
 // DOM Elements
 const userInfoForm = document.getElementById("userInfoForm");
@@ -9,6 +9,10 @@ const btnCancel = document.getElementById("btnCancel");
 // Store original data for cancel button
 let originalData = {};
 
+// Check if user just registered
+const pendingAccountId = localStorage.getItem("pendingAccountId");
+const justRegistered = localStorage.getItem("justRegistered");
+
 // Initialize page
 document.addEventListener("DOMContentLoaded", async () => {
   await loadCustomerInfo();
@@ -17,9 +21,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Load customer information
 async function loadCustomerInfo() {
-  const accountId = localStorage.getItem("username");
+  const accountId = localStorage.getItem("accountId");
+
+  console.log("=== LOADING CUSTOMER INFO ===");
+  console.log("accountId from localStorage:", accountId);
+  console.log("accessToken from localStorage:", localStorage.getItem("accesstoken")?.substring(0, 20) + "...");
+  console.log("justRegistered flag:", localStorage.getItem("justRegistered"));
 
   if (!accountId) {
+    console.error("No accountId found in localStorage");
     showToast("Vui lòng đăng nhập để xem thông tin", "error");
     setTimeout(() => {
       window.location.href = "logIn.html?mode=login";
@@ -27,36 +37,124 @@ async function loadCustomerInfo() {
     return;
   }
 
+  // Check if user needs to create customer info (new registration or login without customer)
+  const isNewUser = localStorage.getItem("justRegistered") === "true";
+  
   try {
+    console.log("Calling getCustomerInfo with accountId:", accountId);
     const customer = await getCustomerInfo(accountId);
 
-    // Fill form with customer data
-    document.getElementById("customerId").value = customer.customerId || "";
-    document.getElementById("accountId").value = customer.accountId || accountId;
-    document.getElementById("customerName").value = customer.customerName || "";
-    document.getElementById("customerEmail").value = customer.customerEmail || "";
-    document.getElementById("customerPhone").value = customer.customerPhone || "";
-    document.getElementById("customerAddress").value = customer.customerAddress || "";
+    console.log("API Response - customer object:", customer);
+    console.log("API Response - customer type:", typeof customer);
+
+    // Check if customer data exists
+    const customerData = customer && (customer.data || customer);
+    
+    // Check if customerId exists (existing customer) or not (new customer)
+    const customerId = customerData && (customerData.customerId || customerData.CustomerId || customerData.id || customerData.Id);
+    
+    if (!customer || !customerId) {
+      // No customer data or no customer ID - new user needs to create info
+      console.log("No customer data found or no customer ID - new user needs to create info");
+      
+      // Set accountId in the form for creation
+      document.getElementById("accountId").value = accountId;
+      document.getElementById("customerId").value = "";
+      
+      // Pre-fill phone from registration/login if available
+      const pendingPhone = localStorage.getItem("pendingPhone");
+      if (pendingPhone) {
+        document.getElementById("customerPhone").value = pendingPhone;
+        localStorage.removeItem("pendingPhone");
+      }
+      
+      // Clear justRegistered flag and show message only if this is a new user
+      if (isNewUser) {
+        localStorage.removeItem("justRegistered");
+        showToast("Vui lòng hoàn thiện thông tin cá nhân", "info");
+      }
+      return;
+    }
+
+    // Customer exists - fill form with customer data - support both camelCase and PascalCase
+    const fields = [
+      { id: "customerId", keys: ["customerId", "CustomerId", "id", "Id"] },
+      { id: "accountId", keys: ["accountId", "AccountId"] },
+      { id: "customerName", keys: ["customerName", "CustomerName", "name", "Name"] },
+      { id: "customerEmail", keys: ["customerEmail", "CustomerEmail", "email", "Email"] },
+      { id: "customerPhone", keys: ["customerPhone", "CustomerPhone", "phone", "Phone"] },
+      { id: "customerAddress", keys: ["customerAddress", "CustomerAddress", "address", "Address"] },
+    ];
+
+    fields.forEach(field => {
+      const input = document.getElementById(field.id);
+      if (input) {
+        let value = "";
+        for (const key of field.keys) {
+          if (customerData[key] !== undefined && customerData[key] !== null) {
+            value = customerData[key];
+            break;
+          }
+        }
+        input.value = value;
+        console.log(`Set ${field.id} = "${value}"`);
+      } else {
+        console.warn(`Input element ${field.id} not found`);
+      }
+    });
 
     // Format date for input
-    if (customer.customerDOB) {
-      const dob = new Date(customer.customerDOB);
-      const formattedDate = dob.toISOString().split("T")[0];
-      document.getElementById("customerDOB").value = formattedDate;
+    const dobValue = customerData.customerDOB || customerData.CustomerDOB || customerData.dob || customerData.DOB;
+    console.log("DOB value from API:", dobValue);
+    if (dobValue) {
+      try {
+        const dob = new Date(dobValue);
+        const formattedDate = dob.toISOString().split("T")[0];
+        document.getElementById("customerDOB").value = formattedDate;
+        console.log("Set customerDOB =", formattedDate);
+      } catch (e) {
+        console.error("Error parsing date:", e);
+      }
     }
 
     // Store original data for cancel
     originalData = {
-      customerId: customer.customerId,
-      customerName: customer.customerName,
-      customerEmail: customer.customerEmail,
-      customerPhone: customer.customerPhone,
-      customerAddress: customer.customerAddress,
-      customerDOB: customer.customerDOB,
+      customerId: customerData.customerId || customerData.CustomerId || "",
+      customerName: customerData.customerName || customerData.CustomerName || "",
+      customerEmail: customerData.customerEmail || customerData.CustomerEmail || "",
+      customerPhone: customerData.customerPhone || customerData.CustomerPhone || "",
+      customerAddress: customerData.customerAddress || customerData.CustomerAddress || "",
+      customerDOB: dobValue,
     };
+    
+    console.log("originalData stored:", originalData);
+    console.log("=== LOAD CUSTOMER INFO COMPLETED ===");
   } catch (error) {
-    showToast("Không thể tải thông tin khách hàng", "error");
-    console.error("Error loading customer info:", error);
+    console.error("Full error details:", error);
+    console.error("Error status:", error.status);
+    console.error("Error message:", error.message);
+    
+    // If 404, treat as new user (no customer info exists)
+    if (error.status === 404) {
+      // Set accountId in the form for creation
+      document.getElementById("accountId").value = accountId;
+      document.getElementById("customerId").value = "";
+      
+      // Pre-fill phone if available
+      const pendingPhone = localStorage.getItem("pendingPhone");
+      if (pendingPhone) {
+        document.getElementById("customerPhone").value = pendingPhone;
+        localStorage.removeItem("pendingPhone");
+      }
+      
+      // Clear justRegistered flag and show message only if this is a new user
+      if (isNewUser) {
+        localStorage.removeItem("justRegistered");
+        showToast("Vui lòng hoàn thiện thông tin cá nhân", "info");
+      }
+    } else {
+      showToast("Không thể tải thông tin khách hàng: " + (error.message || "Lỗi không xác định"), "error");
+    }
   }
 }
 
@@ -101,8 +199,10 @@ function initEventListeners() {
 
 // Save customer information
 async function saveCustomerInfo() {
+  const accountId = localStorage.getItem("accountId");
+  
   const customerData = {
-    customerId: document.getElementById("customerId").value,
+    accountId: accountId,
     customerName: document.getElementById("customerName").value.trim(),
     customerEmail: document.getElementById("customerEmail").value.trim(),
     customerPhone: document.getElementById("customerPhone").value.trim(),
@@ -128,22 +228,30 @@ async function saveCustomerInfo() {
     return;
   }
 
-  // Validate phone format (Vietnamese phone)
-  const phoneRegex = /^(0[3|5|7|8|9])+([0-9]{8})$/;
-  if (!phoneRegex.test(customerData.customerPhone)) {
-    showToast("Số điện thoại không hợp lệ", "error");
-    return;
-  }
+  
 
   try {
-    await updateCustomerInfo(customerData);
-    showToast("Cập nhật thông tin thành công!", "success");
+    // Check if this is creating new or updating existing
+    const customerId = document.getElementById("customerId").value;
+    
+    if (!customerId) {
+      // Creating new customer info
+      await createCustomerInfo(customerData);
+      showToast("Tạo thông tin thành công!", "success");
+    } else {
+      // Updating existing customer info
+      customerData.customerId = customerId;
+      await updateCustomerInfo(customerData);
+      showToast("Cập nhật thông tin thành công!", "success");
+    }
 
-    // Update original data
-    originalData = { ...customerData };
+    // Reload to get the saved data
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   } catch (error) {
-    showToast("Cập nhật thông tin thất bại", "error");
-    console.error("Error updating customer info:", error);
+    showToast("Lưu thông tin thất bại: " + (error.message || "Lỗi không xác định"), "error");
+    console.error("Error saving customer info:", error);
   }
 }
 

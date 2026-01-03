@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chi tiết sản phẩm - Electronic Store</title>
+
+  <link rel="stylesheet" href="../CSS/globalStyles.css" />
+  <link rel="stylesheet" href="../CSS/topheader.css" />
+  <link rel="stylesheet" href="../CSS/mainNav.css" />
+  <link rel="stylesheet" href="../CSS/pages/productDetail.css" />
+  <link rel="stylesheet" href="../CSS/appFooter.css" />
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+
+  <script type="module" src="../components/topHeader.js"></script>
+  <script type="module" src="../components/mainNav.js"></script>
+  <script type="module" src="../components/appFooter.js"></script>
+  <script type="module" src="../JS/pages/productDetail.js"></script>
+</head>
+
+<body>
+  <div class="sticky-header-wrapper">
+    <top-header></top-header>
+    <main-nav></main-nav>
+  </div>
+
+  <main class="container">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb">
+      <a href="../homePage.html">Trang chủ</a>
+      <span class="separator">/</span>
+      <a href="../categoryPage.html" id="breadcrumb-category">Danh mục</a>
+      <span class="separator">/</span>
+      <span id="breadcrumb-product">Chi tiết sản phẩm</span>
+    </nav>
+
+    <!-- Product Detail Section -->
+    <div id="product-detail" class="product-detail-container">
+      <!-- Loading State -->
+      <div class="loading-state" id="loading">
+        <div class="spinner"></div>
+        <p>Đang tải thông tin sản phẩm...</p>
+      </div>
+
+      <!-- Error State -->
+      <div class="error-state hidden" id="error">
+        <i class="bx bx-error-circle"></i>
+        <h2>Không tìm thấy sản phẩm</h2>
+        <p>Sản phẩm bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
+        <a href="../homePage.html" class="btn-back">Quay về trang chủ</a>
+      </div>
+
+      <!-- Product Content -->
+      <div class="product-content hidden" id="product-content">
+        <!-- Left Column - Images -->
+        <div class="product-gallery">
+        <div class="main-image-container">
+            <img id="main-image" src="" alt="Product image" />
+            <div class="image-badges">
+              <span class="badge badge-new">Mới</span>
+            </div>
+          </div>
+          <div id="thumbnail-list" class="thumbnail-list"></div>
+        </div>
+
+        <!-- Right Column - Info -->
+        <div class="product-info">
+          <div class="product-category" id="product-category"></div>
+          <h1 class="product-title" id="product-title"></h1>
+          
+          <div class="product-meta">
+            <span class="product-brand" id="product-brand"></span>
+            <span class="meta-divider">|</span>
+            <span class="product-stock" id="product-stock"></span>
+          </div>
+
+          <div class="product-price-section">
+            <span class="current-price" id="current-price"></span>
+          </div>
+
+          <div class="product-description" id="product-description"></div>
+
+          <!-- Variations -->
+          <div class="product-variations" id="variations-section">
+            <!-- Will be populated by JS -->
+          </div>
+
+          <!-- Quantity & Actions -->
+          <div class="product-actions">
+            <div class="quantity-section">
+              <label>Số lượng:</label>
+              <div class="quantity-control">
+                <button type="button" id="qty-minus"><i class="bx bx-minus"></i></button>
+                <input type="number" id="qty-input" value="1" min="1" />
+                <button type="button" id="qty-plus"><i class="bx bx-plus"></i></button>
+              </div>
+              <span class="stock-warning" id="stock-warning"></span>
+            </div>
+
+            <div class="action-buttons">
+              <button id="btn-add-cart" class="btn btn-outline">
+                <i class="bx bx-cart-plus"></i>
+                Thêm vào giỏ
+              </button>
+              <button id="btn-buy-now" class="btn btn-primary">
+                <i class="bx bx-shopping-bag"></i>
+                Đặt hàng ngay
+              </button>
+            </div>
+          </div>
+
+          <!-- Product Features -->
+          <div class="product-features">
+            <div class="feature-item">
+              <i class="bx bx-package"></i>
+              <span>Bảo hành chính hãng 12 tháng</span>
+            </div>
+            <div class="feature-item">
+              <i class="bx bx-sync"></i>
+              <span>Đổi trả trong 30 ngày</span>
+            </div>
+            <div class="feature-item">
+              <i class="bx bx-truck"></i>
+              <span>Giao hàng toàn quốc</span>
+            </div>
+            <div class="feature-item">
+              <i class="bx bx-check-shield"></i>
+              <span>Hàng chính hãng 100%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs Section -->
+      <div class="product-tabs hidden" id="product-tabs">
+        <div class="tabs-header">
+          <button class="tab-btn active" data-tab="specs">Thông số kỹ thuật</button>
+          <button class="tab-btn" data-tab="description">Mô tả sản phẩm</button>
+          <button class="tab-btn" data-tab="reviews">Đánh giá (0)</button>
+        </div>
+        
+        <div class="tabs-content">
+          <div class="tab-panel active" id="specs-panel">
+            <table class="specs-table" id="specs-table">
+              <!-- Will be populated by JS -->
+            </table>
+          </div>
+          
+          <div class="tab-panel" id="description-panel">
+            <div class="description-content" id="description-content">
+              <!-- Will be populated by JS -->
+            </div>
+          </div>
+          
+          <div class="tab-panel" id="reviews-panel">
+            <p class="no-reviews">Chưa có đánh giá nào.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+</body>
+</html>
+

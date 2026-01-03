@@ -18,6 +18,23 @@ export async function getAllAttributes() {
 }
 
 /**
+ * Get attributes by product ID (for product specifications)
+ * This fetches only the specifications for a specific product
+ */
+export async function getAttributesByProductId(productId) {
+  try {
+    const response = await fetch(`${API_BASE}/product/${productId}`);
+    if (!response.ok) throw new Error("Failed to fetch product attributes");
+
+    const json = await response.json();
+    return json.data || [];
+  } catch (error) {
+    console.error("Error fetching product attributes:", error);
+    return [];
+  }
+}
+
+/**
  * Get attribute by ID
  */
 export async function getAttributeById(attributeId) {

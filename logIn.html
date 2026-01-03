@@ -13,7 +13,7 @@
   />
 
   <!-- JS -->
-  <script src="js/pages/logIn.js" defer></script>
+  <script type="module" src="js/pages/logIn.js" defer></script>
   <script src="js/API/loginApi.js" defer></script>
 </head>
 
@@ -62,17 +62,6 @@
 
         <div class="input-box">
           <input
-            type="text"
-            id="regUsername"
-            placeholder="Tên đăng nhập"
-            required
-          />
-          <i class="bx bxs-user"></i>
-        </div>
-
-
-        <div class="input-box">
-          <input
             type="tel"
             id="regPhone"
             placeholder="Số điện thoại"
@@ -85,10 +74,11 @@
           <input
             type="password"
             id="regPassword"
-            placeholder="Mật khẩu"
+            placeholder="Mật khẩu (ít nhất 8 ký tự, gồm chữ hoa, thường, số và ký tự đặc biệt)"
             required
           />
           <i class="bx bxs-lock-alt"></i>
+          <small class="validation-hint">Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt</small>
         </div>
 
         <div class="input-box">

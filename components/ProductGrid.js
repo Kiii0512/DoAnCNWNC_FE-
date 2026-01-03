@@ -130,9 +130,15 @@ class ProductGrid extends HTMLElement {
   }
 
   handleClick(e) {
+    // Stop propagation for elements with data-link-stop (e.g., quick view button)
+    if (e.target.closest("[data-link-stop]")) {
+      e.stopPropagation();
+    }
+
     const addBtn = e.target.closest("[data-add]");
 
     if (addBtn) {
+      e.stopPropagation();
       addToCart(addBtn.dataset.add, 1);
       document.dispatchEvent(new Event("cart:update"));
       document.dispatchEvent(new Event("cart:open"));
@@ -142,6 +148,7 @@ class ProductGrid extends HTMLElement {
     
     if (quickViewBtn) {
       e.preventDefault();
+      e.stopPropagation();
       const productId = quickViewBtn.dataset.quickView;
       document.dispatchEvent(new CustomEvent("quickview:open", {
         detail: { id: productId }
@@ -158,16 +165,16 @@ class ProductGrid extends HTMLElement {
 
   renderCards(list) {
     this.grid.innerHTML = list.map(p => `
-      <div class="card">
-        <img src="${p.img}">
+      <a href="productDetail.html?id=${p.id}" class="card" data-product-link>
+        <img src="${p.img}" alt="${p.title}">
         <h4>${p.title}</h4>
         <div class="card-bottom">
           <span>${p.price.toLocaleString("vi-VN")}₫</span>
-          <button class="btn-quick-view" data-quick-view="${p.id}" title="Xem nhanh">
+          <button class="btn-quick-view" data-quick-view="${p.id}" data-link-stop title="Xem nhanh">
             <i class="bx bx-search"></i> Xem
           </button>
         </div>
-      </div>
+      </a>
     `).join("");
   }
 

@@ -1,10 +1,13 @@
 import { getProductWithVariations } from "../JS/API/productAPI.js";
 import { addToCart } from "../JS/API/cartApi.js";
+import { getAllAttributes } from "../JS/API/attributeApi.js";
 
 class QuickModal extends HTMLElement {
   constructor() {
     super();
     this.product = null;
+    this.variationAttributes = [];
+    this.selectedOptions = {};
     this.selectedVariation = null;
     this._initialized = false;
   }
@@ -13,6 +16,9 @@ class QuickModal extends HTMLElement {
     this.innerHTML = `
       <div class="modal" id="modal">
         <div class="modal-content">
+          <button id="closeModal" class="btn-close-modal" title="Đóng">
+            <i class="bx bx-x"></i>
+          </button>
           <div class="modal-image-section">
             <img id="modalImg" src="" alt="Product image" />
             <div id="modalThumbnails" class="modal-thumbnails"></div>
@@ -34,11 +40,11 @@ class QuickModal extends HTMLElement {
               <span id="stockText">Còn hàng</span>
             </div>
 
-            <!-- Variations Section - Shows combinations -->
+            <!-- Variations Section - Shows attribute options -->
             <div id="variationsContainer">
               <div class="variation-group">
                 <label>Chọn phiên bản:</label>
-                <div id="variationCombinations" class="variation-combinations"></div>
+                <div id="attributeOptions" class="attribute-options"></div>
               </div>
             </div>
 
@@ -57,10 +63,6 @@ class QuickModal extends HTMLElement {
                 <i class="bx bx-cart-plus"></i> Thêm vào giỏ hàng
               </button>
             </div>
-
-            <button id="closeModal" class="btn-close">
-              <i class="bx bx-x"></i> Đóng
-            </button>
           </div>
         </div>
       </div>
@@ -108,6 +110,12 @@ class QuickModal extends HTMLElement {
 
       console.log("Product variations:", this.product.variations);
 
+      // Fetch attributes from API
+      this.variationAttributes = await getAllAttributes();
+      console.log("=== DEBUG ATTRIBUTES ===");
+      console.log("Fetched attributes from API:", JSON.stringify(this.variationAttributes, null, 2));
+      console.log("Product variations:", JSON.stringify(this.product.variations, null, 2));
+
       // Update basic info
       const imgEl = this.querySelector("#modalImg");
       if (imgEl) imgEl.src = this.product.img || "/assets/images/no-image.jpg";
@@ -128,11 +136,11 @@ class QuickModal extends HTMLElement {
       // Render thumbnails
       this.renderThumbnails();
 
-      // Render variation combinations
-      this.renderVariationCombinations();
+      // Render attribute options
+      this.renderAttributeOptions();
 
-      // Initialize with first variation
-      this.selectFirstVariation();
+      // Select first available options
+      this.selectFirstOptions();
 
       // Show modal
       if (this.modal) {
@@ -186,8 +194,116 @@ class QuickModal extends HTMLElement {
     });
   }
 
-  renderVariationCombinations() {
-    const container = this.querySelector("#variationCombinations");
+  /**
+   * Helper: Get attribute info from optionTypeId and optionTypeName
+   * Uses the API-provided optionTypeId and optionTypeName directly
+   * Falls back to pattern matching only if API data is missing
+   */
+  getAttributeInfo(option) {
+    // Primary: Use API-provided optionTypeId and optionTypeName
+    if (option.optionTypeId && option.optionTypeName) {
+      return {
+        attributeId: option.optionTypeId,
+        name: option.optionTypeName
+      };
+    }
+    
+    // Fallback: If optionTypeId is missing, try to detect from value
+    if (option.value) {
+      const detected = this.detectAttributeTypeFromValue(option.value);
+      if (detected) {
+        return detected;
+      }
+    }
+    
+    // Last resort: Use generic name with index-based ID
+    return {
+      attributeId: 99,
+      name: 'Phiên bản'
+    };
+  }
+
+  /**
+   * Helper: Get attribute name from option value (fallback only)
+   * Only used when API doesn't provide optionTypeName
+   */
+  getAttributeName(value, fallbackName = 'Phiên bản') {
+    if (!value) return fallbackName;
+    
+    const v = value.toString().toLowerCase();
+    
+    // Màu sắc patterns
+    const colorPatterns = ['xanh', 'đen', 'trắng', 'vàng', 'đỏ', 'tím', 'hồng', 'cam', 'titan', 'gray', 'silver', 'gold', 'blue', 'black', 'white', 'red', 'purple', 'pink', 'orange', 'natural'];
+    if (colorPatterns.some(p => v.includes(p))) {
+      return 'Màu sắc';
+    }
+    
+    // Dung lượng patterns (storage)
+    const storagePatterns = ['gb', 'tb', '512', '256', '128', '1tb', '2tb', 'storage'];
+    if (storagePatterns.some(p => v.includes(p))) {
+      return 'Dung lượng';
+    }
+    
+    // RAM patterns
+    const ramPatterns = ['ram', '8gb', '16gb', '32gb', '4gb', '6gb', '12gb'];
+    if (ramPatterns.some(p => v.includes(p))) {
+      return 'RAM';
+    }
+    
+    // Kích thước patterns
+    const sizePatterns = ['inch', '"', '6.1', '6.7', '5.4', '6.8', 'pro', 'ultra', 'plus', 'max'];
+    if (sizePatterns.some(p => v.includes(p))) {
+      return 'Kích thước';
+    }
+    
+    // Chip/Bộ xử lý patterns
+    const chipPatterns = ['a15', 'a16', 'a17', 'snapdragon', 'exynos', 'intel', 'm1', 'm2', 'm3', 'chip'];
+    if (chipPatterns.some(p => v.includes(p))) {
+      return 'Chip';
+    }
+    
+    // Pin patterns
+    const batteryPatterns = ['mah', 'pin', 'battery'];
+    if (batteryPatterns.some(p => v.includes(p))) {
+      return 'Pin';
+    }
+    
+    return fallbackName;
+  }
+
+  /**
+   * Helper: Detect attribute type from option value (returns both id and name)
+   * Since API doesn't return optionTypeName, we infer from the value
+   */
+  detectAttributeTypeFromValue(value) {
+    if (!value) return null;
+    
+    const name = this.getAttributeName(value);
+    
+    // Map name to attributeId
+    const nameToId = {
+      'Màu sắc': 1,
+      'Dung lượng': 2,
+      'RAM': 3,
+      'Kích thước': 4,
+      'Chip': 5,
+      'Pin': 6
+    };
+    
+    return {
+      attributeId: nameToId[name] || 99,
+      name: name
+    };
+  }
+
+  /**
+   * Render attribute options as separate groups
+   * Uses optionTypeId and optionTypeName from the API response
+   * Falls back to pattern matching only if API data is missing
+   * Uses getAllAttributes() only for sorting by attributeId
+   */
+  renderAttributeOptions() {
+    const container = this.querySelector("#attributeOptions");
     const variations = this.product.variations || [];
 
     if (!container) return;
@@ -197,65 +313,223 @@ class QuickModal extends HTMLElement {
       return;
     }
 
-    // Render each variation as a combination option
-    const html = variations.map((v, idx) => {
-      // Build combination label from options
-      const optionLabels = v.options.map(opt => opt.value).join(" - ");
-      const isOutOfStock = v.stockQuantity <= 0;
-      
-      return `
-        <button type="button" 
-                class="variation-combo-btn ${idx === 0 ? 'active' : ''} ${isOutOfStock ? 'out-of-stock' : ''}"
-                data-variation-id="${v.variationId}"
-                data-price="${v.price}"
-                data-stock="${v.stockQuantity}"
-                ${isOutOfStock ? 'disabled' : ''}>
-          <span class="combo-name">${optionLabels}</span>
-          <span class="combo-price">${Number(v.price).toLocaleString("vi-VN")}₫</span>
-          ${isOutOfStock ? '<span class="combo-stock">Hết hàng</span>' : ''}
-        </button>
+    // Get attribute list from API for sorting purposes
+    const attributesMap = {};
+    (this.variationAttributes || []).forEach(attr => {
+      attributesMap[attr.attributeId] = attr.name;
+    });
+
+    // Build option groups keyed by attributeId
+    const optionGroups = {}; // { attributeId: { name, options: [] } }
+
+    variations.forEach((variation) => {
+      variation.options.forEach((option) => {
+        // Get attribute info from API-provided optionTypeId and optionTypeName
+        // Falls back to pattern matching if not available
+        const attrInfo = this.getAttributeInfo(option);
+
+        const attrId = attrInfo.attributeId;
+
+        // If attribute name from API is generic fallback, try to get better name from attributes API
+        let attrName = attrInfo.name;
+        if ((attrName === 'Phiên bản' || attrName === 'Thuộc tính') && attributesMap[attrId]) {
+          attrName = attributesMap[attrId];
+        }
+
+        if (!optionGroups[attrId]) {
+          optionGroups[attrId] = {
+            name: attrName,
+            attributeId: attrId,
+            options: []
+          };
+        }
+
+        // Check if option value already exists (deduplication)
+        const existing = optionGroups[attrId].options.find(
+          (o) => o.value === option.value
+        );
+
+        if (!existing) {
+          optionGroups[attrId].options.push({
+            ...option,
+            variationId: variation.variationId,
+            price: variation.price,
+            stock: variation.stockQuantity,
+          });
+        }
+      });
+    });
+
+    // Convert to array and sort by attributeId
+    const sortedGroups = Object.values(optionGroups).sort((a, b) => {
+      return (a.attributeId || 0) - (b.attributeId || 0);
+    });
+
+    // Build HTML for each option group
+    let html = "";
+
+    sortedGroups.forEach(group => {
+      html += `
+        <div class="variation-group">
+          <label>${group.name}:</label>
+          <div class="variation-options" data-attribute="${group.name}">
+            ${group.options
+              .map((opt) => {
+                const isSelected = this.selectedOptions[group.name] === opt.value;
+                const isOutOfStock = opt.stock <= 0;
+                return `
+                  <button
+                    class="variation-option ${isSelected ? "selected" : ""} ${
+                      isOutOfStock ? "disabled" : ""
+                    }"
+                    data-attribute="${group.name}"
+                    data-value="${opt.value}"
+                    data-option-id="${opt.optionId}"
+                    ${isOutOfStock ? "disabled" : ""}
+                  >
+                    ${opt.value}
+                  </button>
+                `;
+              })
+              .join("")}
+          </div>
+        </div>
       `;
-    }).join("");
+    });
 
     container.innerHTML = html;
 
     // Add click handlers
-    container.querySelectorAll(".variation-combo-btn:not(.out-of-stock)").forEach(btn => {
+    container.querySelectorAll(".variation-option:not(.disabled)").forEach((btn) => {
       btn.addEventListener("click", () => {
-        container.querySelectorAll(".variation-combo-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        this.onVariationSelect();
+        this.handleAttributeSelect(btn);
       });
     });
   }
 
-  selectFirstVariation() {
-    const container = this.querySelector("#variationCombinations");
+  /**
+   * Handle attribute option selection
+   */
+  handleAttributeSelect(btn) {
+    const attribute = btn.dataset.attribute;
+    const value = btn.dataset.value;
+
+    // Update selected options
+    this.selectedOptions[attribute] = value;
+
+    // Update UI
+    const container = this.querySelector("#attributeOptions");
+    container.querySelectorAll(`.variation-option[data-attribute="${attribute}"]`).forEach((b) => {
+      b.classList.remove("selected");
+    });
+    btn.classList.add("selected");
+
+    // Find matching variation
+    this.findMatchingVariation();
+  }
+
+  /**
+   * Select first available options for each attribute
+   */
+  selectFirstOptions() {
+    const variations = this.product.variations;
+    if (!variations || variations.length === 0) return;
+
+    const firstVariation = variations[0];
+
+    // Set selected options from first variation
+    this.selectedOptions = {};
+    firstVariation.options.forEach((opt, index) => {
+      // Use getAttributeName to consistently determine attribute name
+      // This matches the logic used in renderAttributeOptions
+      const attrName = this.getAttributeName(opt.value, `Thuộc tính ${index + 1}`);
+      this.selectedOptions[attrName] = opt.value;
+    });
+
+    // Update UI to reflect selection
+    this.updateSelectedOptionsUI();
+
+    // Set initial variation
+    this.selectedVariation = {
+      variationId: firstVariation.variationId,
+      price: firstVariation.price,
+      stock: firstVariation.stockQuantity,
+    };
+
+    // Update display
+    this.onVariationSelect();
+  }
+
+  /**
+   * Update UI to show selected options
+   */
+  updateSelectedOptionsUI() {
+    const container = this.querySelector("#attributeOptions");
     if (!container) return;
-    
-    const firstBtn = container.querySelector(".variation-combo-btn:not(.out-of-stock)");
-    if (firstBtn) {
-      firstBtn.classList.add("active");
-      this.onVariationSelect();
+
+    Object.entries(this.selectedOptions).forEach(([attrName, value]) => {
+      const btn = container.querySelector(
+        `.variation-option[data-attribute="${attrName}"][data-value="${value}"]`
+      );
+      if (btn) {
+        container.querySelectorAll(`.variation-option[data-attribute="${attrName}"]`).forEach((b) => {
+          b.classList.remove("selected");
+        });
+        btn.classList.add("selected");
+      }
+    });
+  }
+
+  /**
+   * Find matching variation based on selected options
+   */
+  findMatchingVariation() {
+    const variations = this.product.variations;
+
+    // Find variation that matches all selected options
+    const match = variations.find((variation) => {
+      return variation.options.every((opt, index) => {
+        // Use getAttributeName to consistently determine attribute name
+        // This matches the logic used in renderAttributeOptions and selectFirstOptions
+        const attrName = this.getAttributeName(opt.value, `Thuộc tính ${index + 1}`);
+        return this.selectedOptions[attrName] === opt.value;
+      });
+    });
+
+    if (match) {
+      this.selectedVariation = {
+        variationId: match.variationId,
+        price: match.price,
+        stock: match.stockQuantity,
+      };
+    } else {
+      this.selectedVariation = null;
     }
+
+    this.onVariationSelect();
   }
 
   onVariationSelect() {
-    const container = this.querySelector("#variationCombinations");
-    if (!container) return;
+    if (!this.selectedVariation) {
+      // Reset to default state
+      const priceEl = this.querySelector("#modalPrice");
+      if (priceEl) priceEl.textContent = "Liên hệ";
 
-    const activeBtn = container.querySelector(".variation-combo-btn.active");
-    if (!activeBtn) return;
+      const stockText = this.querySelector("#stockText");
+      const stockInfo = this.querySelector("#stockInfo");
+      if (stockInfo && stockText) {
+        stockInfo.classList.remove("out-of-stock", "low-stock");
+        stockText.textContent = "Liên hệ";
+      }
 
-    const variationId = activeBtn.dataset.variationId;
-    const price = parseFloat(activeBtn.dataset.price);
-    const stock = parseInt(activeBtn.dataset.stock);
+      if (this.quantityInput) {
+        this.quantityInput.max = 999;
+        this.quantityInput.value = 1;
+      }
+      return;
+    }
 
-    this.selectedVariation = {
-      variationId: variationId,
-      price: price,
-      stock: stock
-    };
+    const { price, stock } = this.selectedVariation;
 
     // Update price display
     const priceEl = this.querySelector("#modalPrice");
@@ -268,9 +542,11 @@ class QuickModal extends HTMLElement {
     if (stockInfo && stockText) {
       if (stock <= 0) {
         stockInfo.classList.add("out-of-stock");
+        stockInfo.classList.remove("low-stock");
         stockText.textContent = "Hết hàng";
       } else if (stock < 10) {
         stockInfo.classList.add("low-stock");
+        stockInfo.classList.remove("out-of-stock");
         stockText.textContent = `Chỉ còn ${stock} sản phẩm`;
       } else {
         stockInfo.classList.remove("out-of-stock", "low-stock");
@@ -310,6 +586,8 @@ class QuickModal extends HTMLElement {
       this.modal.classList.remove("open");
     }
     this.product = null;
+    this.variationAttributes = [];
+    this.selectedOptions = {};
     this.selectedVariation = null;
   }
 

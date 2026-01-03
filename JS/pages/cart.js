@@ -30,6 +30,8 @@ let cart = null;
 let pendingRemoveItemId = null;
 let pendingRemoveVariationId = null;
 let selectedItems = new Set(); // Set of selected cartItemId
+let discount = 0; // Discount amount
+let appliedPromoCode = null; // Applied promo code
 
 // Initialize page
 document.addEventListener("DOMContentLoaded", async () => {
@@ -237,7 +239,6 @@ function updateCartSummary() {
     document.getElementById("summarySubTotal").textContent = formatCurrency(subTotal);
   }
   
-  const discount = 0;
   const discountRow = document.getElementById("discountRow");
   const summaryDiscount = document.getElementById("summaryDiscount");
   if (discountRow && summaryDiscount) {
@@ -370,8 +371,7 @@ function updateSelectedSummary() {
   document.getElementById("summaryItemCount").textContent = selectedTotalItems;
   document.getElementById("summarySubTotal").textContent = formatCurrency(subTotal);
 
-  // Calculate discount (placeholder)
-  const discount = 0;
+  // Calculate discount from state
   if (discount > 0) {
     document.getElementById("discountRow").style.display = "flex";
     document.getElementById("summaryDiscount").textContent = `-${formatCurrency(discount)}`;
@@ -529,7 +529,7 @@ async function applyPromoCode() {
 
   const promoInput = document.getElementById("promoCode");
   const promoMessage = document.getElementById("promoMessage");
-  const code = promoInput.value.trim();
+  const code = promoInput.value.trim().toUpperCase();
 
   if (!code) {
     promoMessage.textContent = "Vui lòng nhập mã giảm giá";
@@ -537,9 +537,37 @@ async function applyPromoCode() {
     return;
   }
 
-  // TODO: Validate promo code with API
-  promoMessage.textContent = "Mã giảm giá không hợp lệ hoặc đã hết hạn";
-  promoMessage.className = "promo-message error";
+  // Demo promo codes - in production, validate with API
+  const promoCodes = {
+    "DISCOUNT10": { discountPercent: 10, description: "Giảm 10%" },
+    "DISCOUNT20": { discountPercent: 20, description: "Giảm 20%" },
+    "DISCOUNT50": { discountPercent: 50, description: "Giảm 50%" },
+    "VIP100": { discountPercent: 15, description: "VIP: Giảm 15%" }
+  };
+
+  const promoConfig = promoCodes[code];
+  
+  if (promoConfig) {
+    // Calculate discount amount based on cart subtotal
+    const subTotal = cart.items.reduce((sum, item) => {
+      const price = item.variation?.price || 0;
+      return sum + price * item.quantity;
+    }, 0);
+    
+    discount = Math.floor(subTotal * (promoConfig.discountPercent / 100));
+    appliedPromoCode = code;
+    
+    promoMessage.textContent = `Áp dụng thành công! ${promoConfig.description} (-${formatCurrency(discount)})`;
+    promoMessage.className = "promo-message success";
+    promoInput.disabled = true;
+    document.getElementById("applyPromoBtn").disabled = true;
+    
+    // Re-render to show discount in summary
+    renderCart();
+  } else {
+    promoMessage.textContent = "Mã giảm giá không hợp lệ hoặc đã hết hạn";
+    promoMessage.className = "promo-message error";
+  }
 }
 
 // Handle checkout
@@ -559,12 +587,25 @@ function handleCheckout(selectedCartItems) {
     return;
   }
 
-  // Store selected items for checkout
-  localStorage.setItem("checkoutItems", JSON.stringify(selectedCartItems));
+  // Calculate subtotal for selected items
+  const subTotal = selectedCartItems.reduce((sum, item) => {
+    const price = item.variation?.price || 0;
+    return sum + price * item.quantity;
+  }, 0);
+
+  // Store checkout data
+  const checkoutData = {
+    items: selectedCartItems,
+    subTotal: subTotal,
+    discount: discount,
+    appliedPromoCode: appliedPromoCode,
+    total: subTotal - discount
+  };
   
-  // Redirect to checkout page or show checkout modal
-  showToast("Chức năng thanh toán đang được phát triển", "info");
-  // window.location.href = "checkout.html";
+  localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
+  
+  // Redirect to payment page
+  window.location.href = "paymentPage.html";
 }
 
 // Helper functions

@@ -1,34 +1,61 @@
-# TODO - Search Function Implementation
+# User Info Page Fixes - Progress Tracking
 
-## Step 1: Add searchProducts function to productApi.js
-- [x] Add `searchProducts(request)` function
-- [x] Transform API response to match product format
+## Status: ✅ Completed
 
-## Step 2: Update TopHeader.js
-- [x] Add event listener to search button
-- [x] Redirect to categoryPage with keyword param
+### Changes Made:
 
-## Step 3: Update category.js
-- [x] Handle keyword param from URL
-- [x] Call searchProducts API
-- [x] Update ProductGrid to show results
+1. **JS/pages/userInfo.js** - Enhanced `loadCustomerInfo()` function:
+   - Added comprehensive console logging to debug API calls
+   - Added support for both `customer.data` (wrapped response) and direct customer object
+   - Added support for multiple field name variations (camelCase, PascalCase, lowercase)
+   - Added better error handling with detailed error messages
+   - Added logging for all form field assignments
 
-## Step 4: Update searchPage.js
-- [x] Use new searchProducts API function
-- [x] Remove old mock API code
+2. **JS/API/customerApi.js** - Enhanced `getCustomerInfo()` function:
+   - Added API URL logging for debugging
+   - Added response status logging
+   - Added better error parsing for non-JSON error responses
+   - Added full error object with status code
 
-## Step 5: Fix ProductGrid.js
-- [x] Import searchProducts
-- [x] Call searchProducts directly when keyword present
+### How to Test:
 
-## Step 6: Make Header and MainNav Sticky
-- [x] Added `.sticky-header-wrapper` class with `display: flex; flex-direction: column` in globalStyles.css
-- [x] Wrapped top-header and main-nav in homePage.html
-- [x] Wrapped top-header and main-nav in categoryPage.html
-- [x] Reset mainNav.css to use `top: 0`
-- [x] Fixed gap issue between topbar and header
+1. Open the browser's Developer Console (F12)
+2. Navigate to the User Info page (userInfoPage.html)
+3. Check the console for logs:
+   - `=== LOADING CUSTOMER INFO ===` should appear
+   - `accountId from localStorage:` should show the account ID
+   - `API Response - customer object:` should show the API response
+   - `Set customerId = "..."` and other field assignments
 
-## Step 7: Testing
-- [ ] Verify search button works from header
-- [ ] Verify results render correctly
-- [ ] Verify sticky headers work on scroll without gaps
+### Expected Console Output (when working correctly):
+
+```
+=== LOADING CUSTOMER INFO ===
+accountId from localStorage: 123
+accessToken from localStorage: eyJhbGciOiJIUzI1NiIs...
+Calling getCustomerInfo with accountId: 123
+Fetching customer info for account ID: 123
+API URL: https://localhost:7155/api/customers/by-account/123
+Response status: 200
+Response ok: true
+API response data: {customerId: 123, customerName: "John Doe", ...}
+API Response - customer object: {customerId: 123, customerName: "John Doe", ...}
+Set customerId = "123"
+Set customerName = "John Doe"
+...
+=== LOAD CUSTOMER INFO COMPLETED ===
+```
+
+### If Data Still Not Loading:
+
+Check for these issues:
+1. **401 Unauthorized** - Token expired or invalid
+2. **404 Not Found** - Customer not found for this account ID
+3. **500 Internal Server Error** - Backend issue
+4. **accountId is null/undefined** - User not logged in properly
+
+### Related Files:
+- JS/pages/userInfo.js - Main user info page logic
+- JS/API/customerApi.js - API calls for customer operations
+- JS/pages/logIn.js - Login page (stores accountId in localStorage)
+

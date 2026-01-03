@@ -227,14 +227,19 @@ export async function getProductWithVariations(productId) {
       category: data.categoryName ?? "",
       brand: data.brandName ?? "",
       description: data.productDescription ?? "",
+      specifications: data.specifications || data.productSpecifications || [],
       variations: (data.variations || []).map(v => ({
         variationId: v.variationId,
         price: Number(v.price),
         stockQuantity: v.stockQuantity,
         options: (v.options || []).map(opt => ({
           optionId: opt.optionId || opt.optionTypeId,
-          name: opt.optionName || opt.optionTypeName || opt.value,
-          value: opt.value,
+          // optionTypeName = tên loại (Màu sắc, Dung lượng)
+          optionTypeName: opt.optionTypeName,
+          // optionName = giá trị (Titan Xanh, 256GB)
+          optionName: opt.optionName || opt.value,
+          // value = giá trị
+          value: opt.optionName || opt.value,
           optionType: opt.optionType || opt.type
         }))
       }))

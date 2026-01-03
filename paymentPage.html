@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thanh toán - Electronic Store</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="CSS/globalStyles.css" />
+  <link rel="stylesheet" href="CSS/topheader.css" />
+  <link rel="stylesheet" href="CSS/mainNav.css" />
+  <link rel="stylesheet" href="CSS/pages/payment.css" />
+  <link rel="stylesheet" href="CSS/appFooter.css" />
+  <link
+    href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- JS -->
+  <script type="module" src="components/topHeader.js"></script>
+  <script type="module" src="components/mainNav.js"></script>
+  <script type="module" src="components/appFooter.js"></script>
+  <script type="module" src="JS/pages/paymentPage.js"></script>
+</head>
+
+<body>
+  <div class="sticky-header-wrapper">
+    <top-header></top-header>
+    <main-nav></main-nav>
+  </div>
+
+  <main class="container payment-container">
+    <div class="payment-wrapper">
+      <div class="payment-header">
+        <h1><i class="bx bxs-credit-card"></i> Thanh toán</h1>
+        <p>Vui lòng điền thông tin giao hàng và xác nhận đơn hàng</p>
+      </div>
+
+      <div class="payment-content">
+        <!-- Left Column: Shipping Address Form -->
+        <div class="shipping-section">
+          <div class="section-card">
+            <h2><i class="bx bxs-map"></i> Địa chỉ giao hàng</h2>
+            
+            <form id="shippingForm" class="shipping-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="customerName">Họ và tên <span class="required">*</span></label>
+                  <input
+                    type="text"
+                    id="customerName"
+                    name="customerName"
+                    placeholder="Nhập họ và tên"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="customerPhone">Số điện thoại <span class="required">*</span></label>
+                  <input
+                    type="tel"
+                    id="customerPhone"
+                    name="customerPhone"
+                    placeholder="Nhập số điện thoại"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="customerEmail">Email <span class="required">*</span></label>
+                <input
+                  type="email"
+                  id="customerEmail"
+                  name="customerEmail"
+                  placeholder="Nhập địa chỉ email"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="customerAddress">Địa chỉ chi tiết <span class="required">*</span></label>
+                <input
+                  type="text"
+                  id="customerAddress"
+                  name="customerAddress"
+                  placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="orderNote">Ghi chú đơn hàng (tùy chọn)</label>
+                <textarea
+                  id="orderNote"
+                  name="orderNote"
+                  placeholder="Ghi chú về đơn hàng, ví dụ: thời gian giao hàng mong muốn..."
+                  rows="3"
+                ></textarea>
+              </div>
+            </form>
+          </div>
+
+          <!-- Payment Method Section -->
+          <div class="section-card">
+            <h2><i class="bx bxs-wallet"></i> Phương thức thanh toán</h2>
+            <div class="payment-methods">
+              <label class="payment-method">
+                <input type="radio" name="paymentMethod" value="cod" checked />
+                <div class="method-content">
+                  <i class="bx bx-money"></i>
+                  <div>
+                    <span class="method-name">Thanh toán khi nhận hàng (COD)</span>
+                    <span class="method-desc">Thanh toán bằng tiền mặt khi nhận được hàng</span>
+                  </div>
+                </div>
+              </label>
+              <label class="payment-method">
+                <input type="radio" name="paymentMethod" value="bank" />
+                <div class="method-content">
+                  <i class="bx bx-building"></i>
+                  <div>
+                    <span class="method-name">Chuyển khoản ngân hàng</span>
+                    <span class="method-desc">Chuyển khoản trước qua số tài khoản ngân hàng</span>
+                  </div>
+                </div>
+              </label>
+              <label class="payment-method">
+                <input type="radio" name="paymentMethod" value="momo" />
+                <div class="method-content">
+                  <i class="bx bx-mobile-alt"></i>
+                  <div>
+                    <span class="method-name">Ví MoMo</span>
+                    <span class="method-desc">Thanh toán qua ví điện tử MoMo</span>
+                  </div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Order Summary -->
+        <div class="summary-section">
+          <div class="summary-card">
+            <h2><i class="bx bxs-cart-alt"></i> Đơn hàng của bạn</h2>
+            
+            <!-- Cart Items Preview -->
+            <div id="orderItems" class="order-items">
+              <div class="loading-state">
+                <i class="bx bx-loader-alt bx-spin"></i>
+                <p>Đang tải...</p>
+              </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="order-summary">
+              <div class="summary-row">
+                <span>Tạm tính</span>
+                <span id="summarySubTotal">0 ₫</span>
+              </div>
+              <div class="summary-row" id="summaryDiscountRow" style="display: none;">
+                <span>Giảm giá</span>
+                <span id="summaryDiscount">-0 ₫</span>
+              </div>
+              <div class="summary-row">
+                <span>Phí vận chuyển</span>
+                <span id="summaryShipping">Miễn phí</span>
+              </div>
+              <div class="summary-divider"></div>
+              <div class="summary-row total">
+                <span>Tổng cộng</span>
+                <span id="summaryTotal">0 ₫</span>
+              </div>
+            </div>
+
+            <!-- Place Order Button -->
+            <button id="placeOrderBtn" class="btn-place-order" disabled>
+              <i class="bx bx-check-circle"></i> Đặt hàng
+            </button>
+
+            <!-- Promo Code -->
+            <div class="promo-section">
+              <h3>Mã giảm giá</h3>
+              <div class="promo-input-group">
+                <input
+                  type="text"
+                  id="promoCode"
+                  placeholder="Nhập mã giảm giá"
+                />
+                <button id="applyPromoBtn">Áp dụng</button>
+              </div>
+              <p id="promoMessage" class="promo-message"></p>
+            </div>
+
+            <!-- Terms Agreement -->
+            <div class="terms-agreement">
+              <label>
+                <input type="checkbox" id="agreeTerms" />
+                <span>Tôi đồng ý với <a href="#">điều khoản</a> và <a href="#">chính sách</a> của cửa hàng</span>
+              </label>
+            </div>
+
+            <!-- Secure Note -->
+            <div class="secure-note">
+              <i class="bx bx-lock-alt"></i>
+              <span>Thông tin thanh toán của bạn được bảo mật</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <app-footer></app-footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+    <div class="loading-content">
+      <i class="bx bx-loader-alt bx-spin bx-3x"></i>
+      <p>Đang xử lý đơn hàng...</p>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content success">
+      <div class="modal-icon success">
+        <i class="bx bx-check"></i>
+      </div>
+      <h3>Đặt hàng thành công!</h3>
+      <p>Cảm ơn bạn đã đặt hàng. Đơn hàng của bạn đang được xử lý.</p>
+      <button class="btn-view-orders" id="viewOrdersBtn">
+        <i class="bx bx-shopping-bag"></i> Xem đơn hàng
+      </button>
+    </div>
+  </div>
+</body>
+</html>
+

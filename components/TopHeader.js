@@ -1,4 +1,5 @@
 import { callLogoutAPI } from "../JS/API/logoutAPI.js";
+import { getCartItemCount } from "../JS/API/cartApi.js";
 
 class TopHeader extends HTMLElement {
   connectedCallback() {
@@ -29,7 +30,6 @@ class TopHeader extends HTMLElement {
           <button class="icon-btn" id="searchIcon" style="display:none;">🔍</button>
 
           <div class="nav-actions">
-            <button class="icon-btn">Yêu thích</button>
             <a href="cartPage.html" class="icon-btn" style="text-decoration:none;">
               <i class="bx bx-cart"></i>Giỏ hàng (<span id="cartCount">0</span>)
             </a>
@@ -52,8 +52,12 @@ class TopHeader extends HTMLElement {
 
     this.initUIEvents();
     this.renderAuthState();
+    this.updateCartCount();
 
-    window.addEventListener("authChanged", () => this.renderAuthState());
+    window.addEventListener("authChanged", () => {
+      this.renderAuthState();
+      this.updateCartCount();
+    });
   }
 
   /* ================= AUTH UI ================= */
@@ -106,6 +110,26 @@ class TopHeader extends HTMLElement {
       infoMenu.style.display = "none";
       orderMenu.style.display = "none";
       logoutMenu.style.display = "none";
+    }
+  }
+
+  /* ================= CART COUNT ================= */
+  async updateCartCount() {
+    const cartCountEl = this.querySelector("#cartCount");
+    if (!cartCountEl) return;
+
+    const token = localStorage.getItem("accesstoken");
+    if (!token) {
+      cartCountEl.textContent = "0";
+      return;
+    }
+
+    try {
+      const count = await getCartItemCount();
+      cartCountEl.textContent = count;
+    } catch (error) {
+      console.error("Error fetching cart count:", error);
+      cartCountEl.textContent = "0";
     }
   }
 
