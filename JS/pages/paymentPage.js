@@ -99,10 +99,12 @@ async function initializePage() {
 // Load customer info
 async function loadCustomerInfo() {
   try {
-    const accountId = localStorage.getItem("accountid");
+    const accountId = localStorage.getItem("accountId");
     if (!accountId) {
+      console.warn("No accountId found in localStorage");
       // For demo purposes, use empty values
       customerInfo = {
+        customerId: null,
         customerName: "",
         customerPhone: "",
         customerEmail: "",
@@ -111,19 +113,40 @@ async function loadCustomerInfo() {
       return;
     }
 
-    customerInfo = await getCustomerInfo(accountId);
+    console.log("Loading customer info for accountId:", accountId);
+    const response = await getCustomerInfo(accountId);
+    
+    // Handle nested response structure (success: true, data: {...})
+    const customerData = response && (response.data || response);
+    console.log("Customer data from API:", customerData);
+    
+    customerInfo = customerData;
 
-    // Pre-fill form with customer info
-    if (customerInfo) {
-      customerNameInput.value = customerInfo.customerName || "";
-      customerPhoneInput.value = customerInfo.customerPhone || "";
-      customerEmailInput.value = customerInfo.customerEmail || "";
-      customerAddressInput.value = customerInfo.customerAddress || "";
+    // Store customerId for order creation - handle all possible field names
+    if (customerData) {
+      const customerId = customerData.customerId || customerData.CustomerId || customerData.id || customerData.Id;
+      console.log("Extracted customerId:", customerId);
+      
+      if (customerId) {
+        localStorage.setItem("customerId", customerId);
+        console.log("Stored customerId in localStorage:", customerId);
+      } else {
+        console.warn("No customerId found in customerData:", customerData);
+      }
+      
+      // Pre-fill form with customer info - handle nested data structure
+      customerNameInput.value = customerData.customerName || customerData.CustomerName || customerData.name || customerData.Name || "";
+      customerPhoneInput.value = customerData.customerPhone || customerData.CustomerPhone || customerData.phone || customerData.Phone || "";
+      customerEmailInput.value = customerData.customerEmail || customerData.CustomerEmail || customerData.email || customerData.Email || "";
+      customerAddressInput.value = customerData.customerAddress || customerData.CustomerAddress || customerData.address || customerData.Address || "";
+      
+      console.log("Form pre-filled - Name:", customerNameInput.value, "Email:", customerEmailInput.value);
     }
   } catch (error) {
     console.error("Error loading customer info:", error);
     // Continue without customer info
     customerInfo = {
+      customerId: null,
       customerName: "",
       customerPhone: "",
       customerEmail: "",
@@ -365,15 +388,25 @@ async function handlePlaceOrder() {
     return;
   }
 
+  // Get customer ID from localStorage (stored in loadCustomerInfo)
+  const customerId = localStorage.getItem("customerId") || null;
+  
+  // Check if customer profile exists
+  if (!customerId) {
+    showToast("Vui lòng hoàn thiện thông tin cá nhân trước khi đặt hàng", "warning");
+    loadingOverlay.style.display = "none";
+    setTimeout(() => {
+      window.location.href = "userInfoPage.html";
+    }, 1500);
+    return;
+  }
+
   // Show loading overlay
   loadingOverlay.style.display = "flex";
 
   try {
     // Build shipping address from customer address input
     const shippingAddress = customerAddressInput.value.trim();
-
-    // Get customer ID from localStorage
-    const customerId = localStorage.getItem("accountid") || null;
 
     // Build order items - only include variationId and quantity as per backend model
     const orderItems = checkoutItems.map(item => ({
@@ -394,6 +427,8 @@ async function handlePlaceOrder() {
       discountId: discountId,
       customerId: customerId
     };
+
+    console.log("Creating order with data:", orderData);
 
     // Call createOrder API
     const order = await createOrder(orderData);

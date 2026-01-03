@@ -1,61 +1,100 @@
-# User Info Page Fixes - Progress Tracking
+# Customer ID Fix for Payment Page - Progress Tracking
 
 ## Status: ✅ Completed
 
+### Problem:
+- Error: "customerId cannot be null" when placing orders
+- The customerId was not being stored in localStorage after creating or loading customer info
+
+### Root Cause:
+1. When loading customer info, the customerId was not being saved to localStorage
+2. When creating new customer info, the returned customerId from the API was not being stored
+
 ### Changes Made:
 
-1. **JS/pages/userInfo.js** - Enhanced `loadCustomerInfo()` function:
-   - Added comprehensive console logging to debug API calls
-   - Added support for both `customer.data` (wrapped response) and direct customer object
-   - Added support for multiple field name variations (camelCase, PascalCase, lowercase)
-   - Added better error handling with detailed error messages
-   - Added logging for all form field assignments
+#### 1. JS/pages/userInfo.js - `loadCustomerInfo()` function:
+- Added code to store `customerId` in localStorage when customer data is loaded
+- Added console logging for debugging
 
-2. **JS/API/customerApi.js** - Enhanced `getCustomerInfo()` function:
-   - Added API URL logging for debugging
-   - Added response status logging
-   - Added better error parsing for non-JSON error responses
-   - Added full error object with status code
+```javascript
+// Store customerId in localStorage for order creation
+if (customerId) {
+  localStorage.setItem("customerId", customerId);
+  console.log("Stored customerId in localStorage:", customerId);
+}
+```
+
+#### 2. JS/pages/userInfo.js - `saveCustomerInfo()` function:
+- Added code to extract and store customerId from the API response when creating new customer
+- Added code to update localStorage when updating existing customer
+
+```javascript
+if (!customerId) {
+  // Creating new customer info
+  const newCustomer = await createCustomerInfo(customerData);
+  
+  // Store the new customerId in localStorage for order creation
+  const createdCustomerId = newCustomer?.customerId || newCustomer?.CustomerId || newCustomer?.id || newCustomer?.Id;
+  if (createdCustomerId) {
+    localStorage.setItem("customerId", createdCustomerId);
+  }
+  
+  showToast("Tạo thông tin thành công!", "success");
+} else {
+  // Updating existing customer info
+  customerData.customerId = customerId;
+  await updateCustomerInfo(customerData);
+  
+  // Update localStorage with the customerId
+  localStorage.setItem("customerId", customerId);
+  
+  showToast("Cập nhật thông tin thành công!", "success");
+}
+```
+
+#### 3. JS/pages/paymentPage.js - `loadCustomerInfo()` function:
+- Added comprehensive logging to debug customer data loading
+- Added support for nested response structure (response.data)
+- Added logging for customerId extraction
+
+#### 4. JS/pages/paymentPage.js - `handlePlaceOrder()` function:
+- Added validation to check if customerId exists before placing order
+- Added redirect to userInfoPage if customer profile is incomplete
+- Added console logging for order data
 
 ### How to Test:
 
-1. Open the browser's Developer Console (F12)
-2. Navigate to the User Info page (userInfoPage.html)
-3. Check the console for logs:
-   - `=== LOADING CUSTOMER INFO ===` should appear
-   - `accountId from localStorage:` should show the account ID
-   - `API Response - customer object:` should show the API response
-   - `Set customerId = "..."` and other field assignments
+1. **Test creating new customer info:**
+   - Login with a new account
+   - Navigate to userInfoPage.html
+   - Fill in the customer info form
+   - Submit the form
+   - Check browser console for: `Stored customerId in localStorage: ...`
+   - Check localStorage: `customerId` should be set
 
-### Expected Console Output (when working correctly):
+2. **Test placing order:**
+   - Ensure customer info is complete
+   - Go to cartPage.html
+   - Add items to cart
+   - Proceed to checkout
+   - On paymentPage.html, check console for: `customerId from localStorage: ...`
+   - Try to place order
+   - Order should succeed
+
+### Expected Console Output:
 
 ```
 === LOADING CUSTOMER INFO ===
 accountId from localStorage: 123
-accessToken from localStorage: eyJhbGciOiJIUzI1NiIs...
-Calling getCustomerInfo with accountId: 123
-Fetching customer info for account ID: 123
-API URL: https://localhost:7155/api/customers/by-account/123
-Response status: 200
-Response ok: true
-API response data: {customerId: 123, customerName: "John Doe", ...}
-API Response - customer object: {customerId: 123, customerName: "John Doe", ...}
-Set customerId = "123"
-Set customerName = "John Doe"
-...
-=== LOAD CUSTOMER INFO COMPLETED ===
+Loading customer info for accountId: 123
+Customer data from API: {customerId: 456, customerName: "John", ...}
+Extracted customerId: 456
+Stored customerId in localStorage: 456
+Form pre-filled - Name: John Email: john@example.com
 ```
 
-### If Data Still Not Loading:
-
-Check for these issues:
-1. **401 Unauthorized** - Token expired or invalid
-2. **404 Not Found** - Customer not found for this account ID
-3. **500 Internal Server Error** - Backend issue
-4. **accountId is null/undefined** - User not logged in properly
-
 ### Related Files:
-- JS/pages/userInfo.js - Main user info page logic
-- JS/API/customerApi.js - API calls for customer operations
-- JS/pages/logIn.js - Login page (stores accountId in localStorage)
+- JS/pages/userInfo.js - User info page (creates/stores customerId)
+- JS/pages/paymentPage.js - Payment page (uses customerId)
+- JS/API/customerApi.js - Customer API calls
 

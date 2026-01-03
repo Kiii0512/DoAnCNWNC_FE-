@@ -117,6 +117,12 @@ async function loadCustomerInfo() {
       }
     }
 
+    // Store customerId in localStorage for order creation
+    if (customerId) {
+      localStorage.setItem("customerId", customerId);
+      console.log("Stored customerId in localStorage:", customerId);
+    }
+    
     // Store original data for cancel
     originalData = {
       customerId: customerData.customerId || customerData.CustomerId || "",
@@ -236,12 +242,23 @@ async function saveCustomerInfo() {
     
     if (!customerId) {
       // Creating new customer info
-      await createCustomerInfo(customerData);
+      const newCustomer = await createCustomerInfo(customerData);
+      
+      // Store the new customerId in localStorage for order creation
+      const createdCustomerId = newCustomer?.customerId || newCustomer?.CustomerId || newCustomer?.id || newCustomer?.Id;
+      if (createdCustomerId) {
+        localStorage.setItem("customerId", createdCustomerId);
+      }
+      
       showToast("Tạo thông tin thành công!", "success");
     } else {
       // Updating existing customer info
       customerData.customerId = customerId;
       await updateCustomerInfo(customerData);
+      
+      // Update localStorage with the customerId
+      localStorage.setItem("customerId", customerId);
+      
       showToast("Cập nhật thông tin thành công!", "success");
     }
 
