@@ -43,7 +43,16 @@ class AppMenu extends HTMLElement {
                 <span class="tag">PROMOTION</span>
               </a>
 
-              <!-- e. XỬ LÝ PHẢN HỒI -->
+              <!-- e. QUẢN LÝ NHÂN VIÊN -->
+              <a class="menu-item"
+                 href="adminEmployee.html"
+                 data-route="employee"
+                 title="Quản lý nhân viên">
+                Quản lý nhân viên
+                <span class="tag">EMPLOYEE</span>
+              </a>
+
+              <!-- f. XỬ LÝ PHẢN HỒI -->
               <a class="menu-item"
                  href="#feedback"
                  data-route="feedback"
@@ -104,9 +113,9 @@ setActiveFromLocation() {
   else if (path.includes('admindiscount')) route = 'discount';
   else if (path.includes('admincatalog')) route = 'catalog';
   else if (path.includes('admindashboard')) route = 'product';
+  else if (path.includes('adminemployee')) route = 'employee';
   else if (path.includes('adminfeedback')) route = 'feedback';
   else if (path.includes('adminreport')) route = 'report';
-  else if (path.includes('admincatalog')) route = 'catalog';
 
   const el =
     this.items.find(x => x.dataset.route === route) ||

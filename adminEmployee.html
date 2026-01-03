@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Quản lý nhân viên</title>
+
+  <!-- CSS chung -->
+  <link rel="stylesheet" href="./CSS/global.css" />
+  <link rel="stylesheet" href="./CSS/header.css" />
+  <link rel="stylesheet" href="./CSS/menu.css" />
+  <link rel="stylesheet" href="./CSS/footer.css" />
+
+  <!-- CSS riêng cho employee -->
+  <link rel="stylesheet" href="./CSS/employee/employee-page.css" />
+  <link rel="stylesheet" href="./CSS/employee/employee-table.css" />
+  <link rel="stylesheet" href="./CSS/employee/employee-drawer.css" />
+</head>
+
+<body>
+  <app-header></app-header>
+  <app-menu></app-menu>
+
+  <main class="container" style="max-width:1200px;margin:18px auto;padding:0 18px">
+    <employee-page></employee-page>
+  </main>
+
+  <app-footer></app-footer>
+
+  <script type="module">
+    // components chung
+    import './components/app-header.js';
+    import './components/app-menu.js';
+    import './components/app-footer.js';
+
+    // employee page
+    import './components/employee/employee-page.js';
+    import './components/employee/employee-table.js';
+    import './components/employee/employee-drawer.js';
+  </script>
+
+  <employee-drawer></employee-drawer>
+</body>
+</html>
