@@ -121,6 +121,15 @@ class DiscountTable extends HTMLElement {
   }
 
   bindEvents() {
+    // Create button - always bind this regardless of table state
+    const createBtn = this.querySelector('.act-create');
+    if (createBtn) {
+      createBtn.onclick = () => {
+        const drawer = document.querySelector('discount-drawer');
+        if (drawer) drawer.open();
+      };
+    }
+
     const searchInput = this.querySelector('.dt-search-input');
     const refreshBtn = this.querySelector('.dt-refresh');
 
@@ -134,15 +143,6 @@ class DiscountTable extends HTMLElement {
   }
 
   bindRowEvents() {
-    // Create button
-    const createBtn = this.querySelector('.act-create');
-    if (createBtn) {
-      createBtn.onclick = () => {
-        const drawer = document.querySelector('discount-drawer');
-        if (drawer) drawer.open();
-      };
-    }
-
     // View Details buttons
     this.querySelectorAll('.act-view').forEach(btn => {
       btn.onclick = () => {

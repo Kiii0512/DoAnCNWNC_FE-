@@ -329,7 +329,7 @@ class DiscountDrawer extends HTMLElement {
       isValid = false;
     }
 
-    // Comprehensive date-time validation
+    // Date validation
     const startDate = new Date(data.startDate);
     const expireDate = new Date(data.expireDate);
     const now = new Date();
@@ -346,25 +346,29 @@ class DiscountDrawer extends HTMLElement {
     }
 
     if (isValid) {
-      // Check if start date is in the past (for both new and update discounts)
-      if (startDate < now) {
-        if (this.isEdit) {
-          throw new Error('Ngày bắt đầu không thể là quá khứ');
-        } else {
-          this.showError('startDate', 'Ngày bắt đầu không thể là quá khứ');
-          isValid = false;
-        }
-      }
-
-      // Check if expire date is after start date
-      if (expireDate <= startDate) {
-        this.showError('expireDate', 'Ngày hết hạn phải sau ngày bắt đầu ít nhất 1 phút');
+      // For new discounts, start date must be in the future
+      // For editing, allow past dates but expire date must be after start date
+      if (!this.isEdit && startDate <= now) {
+        this.showError('startDate', 'Ngày bắt đầu phải trong tương lai');
         isValid = false;
       }
 
-      // Check for reasonable date ranges (not too far in the future)
+      // Expire date must be after start date
+      if (expireDate <= startDate) {
+        this.showError('expireDate', 'Ngày hết hạn phải sau ngày bắt đầu');
+        isValid = false;
+      }
+
+      // Minimum duration: 1 hour
+      const minDuration = new Date(startDate.getTime() + 60 * 60 * 1000);
+      if (expireDate < minDuration) {
+        this.showError('expireDate', 'Thời gian khuyến mãi phải ít nhất 1 giờ');
+        isValid = false;
+      }
+
+      // Reasonable future limit: 5 years
       const maxFutureDate = new Date();
-      maxFutureDate.setFullYear(maxFutureDate.getFullYear() + 5); // 5 years max
+      maxFutureDate.setFullYear(maxFutureDate.getFullYear() + 5);
 
       if (startDate > maxFutureDate) {
         this.showError('startDate', 'Ngày bắt đầu không thể quá 5 năm trong tương lai');
@@ -374,42 +378,6 @@ class DiscountDrawer extends HTMLElement {
       if (expireDate > maxFutureDate) {
         this.showError('expireDate', 'Ngày hết hạn không thể quá 5 năm trong tương lai');
         isValid = false;
-      }
-
-      // Check for minimum duration (at least 1 hour for both new and update discounts)
-      const minDuration = new Date(startDate.getTime() + 60 * 60 * 1000); // 1 hour
-      if (expireDate < minDuration) {
-        if (this.isEdit) {
-          throw new Error('Ngày hết hạn phải ít nhất 1 giờ sau ngày bắt đầu');
-        } else {
-          this.showError('expireDate', 'Thời gian khuyến mãi phải ít nhất 1 giờ');
-          isValid = false;
-        }
-      }
-
-      // Check for leap year and other date edge cases
-      const startYear = startDate.getFullYear();
-      const expireYear = expireDate.getFullYear();
-
-      // Validate February 29th for leap years
-      if (startDate.getMonth() === 1 && startDate.getDate() === 29) {
-        if (!this.isLeapYear(startYear)) {
-          this.showError('startDate', 'Năm ' + startYear + ' không phải năm nhuận');
-          isValid = false;
-        }
-      }
-
-      if (expireDate.getMonth() === 1 && expireDate.getDate() === 29) {
-        if (!this.isLeapYear(expireYear)) {
-          this.showError('expireDate', 'Năm ' + expireYear + ' không phải năm nhuận');
-          isValid = false;
-        }
-      }
-
-      // Check for daylight saving time transitions
-      if (this.hasDSTTransition(startDate) || this.hasDSTTransition(expireDate)) {
-        // Allow but log warning - DST transitions are valid but may cause confusion
-        console.warn('Date includes DST transition - ensure times are correct');
       }
     }
 
