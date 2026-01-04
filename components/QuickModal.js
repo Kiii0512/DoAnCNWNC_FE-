@@ -601,15 +601,29 @@ class QuickModal extends HTMLElement {
       return;
     }
 
-    // Check if user is logged in
-    const accessToken = localStorage.getItem("accesstoken");
-    if (!accessToken) {
-      // Show notification
+    // Helper function to check if user is logged in (by cookie)
+    const isLoggedIn = () => {
+      const name = "access_token=";
+      const decodedCookie = decodeURIComponent(document.cookie);
+      const ca = decodedCookie.split(';');
+      for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) === 0) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    // Check if user is logged in via cookie
+    if (!isLoggedIn()) {
       document.dispatchEvent(new CustomEvent("toast:show", { 
         detail: { message: "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng", type: "warning" } 
       }));
       
-      // Redirect to login page after short delay
       setTimeout(() => {
         window.location.href = "logIn.html";
       }, 1500);
@@ -626,12 +640,10 @@ class QuickModal extends HTMLElement {
     } catch (error) {
       console.error("Add to cart error:", error);
       
-      // Show error in toast
       document.dispatchEvent(new CustomEvent("toast:show", { 
         detail: { message: error.message || "Không thể thêm vào giỏ hàng", type: "error" } 
       }));
 
-      // If token expired, redirect to login after delay
       if (error.message.includes("hết hạn") || error.message.includes("đăng nhập")) {
         setTimeout(() => {
           window.location.href = "logIn.html";

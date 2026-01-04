@@ -1,5 +1,40 @@
+
 import { getCustomerInfo } from "../API/customerApi.js";
 import { createOrder } from "../API/orderApi.js";
+
+// Helper function to get accountId from cookie
+function getAccountId() {
+  const name = "account_id=";
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+// Helper function to check if user is logged in (by cookie)
+function isLoggedIn() {
+  const name = "access_token=";
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // DOM Elements
 const shippingForm = document.getElementById("shippingForm");
@@ -27,8 +62,8 @@ const promoMessage = document.getElementById("promoMessage");
 let checkoutItems = [];
 let checkoutData = null;
 let customerInfo = null;
-let discount = 0; // Discount amount
-let appliedPromoCode = null; // Applied promo code
+let discount = 0;
+let appliedPromoCode = null;
 
 // Initialize page
 document.addEventListener("DOMContentLoaded", async () => {
@@ -38,10 +73,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Initialize page
 async function initializePage() {
-  // Get checkout items from sessionStorage
+  // Check if user is logged in via cookie
+  if (!isLoggedIn()) {
+    showToast("Vui lòng đăng nhập để thanh toán", "warning");
+    setTimeout(() => {
+      window.location.href = "logIn.html";
+    }, 1500);
+    return;
+  }
+
   const checkoutItemsData = sessionStorage.getItem("checkoutItems");
   
-  // If no items in sessionStorage, check localStorage
   if (!checkoutItemsData) {
     const checkoutDataStr = localStorage.getItem("checkoutData");
     if (checkoutDataStr) {
@@ -63,7 +105,6 @@ async function initializePage() {
     }
   }
   
-  // Validate checkout items
   if (!checkoutItems || checkoutItems.length === 0) {
     showToast("Không có sản phẩm để thanh toán", "warning");
     setTimeout(() => {
@@ -72,12 +113,10 @@ async function initializePage() {
     return;
   }
 
-  // Get checkout data from localStorage (includes discount info)
   const checkoutDataStr = localStorage.getItem("checkoutData");
   if (checkoutDataStr) {
     try {
       checkoutData = JSON.parse(checkoutDataStr);
-      // Update checkoutItems from checkoutData if available
       if (checkoutData.items && checkoutData.items.length > 0) {
         checkoutItems = checkoutData.items;
       }
@@ -86,23 +125,19 @@ async function initializePage() {
     }
   }
 
-  // Render order items
   renderOrderItems();
 
-  // Load customer info
   await loadCustomerInfo();
 
-  // Update place order button state
   updatePlaceOrderButton();
 }
 
 // Load customer info
 async function loadCustomerInfo() {
   try {
-    const accountId = localStorage.getItem("accountId");
+    const accountId = getAccountId() || localStorage.getItem("accountId");
     if (!accountId) {
-      console.warn("No accountId found in localStorage");
-      // For demo purposes, use empty values
+      console.warn("No accountId found");
       customerInfo = {
         customerId: null,
         customerName: "",
@@ -116,13 +151,11 @@ async function loadCustomerInfo() {
     console.log("Loading customer info for accountId:", accountId);
     const response = await getCustomerInfo(accountId);
     
-    // Handle nested response structure (success: true, data: {...})
     const customerData = response && (response.data || response);
     console.log("Customer data from API:", customerData);
     
     customerInfo = customerData;
 
-    // Store customerId for order creation - handle all possible field names
     if (customerData) {
       const customerId = customerData.customerId || customerData.CustomerId || customerData.id || customerData.Id;
       console.log("Extracted customerId:", customerId);
@@ -134,7 +167,6 @@ async function loadCustomerInfo() {
         console.warn("No customerId found in customerData:", customerData);
       }
       
-      // Pre-fill form with customer info - handle nested data structure
       customerNameInput.value = customerData.customerName || customerData.CustomerName || customerData.name || customerData.Name || "";
       customerPhoneInput.value = customerData.customerPhone || customerData.CustomerPhone || customerData.phone || customerData.Phone || "";
       customerEmailInput.value = customerData.customerEmail || customerData.CustomerEmail || customerData.email || customerData.Email || "";
@@ -144,7 +176,6 @@ async function loadCustomerInfo() {
     }
   } catch (error) {
     console.error("Error loading customer info:", error);
-    // Continue without customer info
     customerInfo = {
       customerId: null,
       customerName: "",
@@ -154,8 +185,6 @@ async function loadCustomerInfo() {
     };
   }
 }
-
-
 
 // Render order items
 function renderOrderItems() {
@@ -196,7 +225,6 @@ function renderOrderItems() {
     })
     .join("");
 
-  // Update summary
   updateOrderSummary();
 }
 
@@ -209,10 +237,8 @@ function updateOrderSummary() {
 
   summarySubTotal.textContent = formatCurrency(subTotal);
   
-  // Get discount from checkoutData or use local state
   const finalDiscount = checkoutData?.discount > 0 ? checkoutData.discount : discount;
   
-  // Update discount display
   if (finalDiscount > 0 && summaryDiscountRow && summaryDiscount) {
     summaryDiscountRow.style.display = "flex";
     summaryDiscount.textContent = `-${formatCurrency(finalDiscount)}`;
@@ -226,7 +252,6 @@ function updateOrderSummary() {
 
 // Initialize event listeners
 function initEventListeners() {
-  // Form input listeners for validation
   const requiredInputs = [
     customerNameInput,
     customerPhoneInput,
@@ -239,18 +264,14 @@ function initEventListeners() {
     input.addEventListener("change", updatePlaceOrderButton);
   });
 
-  // Terms checkbox
   agreeTermsCheckbox.addEventListener("change", updatePlaceOrderButton);
 
-  // Place order button
   placeOrderBtn.addEventListener("click", handlePlaceOrder);
 
-  // View orders button in success modal
   viewOrdersBtn.addEventListener("click", () => {
     window.location.href = "ordersPage.html";
   });
 
-  // Apply promo code
   applyPromoBtn.addEventListener("click", applyPromoCode);
   promoCodeInput.addEventListener("keyup", (e) => {
     if (e.key === "Enter") applyPromoCode();
@@ -259,9 +280,7 @@ function initEventListeners() {
 
 // Apply promo code
 async function applyPromoCode() {
-  // Check if user is logged in
-  const accessToken = localStorage.getItem("accesstoken");
-  if (!accessToken) {
+  if (!isLoggedIn()) {
     showToast("Vui lòng đăng nhập để áp dụng mã giảm giá", "warning");
     setTimeout(() => {
       window.location.href = "logIn.html";
@@ -277,7 +296,6 @@ async function applyPromoCode() {
     return;
   }
 
-  // Demo promo codes - in production, validate with API
   const promoCodes = {
     "DISCOUNT10": { discountPercent: 10, description: "Giảm 10%" },
     "DISCOUNT20": { discountPercent: 20, description: "Giảm 20%" },
@@ -288,7 +306,6 @@ async function applyPromoCode() {
   const promoConfig = promoCodes[code];
   
   if (promoConfig) {
-    // Calculate discount amount based on checkout items subtotal
     const subTotal = checkoutItems.reduce((sum, item) => {
       const price = item.variation?.price || 0;
       return sum + price * (item.quantity || 1);
@@ -302,22 +319,19 @@ async function applyPromoCode() {
     promoCodeInput.disabled = true;
     applyPromoBtn.disabled = true;
     
-    // Update checkoutData and localStorage (use discountId for backend compatibility)
     if (!checkoutData) {
       checkoutData = { items: checkoutItems };
     }
     checkoutData.discount = discount;
-    checkoutData.discountId = appliedPromoCode; // Use promo code as discountId for backend
+    checkoutData.discountId = appliedPromoCode;
     localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
     
-    // Update order summary
     updateOrderSummary();
   } else {
     promoMessage.textContent = "Mã giảm giá không hợp lệ hoặc đã hết hạn";
     promoMessage.className = "promo-message error";
   }
 }
-
 
 // Validate form
 function validateForm() {
@@ -336,7 +350,6 @@ function validateForm() {
     }
   }
 
-  // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(customerEmailInput.value.trim())) {
     showToast("Vui lòng nhập đúng địa chỉ email", "warning");
@@ -344,7 +357,6 @@ function validateForm() {
     return false;
   }
 
-  // Validate phone number (Vietnam format)
   const phoneRegex = /^(0|\+84)[0-9]{9,10}$/;
   const phone = customerPhoneInput.value.trim().replace(/\s/g, "");
   if (!phoneRegex.test(phone)) {
@@ -377,21 +389,17 @@ function validateFormSimple() {
 
 // Handle place order
 async function handlePlaceOrder() {
-  // Validate form
   if (!validateForm()) {
     return;
   }
 
-  // Check terms agreement
   if (!agreeTermsCheckbox.checked) {
     showToast("Vui lòng đồng ý với điều khoản", "warning");
     return;
   }
 
-  // Get customer ID from localStorage (stored in loadCustomerInfo)
   const customerId = localStorage.getItem("customerId") || null;
   
-  // Check if customer profile exists
   if (!customerId) {
     showToast("Vui lòng hoàn thiện thông tin cá nhân trước khi đặt hàng", "warning");
     loadingOverlay.style.display = "none";
@@ -401,23 +409,18 @@ async function handlePlaceOrder() {
     return;
   }
 
-  // Show loading overlay
   loadingOverlay.style.display = "flex";
 
   try {
-    // Build shipping address from customer address input
     const shippingAddress = customerAddressInput.value.trim();
 
-    // Build order items - only include variationId and quantity as per backend model
     const orderItems = checkoutItems.map(item => ({
       variationId: item.variation?.variationId || item.variationId,
       quantity: item.quantity || 1
     }));
 
-    // Get discount ID from checkoutData
     const discountId = checkoutData?.discountId || checkoutData?.appliedPromoCode || null;
 
-    // Create order request matching C# CreateOrderRequest DTO
     const orderData = {
       shippingAddress: shippingAddress,
       receiverName: customerNameInput.value.trim(),
@@ -430,20 +433,14 @@ async function handlePlaceOrder() {
 
     console.log("Creating order with data:", orderData);
 
-    // Call createOrder API
     const order = await createOrder(orderData);
 
-    // Clear checkout items from sessionStorage
     sessionStorage.removeItem("checkoutItems");
-    
-    // Clear checkoutData from localStorage
     localStorage.removeItem("checkoutData");
 
-    // Show success modal
     loadingOverlay.style.display = "none";
     successModal.style.display = "flex";
 
-    // Store the order ID for viewing
     sessionStorage.setItem("lastOrderId", order.orderId || order.id);
 
   } catch (error) {

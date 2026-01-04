@@ -1,3 +1,4 @@
+
 import {
   getCart,
   addToCart,
@@ -5,7 +6,24 @@ import {
   removeFromCart,
   clearCart,
 } from "../API/cartApi.js";
-import { getProductWithVariations } from "../API/productAPI.js";
+import { getProductWithVariations } from "../API/productApi.js";
+
+// Helper function to check if user is logged in (by cookie)
+function isLoggedIn() {
+  const name = "access_token=";
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // DOM Elements
 const cartItemsList = document.getElementById("cartItemsList");
@@ -29,9 +47,9 @@ const removeModal = document.getElementById("removeModal");
 let cart = null;
 let pendingRemoveItemId = null;
 let pendingRemoveVariationId = null;
-let selectedItems = new Set(); // Set of selected cartItemId
-let discount = 0; // Discount amount
-let appliedPromoCode = null; // Applied promo code
+let selectedItems = new Set();
+let discount = 0;
+let appliedPromoCode = null;
 
 // Initialize page
 document.addEventListener("DOMContentLoaded", async () => {
@@ -41,10 +59,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Load cart
 async function loadCart() {
-  // Check if user is logged in
-  const accessToken = localStorage.getItem("accesstoken");
-  if (!accessToken) {
-    // For guest users, show empty cart
+  if (!isLoggedIn()) {
     showEmptyCart();
     return;
   }
@@ -52,29 +67,22 @@ async function loadCart() {
   try {
     cart = await getCart();
     
-    // If cart is null or empty, show empty cart (not an error)
     if (!cart || !cart.items || cart.items.length === 0) {
       showEmptyCart();
       return;
     }
     
-    // Initialize all items as selected by default
-    // Fetch product details for each cart item if variation data is incomplete
     for (const item of cart.items) {
       if (!item.variation?.product || !item.variation?.variantName) {
-        // Need to fetch product details from DB
         const productId = item.productId || (item.variation?.product?.productId);
         if (productId) {
           try {
-            // Use getProductWithVariations to fetch from API
             const product = await getProductWithVariations(productId);
             if (product) {
-              // Find the variation in the product
               const variationId = item.variation?.variationId || item.variationId;
               const variation = product.variations?.find(v => v.variationId === variationId);
               
               if (variation && variation.options) {
-                // Build variant name from all options (like QuickModal does)
                 const variantName = variation.options.map(opt => opt.value).join(" - ");
                 
                 item.variation = {
@@ -115,10 +123,7 @@ async function loadCart() {
     renderCart();
   } catch (error) {
     console.error("Error loading cart:", error);
-    // Check if it's a 401/unauthorized error
     if (error.message?.includes("hết hạn") || error.message?.includes("đăng nhập") || error.message?.includes("401")) {
-      // Token expired, redirect to login
-      localStorage.removeItem("accesstoken");
       showToast("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại", "warning");
       setTimeout(() => {
         window.location.href = "logIn.html";
@@ -131,25 +136,19 @@ async function loadCart() {
 
 // Initialize event listeners
 function initEventListeners() {
-  // Select all checkbox
   selectAllCheckbox.addEventListener("change", () => {
     if (selectAllCheckbox.checked) {
-      // Select all items
       if (cart && cart.items) {
         cart.items.forEach((item) => selectedItems.add(item.cartItemId));
       }
     } else {
-      // Deselect all items
       selectedItems.clear();
     }
     renderCart();
   });
 
-  // Delete selected items
   deleteSelectedBtn.addEventListener("click", async () => {
-    // Check if user is logged in
-    const accessToken = localStorage.getItem("accesstoken");
-    if (!accessToken) {
+    if (!isLoggedIn()) {
       showToast("Vui lòng đăng nhập để thực hiện thao tác này", "warning");
       setTimeout(() => {
         window.location.href = "logIn.html";
@@ -167,7 +166,6 @@ function initEventListeners() {
     }
 
     try {
-      // Remove each selected item using variationId
       for (const item of cart.items) {
         if (selectedItems.has(item.cartItemId)) {
           const variationId = item.variation?.variationId || item.variationId;
@@ -177,7 +175,6 @@ function initEventListeners() {
         }
       }
 
-      // Remove from local cart
       cart.items = cart.items.filter((item) => !selectedItems.has(item.cartItemId));
       selectedItems.clear();
 
@@ -188,24 +185,20 @@ function initEventListeners() {
     }
   });
 
-  // Checkout button (all items)
   checkoutBtn.addEventListener("click", () => {
     handleCheckout(Array.from(cart.items));
   });
 
-  // Checkout selected button
   checkoutSelectedBtn.addEventListener("click", () => {
     const selectedCartItems = cart.items.filter((item) => selectedItems.has(item.cartItemId));
     handleCheckout(selectedCartItems);
   });
 
-  // Apply promo code
   document.getElementById("applyPromoBtn").addEventListener("click", applyPromoCode);
   document.getElementById("promoCode").addEventListener("keyup", (e) => {
     if (e.key === "Enter") applyPromoCode();
   });
 
-  // Remove modal buttons
   document.getElementById("cancelRemove").addEventListener("click", closeRemoveModal);
   document.getElementById("confirmRemove").addEventListener("click", confirmRemoveItem);
 }
@@ -221,7 +214,7 @@ function renderCart() {
   updateCartSummary();
 }
 
-// Update cart summary (main summary)
+// Update cart summary
 function updateCartSummary() {
   if (!cart || !cart.items || cart.items.length === 0) return;
 
@@ -231,7 +224,6 @@ function updateCartSummary() {
     return sum + price * item.quantity;
   }, 0);
 
-  // Update main summary
   if (document.getElementById("summaryItemCount")) {
     document.getElementById("summaryItemCount").textContent = totalItems;
   }
@@ -282,7 +274,6 @@ function showCartItems() {
     .map((item) => renderCartItem(item))
     .join("");
 
-  // Add event listeners
   cartItemsList.querySelectorAll(".quantity-btn.minus").forEach((btn) => {
     btn.addEventListener("click", () => updateQuantity(btn.dataset.variationId, -1));
   });
@@ -295,7 +286,6 @@ function showCartItems() {
     btn.addEventListener("click", () => openRemoveModal(btn.dataset.itemId, btn.dataset.variationId));
   });
 
-  // Item checkbox listeners
   cartItemsList.querySelectorAll(".cart-item-checkbox input").forEach((checkbox) => {
     checkbox.addEventListener("change", () => {
       const itemId = checkbox.dataset.itemId;
@@ -310,7 +300,6 @@ function showCartItems() {
     });
   });
 
-  // Initialize checkbox states and visual selection
   cartItemsList.querySelectorAll(".cart-item").forEach((item) => {
     const itemId = item.dataset.itemId;
     const checkbox = item.querySelector(".cart-item-checkbox input");
@@ -331,16 +320,13 @@ function updateSelectionUI() {
   const totalItems = cart?.items?.length || 0;
   const selectedCountValue = selectedItems.size;
 
-  // Update select all checkbox
   selectAllCheckbox.checked = selectedCountValue === totalItems && totalItems > 0;
   selectAllCheckbox.indeterminate = selectedCountValue > 0 && selectedCountValue < totalItems;
 
-  // Update counts
   selectedCount.textContent = selectedCountValue;
   selectedItemCount.textContent = selectedCountValue;
   checkoutSelectedCount.textContent = selectedCountValue;
 
-  // Show/hide elements based on selection
   if (selectedCountValue > 0) {
     selectedSummary.style.display = "block";
     checkoutSelectedBtn.style.display = "flex";
@@ -351,11 +337,9 @@ function updateSelectionUI() {
     checkoutBtn.style.display = "flex";
   }
 
-  // Enable/disable checkout buttons
   checkoutBtn.disabled = totalItems === 0;
   checkoutSelectedBtn.disabled = selectedCountValue === 0;
 
-  // Update summary with selected items
   updateSelectedSummary();
 }
 
@@ -371,7 +355,6 @@ function updateSelectedSummary() {
   document.getElementById("summaryItemCount").textContent = selectedTotalItems;
   document.getElementById("summarySubTotal").textContent = formatCurrency(subTotal);
 
-  // Calculate discount from state
   if (discount > 0) {
     document.getElementById("discountRow").style.display = "flex";
     document.getElementById("summaryDiscount").textContent = `-${formatCurrency(discount)}`;
@@ -389,11 +372,9 @@ function renderCartItem(item) {
   const product = variation?.product;
   const image = product?.productImages?.[0]?.imageUrl || "assets/images/no-image.jpg";
   const productName = product?.productName || "Sản phẩm";
-  // Use variantName from variation, or fall back to color/storage for compatibility
   const variantName = variation?.variantName || 
     (variation?.color ? `${variation.color}${variation.storage ? ` - ${variation.storage}` : ""}` : "Mặc định");
 
-  // Calculate item total
   const unitPrice = variation?.price || 0;
   const total = unitPrice * item.quantity;
   const isSelected = selectedItems.has(item.cartItemId);
@@ -431,9 +412,7 @@ function renderCartItem(item) {
 
 // Update quantity
 async function updateQuantity(variationId, change) {
-  // Check if user is logged in
-  const accessToken = localStorage.getItem("accesstoken");
-  if (!accessToken) {
+  if (!isLoggedIn()) {
     showToast("Vui lòng đăng nhập để thực hiện thao tác này", "warning");
     setTimeout(() => {
       window.location.href = "logIn.html";
@@ -472,9 +451,7 @@ function closeRemoveModal() {
 
 // Confirm remove item
 async function confirmRemoveItem() {
-  // Check if user is logged in
-  const accessToken = localStorage.getItem("accesstoken");
-  if (!accessToken) {
+  if (!isLoggedIn()) {
     showToast("Vui lòng đăng nhập để thực hiện thao tác này", "warning");
     setTimeout(() => {
       window.location.href = "logIn.html";
@@ -492,7 +469,6 @@ async function confirmRemoveItem() {
   try {
     await removeFromCart(pendingRemoveVariationId);
 
-    // Remove from local cart
     cart.items = cart.items.filter((i) => i.cartItemId !== pendingRemoveItemId);
     selectedItems.delete(pendingRemoveItemId);
 
@@ -500,9 +476,7 @@ async function confirmRemoveItem() {
     renderCart();
   } catch (error) {
     console.error("Remove error:", error);
-    // Check if it's a 401/unauthorized error
     if (error.message?.includes("hết hạn") || error.message?.includes("đăng nhập") || error.message?.includes("401")) {
-      localStorage.removeItem("accesstoken");
       showToast("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại", "warning");
       setTimeout(() => {
         window.location.href = "logIn.html";
@@ -517,9 +491,7 @@ async function confirmRemoveItem() {
 
 // Apply promo code
 async function applyPromoCode() {
-  // Check if user is logged in
-  const accessToken = localStorage.getItem("accesstoken");
-  if (!accessToken) {
+  if (!isLoggedIn()) {
     showToast("Vui lòng đăng nhập để áp dụng mã giảm giá", "warning");
     setTimeout(() => {
       window.location.href = "logIn.html";
@@ -537,7 +509,6 @@ async function applyPromoCode() {
     return;
   }
 
-  // Demo promo codes - in production, validate with API
   const promoCodes = {
     "DISCOUNT10": { discountPercent: 10, description: "Giảm 10%" },
     "DISCOUNT20": { discountPercent: 20, description: "Giảm 20%" },
@@ -548,7 +519,6 @@ async function applyPromoCode() {
   const promoConfig = promoCodes[code];
   
   if (promoConfig) {
-    // Calculate discount amount based on cart subtotal
     const subTotal = cart.items.reduce((sum, item) => {
       const price = item.variation?.price || 0;
       return sum + price * item.quantity;
@@ -562,7 +532,6 @@ async function applyPromoCode() {
     promoInput.disabled = true;
     document.getElementById("applyPromoBtn").disabled = true;
     
-    // Re-render to show discount in summary
     renderCart();
   } else {
     promoMessage.textContent = "Mã giảm giá không hợp lệ hoặc đã hết hạn";
@@ -577,9 +546,7 @@ function handleCheckout(selectedCartItems) {
     return;
   }
 
-  // Check if user is logged in
-  const accessToken = localStorage.getItem("accesstoken");
-  if (!accessToken) {
+  if (!isLoggedIn()) {
     showToast("Vui lòng đăng nhập để thanh toán", "warning");
     setTimeout(() => {
       window.location.href = "logIn.html";
@@ -587,13 +554,11 @@ function handleCheckout(selectedCartItems) {
     return;
   }
 
-  // Calculate subtotal for selected items
   const subTotal = selectedCartItems.reduce((sum, item) => {
     const price = item.variation?.price || 0;
     return sum + price * item.quantity;
   }, 0);
 
-  // Store checkout data
   const checkoutData = {
     items: selectedCartItems,
     subTotal: subTotal,
@@ -604,7 +569,6 @@ function handleCheckout(selectedCartItems) {
   
   localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
   
-  // Redirect to payment page
   window.location.href = "paymentPage.html";
 }
 

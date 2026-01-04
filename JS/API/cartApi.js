@@ -1,42 +1,25 @@
 // API for cart operations
 const CART_API_BASE = "https://localhost:7155/api/cart";
 
-// Helper function to get auth headers
-function getAuthHeaders() {
-  const accessToken = localStorage.getItem("accesstoken");
-  
-  if (!accessToken) {
-    throw new Error("Vui lòng đăng nhập để thực hiện chức năng này");
-  }
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${accessToken}`,
-  };
-}
+// AccessToken được browser tự động gửi từ HttpOnly cookie
+// Không cần thêm Authorization header
 
 // Helper function to handle response errors safely
 async function handleResponse(response) {
-  // Check if response is OK
   if (!response.ok) {
-    // Handle 401 Unauthorized
     if (response.status === 401) {
-      // Clear invalid token
-      localStorage.removeItem("accesstoken");
       throw new Error("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại");
     }
 
-    // Try to parse error message from response
     const contentType = response.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
       const errorData = await response.json();
       throw new Error(errorData.message || `Lỗi ${response.status}: ${response.statusText}`);
     } else {
-      // Non-JSON error response
       throw new Error(`Lỗi ${response.status}: ${response.statusText}`);
     }
   }
 
-  // Handle empty responses
   const text = await response.text();
   if (!text) {
     return null;
@@ -45,12 +28,14 @@ async function handleResponse(response) {
   return JSON.parse(text);
 }
 
-// Get cart - no accountId needed, server gets it from JWT
+// Get cart
 export async function getCart() {
   try {
     const response = await fetch(`${CART_API_BASE}`, {
       method: "GET",
-      headers: getAuthHeaders(),
+      headers: {
+        "Content-Type": "application/json"
+      },
     });
 
     if (response.status === 404) {
@@ -58,7 +43,6 @@ export async function getCart() {
     }
 
     const result = await handleResponse(response);
-    // Extract data from nested response structure
     return result?.data || result;
   } catch (error) {
     console.error("Error fetching cart:", error);
@@ -69,11 +53,11 @@ export async function getCart() {
 // Add item to cart
 export async function addToCart(variationId, quantity = 1) {
   try {
-    const headers = getAuthHeaders();
-    
     const response = await fetch(`${CART_API_BASE}/items`, {
       method: "POST",
-      headers: headers,
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         variationId,
         quantity,
@@ -81,7 +65,6 @@ export async function addToCart(variationId, quantity = 1) {
     });
 
     const result = await handleResponse(response);
-    // Extract data from nested response structure
     return result?.data || result;
   } catch (error) {
     console.error("Error adding to cart:", error);
@@ -94,7 +77,9 @@ export async function updateCartItem(variationId, quantity) {
   try {
     const response = await fetch(`${CART_API_BASE}/items/${variationId}`, {
       method: "PUT",
-      headers: getAuthHeaders(),
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         quantity,
       }),
@@ -113,7 +98,9 @@ export async function removeFromCart(variationId) {
   try {
     const response = await fetch(`${CART_API_BASE}/items/${variationId}`, {
       method: "DELETE",
-      headers: getAuthHeaders(),
+      headers: {
+        "Content-Type": "application/json"
+      },
     });
 
     const result = await handleResponse(response);
@@ -129,7 +116,9 @@ export async function clearCart() {
   try {
     const response = await fetch(`${CART_API_BASE}/clear`, {
       method: "DELETE",
-      headers: getAuthHeaders(),
+      headers: {
+        "Content-Type": "application/json"
+      },
     });
 
     const result = await handleResponse(response);
@@ -145,7 +134,9 @@ export async function syncGuestCart(guestCartItems) {
   try {
     const response = await fetch(`${CART_API_BASE}/sync`, {
       method: "POST",
-      headers: getAuthHeaders(),
+      headers: {
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         items: guestCartItems,
       }),
@@ -171,5 +162,4 @@ export async function getCartItemCount() {
     return 0;
   }
 }
-
 

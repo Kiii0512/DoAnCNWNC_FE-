@@ -1,5 +1,23 @@
+
 import { getCategories } from '../JS/API/categoryApi.js';
 import { getBrands } from '../JS/API/brandApi.js';
+
+// Helper function to check if user is logged in (by cookie)
+function isLoggedIn() {
+  const name = "access_token=";
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return true;
+    }
+  }
+  return false;
+}
 
 class MainNav extends HTMLElement {
   constructor() {
@@ -50,7 +68,6 @@ class MainNav extends HTMLElement {
     /* ========== ALL PRODUCTS ========== */
     this.querySelector('#all-products').addEventListener('click', e => {
       e.preventDefault();
-      // Only remove filters, keep auth token
       localStorage.removeItem('categoryId');
       localStorage.removeItem('categoryName');
       localStorage.removeItem('brandId');
@@ -194,9 +211,9 @@ class MainNav extends HTMLElement {
   /* ================= POSITION ================= */
   adjustPosition() {
     const nav = this.querySelector('.main-nav');
-    const token = localStorage.getItem("accesstoken");
-    nav.style.top = token ? "72px" : "110px";
+    nav.style.top = isLoggedIn() ? "72px" : "110px";
   }
 }
 
 customElements.define('main-nav', MainNav);
+

@@ -1,5 +1,11 @@
-import { callLogoutAPI } from "../JS/API/logoutAPI.js";
+import { doLogout } from "../JS/API/logoutAPI.js";
 import { getCartItemCount } from "../JS/API/cartApi.js";
+
+/* ========= AUTH STATE (FE-ONLY) ========= */
+// Không đọc cookie HttpOnly
+function isLoggedIn() {
+  return !!localStorage.getItem("username");
+}
 
 class TopHeader extends HTMLElement {
   connectedCallback() {
@@ -31,7 +37,8 @@ class TopHeader extends HTMLElement {
 
           <div class="nav-actions">
             <a href="cartPage.html" class="icon-btn" style="text-decoration:none;">
-              <i class="bx bx-cart"></i>Giỏ hàng (<span id="cartCount">0</span>)
+              <i class="bx bx-cart"></i>
+              Giỏ hàng (<span id="cartCount">0</span>)
             </a>
           </div>
 
@@ -62,14 +69,12 @@ class TopHeader extends HTMLElement {
 
   /* ================= AUTH UI ================= */
   renderAuthState() {
-    const token = localStorage.getItem("accesstoken");
-    
-    // Debug logging
-    console.log("TopHeader - localStorage contents:", {
-      accesstoken: token,
+    const loggedIn = isLoggedIn();
+
+    console.log("TopHeader auth state:", {
+      isLoggedIn: loggedIn,
       username: localStorage.getItem("username"),
-      role: localStorage.getItem("role"),
-      allKeys: Object.keys(localStorage)
+      role: localStorage.getItem("role")
     });
 
     const topbar = this.querySelector(".topbar");
@@ -82,11 +87,11 @@ class TopHeader extends HTMLElement {
     const registerMenu = this.querySelector("#registerMenu");
     const logoutMenu = this.querySelector("#logoutMenu");
 
-    const links = this.querySelectorAll("#accountMenu a");
-    const infoMenu = links[2];
-    const orderMenu = links[3];
+    const infoMenu = this.querySelector("#infoMenu");
+    const orderMenu = this.querySelector("#orderMenu");
 
-    if (token) {
+    if (loggedIn) {
+      // Logged in
       topbar.style.display = "none";
       header.style.top = "0";
 
@@ -99,6 +104,7 @@ class TopHeader extends HTMLElement {
       orderMenu.style.display = "block";
       logoutMenu.style.display = "block";
     } else {
+      // Logged out
       topbar.style.display = "block";
       header.style.top = "40px";
 
@@ -118,14 +124,13 @@ class TopHeader extends HTMLElement {
     const cartCountEl = this.querySelector("#cartCount");
     if (!cartCountEl) return;
 
-    const token = localStorage.getItem("accesstoken");
-    if (!token) {
+    if (!isLoggedIn()) {
       cartCountEl.textContent = "0";
       return;
     }
 
     try {
-      const count = await getCartItemCount();
+      const count = await getCartItemCount(); // API dùng cookie HttpOnly
       cartCountEl.textContent = count;
     } catch (error) {
       console.error("Error fetching cart count:", error);
@@ -135,7 +140,6 @@ class TopHeader extends HTMLElement {
 
   /* ================= EVENTS ================= */
   initUIEvents() {
-    // Toggle account menu
     const tkBtn = this.querySelector("#taikhoan");
     const accountMenu = this.querySelector("#accountMenu");
 
@@ -149,7 +153,7 @@ class TopHeader extends HTMLElement {
       accountMenu.style.display = "none";
     });
 
-    // Login / Register
+    // Login
     this.querySelectorAll("#loginBtn, #loginMenu").forEach(btn => {
       btn?.addEventListener("click", e => {
         e.preventDefault();
@@ -157,6 +161,7 @@ class TopHeader extends HTMLElement {
       });
     });
 
+    // Register
     this.querySelectorAll("#registerBtn, #registerMenu").forEach(btn => {
       btn?.addEventListener("click", e => {
         e.preventDefault();
@@ -168,14 +173,14 @@ class TopHeader extends HTMLElement {
     this.querySelector("#logoutMenu")?.addEventListener("click", async e => {
       e.preventDefault();
 
-      await callLogoutAPI();
-      localStorage.clear();
+      await doLogout(); // BE xoá cookie
+      localStorage.clear(); // xoá state UI
 
       window.dispatchEvent(new Event("authChanged"));
       location.href = "/homePage.html";
     });
 
-    // Responsive search
+    // Search responsive
     const searchBox = this.querySelector(".search");
     const searchIcon = this.querySelector("#searchIcon");
 
@@ -192,14 +197,14 @@ class TopHeader extends HTMLElement {
     window.addEventListener("resize", checkResponsive);
     checkResponsive();
 
-    // Search
     const searchInput = this.querySelector("#q");
     const searchBtn = this.querySelector("#searchBtn");
 
     const performSearch = () => {
       const keyword = searchInput.value.trim();
       if (keyword) {
-        location.href = `/categoryPage.html?keyword=${encodeURIComponent(keyword)}`;
+        location.href =
+          `/categoryPage.html?keyword=${encodeURIComponent(keyword)}`;
       }
     };
 

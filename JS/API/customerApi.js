@@ -1,128 +1,120 @@
-// API for customer operations
+// ================================
+// CUSTOMER API (COOKIE-BASED AUTH)
+// ================================
+
 const API_BASE = "https://localhost:7155/api/customers";
 
-// Get customer info by account ID
-export async function getCustomerInfo(accountId) {
+/**
+ * ⚠️ QUAN TRỌNG
+ * - AccessToken nằm trong HttpOnly cookie
+ * - JS KHÔNG đọc được token
+ * - PHẢI dùng credentials: "include"
+ */
+
+/* ================= GET CUSTOMER INFO ================= */
+/**
+ * Backend đã biết accountId từ token
+ * => FE KHÔNG truyền accountId nữa
+ */
+export async function getCustomerInfo() {
   try {
-    console.log("Fetching customer info for account ID:", accountId);
-    console.log("API URL:", `${API_BASE}/by-account/${accountId}`);
-    
-    const response = await fetch(`${API_BASE}/by-account/${accountId}`, {
+    const response = await fetch(`${API_BASE}/by-account`, {
       method: "GET",
+      credentials: "include", // 🔥 BẮT BUỘC
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accesstoken")}`,
-      },
+        "Content-Type": "application/json"
+      }
     });
 
-    console.log("Response status:", response.status);
-    console.log("Response ok:", response.ok);
-
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Error response:", errorText);
-      
-      let errorMessage = "Failed to fetch customer info";
-      try {
-        const errorData = JSON.parse(errorText);
-        errorMessage = errorData.message || errorData.error || errorMessage;
-      } catch (e) {
-        // Response is not JSON
-        errorMessage = `HTTP ${response.status}: ${errorText || response.statusText}`;
+      if (response.status === 401) {
+        throw new Error("Chưa đăng nhập hoặc phiên đã hết hạn");
       }
-      
-      const error = new Error(errorMessage);
-      error.status = response.status;
-      throw error;
+      if (response.status === 404) {
+        return null; // chưa có customer
+      }
+      const text = await response.text();
+      throw new Error(text || "Không lấy được thông tin khách hàng");
     }
 
-    const data = await response.json();
-    console.log("API response data:", data);
-    return data;
+    return await response.json();
   } catch (error) {
-    console.error("Error fetching customer info:", error);
+    console.error("getCustomerInfo error:", error);
     throw error;
   }
 }
 
-// Update customer info
+/* ================= UPDATE CUSTOMER INFO ================= */
 export async function updateCustomerInfo(customerData) {
   try {
     const response = await fetch(API_BASE, {
       method: "PUT",
+      credentials: "include", // 🔥
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accesstoken")}`,
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify(customerData),
+      body: JSON.stringify(customerData)
     });
 
     if (!response.ok) {
-      throw new Error("Failed to update customer info");
+      const text = await response.text();
+      throw new Error(text || "Cập nhật thông tin thất bại");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error updating customer info:", error);
+    console.error("updateCustomerInfo error:", error);
     throw error;
   }
 }
 
-// Change password
+/* ================= CHANGE PASSWORD ================= */
 export async function changePassword(currentPassword, newPassword) {
   try {
     const response = await fetch(`${API_BASE}/change-password`, {
       method: "POST",
+      credentials: "include", // 🔥
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accesstoken")}`,
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         currentPassword,
-        newPassword,
-      }),
+        newPassword
+      })
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || "Failed to change password");
+      const data = await response.json().catch(() => null);
+      throw new Error(data?.message || "Đổi mật khẩu thất bại");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error changing password:", error);
+    console.error("changePassword error:", error);
     throw error;
   }
 }
 
-// Create new customer info (for newly registered users)
+/* ================= CREATE CUSTOMER INFO ================= */
 export async function createCustomerInfo(customerData) {
   try {
     const response = await fetch(API_BASE, {
       method: "POST",
+      credentials: "include", // 🔥
       headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accesstoken")}`,
+        "Content-Type": "application/json"
       },
-      body: JSON.stringify(customerData),
+      body: JSON.stringify(customerData)
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      let errorMessage = "Failed to create customer info";
-      try {
-        const errorData = JSON.parse(errorText);
-        errorMessage = errorData.message || errorData.error || errorMessage;
-      } catch (e) {
-        errorMessage = `HTTP ${response.status}: ${errorText || response.statusText}`;
-      }
-      throw new Error(errorMessage);
+      const text = await response.text();
+      throw new Error(text || "Tạo thông tin khách hàng thất bại");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error creating customer info:", error);
+    console.error("createCustomerInfo error:", error);
     throw error;
   }
 }
-

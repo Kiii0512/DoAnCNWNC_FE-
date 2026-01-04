@@ -1,4 +1,39 @@
+
 import { getOrdersByCustomer, getOrderDetails, cancelOrder, reorder } from "../API/orderApi.js";
+
+// Helper function to get accountId from cookie
+function getAccountId() {
+  const name = "account_id=";
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
+// Helper function to check if user is logged in (by cookie)
+function isLoggedIn() {
+  const name = "access_token=";
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const ca = decodedCookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) === ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) === 0) {
+      return true;
+    }
+  }
+  return false;
+}
 
 // DOM Elements
 const ordersList = document.getElementById("ordersList");
@@ -20,7 +55,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Load orders
 async function loadOrders() {
-  const accountId = localStorage.getItem("username");
+  // Check if user is logged in via cookie
+  if (!isLoggedIn()) {
+    showToast("Vui lòng đăng nhập để xem đơn hàng", "error");
+    setTimeout(() => {
+      window.location.href = "logIn.html?mode=login";
+    }, 2000);
+    return;
+  }
+
+  const accountId = getAccountId();
 
   if (!accountId) {
     showToast("Vui lòng đăng nhập để xem đơn hàng", "error");
@@ -59,7 +103,6 @@ async function loadOrders() {
 
 // Initialize event listeners
 function initEventListeners() {
-  // Tab filtering
   orderTabs.forEach((tab) => {
     tab.addEventListener("click", () => {
       orderTabs.forEach((t) => t.classList.remove("active"));
@@ -69,13 +112,10 @@ function initEventListeners() {
     });
   });
 
-  // Close panel
   closePanelBtn.addEventListener("click", closePanel);
   
-  // Close panel on overlay click
   orderDetailPanel.querySelector(".panel-overlay").addEventListener("click", closePanel);
   
-  // Close panel on escape key
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && orderDetailPanel.classList.contains("show")) {
       closePanel();
@@ -103,7 +143,6 @@ function renderOrders() {
     .map((order) => renderOrderCard(order))
     .join("");
 
-  // Add click events to cards
   ordersList.querySelectorAll(".order-card").forEach((card) => {
     card.addEventListener("click", () => openOrderDetail(card.dataset.orderId));
   });
@@ -116,7 +155,6 @@ function renderOrderCard(order) {
   const formattedDate = formatDate(order.createdAt);
   const formattedTotal = formatCurrency(order.total);
 
-  // Get first product image (placeholder if none)
   const firstImage = order.orderDetails?.[0]?.variation?.product?.productImages?.[0]?.imageUrl 
     || "assets/images/no-image.jpg";
   
@@ -150,11 +188,9 @@ async function openOrderDetail(orderId) {
   const order = allOrders.find((o) => o.orderId === orderId);
   if (!order) return;
 
-  // Show panel first with basic info
   showPanel();
   renderOrderBasicInfo(order);
   
-  // Load detailed order info (with items)
   try {
     const orderDetails = await getOrderDetails(orderId);
     renderOrderItems(orderDetails.orderDetails || []);
@@ -245,7 +281,6 @@ function renderOrderActions(order, orderDetails) {
   
   let actionsHTML = "";
   
-  // Can cancel if pending or confirmed
   if (status === "pending" || status === "confirmed") {
     actionsHTML += `
       <button class="btn-cancel-order" onclick="handleCancelOrder('${order.orderId}')">
@@ -254,7 +289,6 @@ function renderOrderActions(order, orderDetails) {
     `;
   }
   
-  // Can reorder if delivered or cancelled
   if (status === "delivered" || status === "cancelled") {
     actionsHTML += `
       <button class="btn-reorder" onclick="handleReorder('${order.orderId}')">
@@ -263,7 +297,6 @@ function renderOrderActions(order, orderDetails) {
     `;
   }
   
-  // Always show view details action
   if (!actionsHTML) {
     actionsHTML = `
       <p style="color: #6b7280; font-size: 13px; text-align: center; width: 100%;">
@@ -297,7 +330,7 @@ window.handleCancelOrder = async function (orderId) {
     await cancelOrder(orderId);
     showToast("Hủy đơn hàng thành công", "success");
     closePanel();
-    await loadOrders(); // Reload orders
+    await loadOrders();
   } catch (error) {
     showToast(error.message || "Hủy đơn hàng thất bại", "error");
   }
@@ -309,8 +342,6 @@ window.handleReorder = async function (orderId) {
     await reorder(orderId);
     showToast("Đã thêm sản phẩm vào giỏ hàng", "success");
     closePanel();
-    // Optionally redirect to cart
-    // window.location.href = "cart.html";
   } catch (error) {
     showToast(error.message || "Mua lại thất bại", "error");
   }
