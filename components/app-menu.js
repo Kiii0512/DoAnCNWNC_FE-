@@ -8,7 +8,7 @@ class AppMenu extends HTMLElement {
 
               <!-- b. QUẢN LÝ SẢN PHẨM -->
               <a class="menu-item"
-                href="adminDashboard.html"
+                href="staffDashboard.html"
                 data-route="product"
                 title="Thêm mới, sửa, cập nhật giá, hình ảnh, tồn kho">
                 Quản lý sản phẩm
@@ -17,53 +17,26 @@ class AppMenu extends HTMLElement {
 
               <!-- c. QUẢN LÝ ĐƠN HÀNG -->
               <a class="menu-item"
-                 href="adminOrder.html"
+                 href="staffOrder.html"
                  data-route="order"
                  title="Xác nhận, đóng gói và cập nhật trạng thái đơn hàng">
                 Quản lý đơn hàng
                 <span class="tag">ORDER</span>
               </a>
 
-              <!-- d. QUẢN LÝ DANH MỤC & THƯƠNG HIỆU -->
-              <a class="menu-item"
-                href="adminCatalog.html"
-                data-route="catalog"
-                  title="Quản lý danh mục (Category) và thương hiệu (Brand)">
-                Quản lý danh mục & thương hiệu
-                  <span class="tag">CATALOG</span>
-                </a>
-
-
-              <!-- d. QUẢN LÝ KHUYẾN MÃI -->
-              <a class="menu-item"
-                 href="adminDiscount.html"
-                 data-route="discount"
-                 title="Quản lý các chương trình khuyến mãi và giảm giá">
-                Quản lý khuyến mãi
-                <span class="tag">PROMOTION</span>
-              </a>
-
-              <!-- e. QUẢN LÝ NHÂN VIÊN -->
-              <a class="menu-item"
-                 href="adminEmployee.html"
-                 data-route="employee"
-                 title="Quản lý nhân viên">
-                Quản lý nhân viên
-                <span class="tag">EMPLOYEE</span>
-              </a>
 
               <!-- f. XỬ LÝ PHẢN HỒI -->
-              <a class="menu-item"
-                 href="#feedback"
-                 data-route="feedback"
-                 title="Xem, trả lời hoặc xóa phản hồi khách hàng">
-                Xử lý phản hồi
-                <span class="tag">FEEDBACK</span>
-              </a>
+                <a class="menu-item"
+                  href="staffFeedback.html"
+                  data-route="feedback"
+                  title="Xem, trả lời hoặc xóa phản hồi khách hàng">
+                  Xử lý phản hồi
+                  <span class="tag">FEEDBACK</span>
+                </a>
 
               <!-- e. BÁO CÁO DOANH THU -->
               <a class="menu-item"
-                href="adminReport.html"
+                href="staffReport.html"
                 data-route="report"
                 title="Xem báo cáo doanh thu">
 
@@ -110,13 +83,10 @@ setActiveFromLocation() {
   const path = location.pathname.toLowerCase();
 
   let route = '';
-  if (path.includes('adminorder')) route = 'order';
-  else if (path.includes('admindiscount')) route = 'discount';
-  else if (path.includes('admincatalog')) route = 'catalog';
-  else if (path.includes('admindashboard')) route = 'product';
-  else if (path.includes('adminemployee')) route = 'employee';
-  else if (path.includes('adminfeedback')) route = 'feedback';
-  else if (path.includes('adminreport')) route = 'report';
+  if (path.includes('stafforder')) route = 'order';
+  else if (path.includes('staffdashboard')) route = 'product';
+  else if (path.includes('stafffeedback')) route = 'feedback';
+  else if (path.includes('staffreport')) route = 'report';
 
   const el =
     this.items.find(x => x.dataset.route === route) ||
