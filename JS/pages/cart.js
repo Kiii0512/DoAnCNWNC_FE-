@@ -8,23 +8,10 @@ import {
 } from "../API/cartApi.js";
 import { getProductWithVariations } from "../API/productApi.js";
 
-// Helper function to check if user is logged in (by cookie)
-function isLoggedIn() {
-  const name = "access_token=";
-  const decodedCookie = decodeURIComponent(document.cookie);
-  const ca = decodedCookie.split(';');
-  for(let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) === 0) {
-      return true;
-    }
-  }
-  return false;
-}
 
+function isLoggedIn() {
+  return !!localStorage.getItem("username");
+}
 // DOM Elements
 const cartItemsList = document.getElementById("cartItemsList");
 const emptyCart = document.getElementById("emptyCart");
@@ -65,76 +52,33 @@ async function loadCart() {
   }
 
   try {
-    cart = await getCart();
-    
-    if (!cart || !cart.items || cart.items.length === 0) {
+    const res = await getCart();
+    cart = res;
+
+    if (!cart?.items?.length) {
       showEmptyCart();
       return;
     }
-    
+
     for (const item of cart.items) {
-      if (!item.variation?.product || !item.variation?.variantName) {
-        const productId = item.productId || (item.variation?.product?.productId);
-        if (productId) {
-          try {
-            const product = await getProductWithVariations(productId);
-            if (product) {
-              const variationId = item.variation?.variationId || item.variationId;
-              const variation = product.variations?.find(v => v.variationId === variationId);
-              
-              if (variation && variation.options) {
-                const variantName = variation.options.map(opt => opt.value).join(" - ");
-                
-                item.variation = {
-                  variationId: variation.variationId,
-                  price: variation.price,
-                  stockQuantity: variation.stockQuantity,
-                  variantName: variantName,
-                  options: variation.options,
-                  product: {
-                    productId: product.id,
-                    productName: product.title,
-                    productImages: product.images || [{ imageUrl: product.img }],
-                    productDescription: product.description
-                  }
-                };
-              } else {
-                item.variation = {
-                  variationId: variationId,
-                  product: {
-                    productId: product.id,
-                    productName: product.title,
-                    productImages: [{ imageUrl: product.img }],
-                    productDescription: product.description
-                  },
-                  price: item.price || 0,
-                  variantName: "Mặc định",
-                  options: []
-                };
-              }
-            }
-          } catch (err) {
-            console.error("Error fetching product:", err);
-          }
-        }
-      }
-      selectedItems.add(item.cartItemId);
+      const product = await getProductWithVariations(item.productId);
+
+      const variation = product.variations.find(
+        v => v.variationId === item.variationId
+      );
+
+      item._product = product;
+      item._variation = variation;
     }
+
+    selectedItems = new Set(cart.items.map(i => i.cartItemId));
     renderCart();
-  } catch (error) {
-    console.error("Error loading cart:", error);
-    if (error.message?.includes("hết hạn") || error.message?.includes("đăng nhập") || error.message?.includes("401")) {
-      showToast("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại", "warning");
-      setTimeout(() => {
-        window.location.href = "logIn.html";
-      }, 1500);
-    } else {
-      showEmptyCart();
-    }
+  } catch (e) {
+    console.error(e);
+    showEmptyCart();
   }
 }
 
-// Initialize event listeners
 function initEventListeners() {
   selectAllCheckbox.addEventListener("change", () => {
     if (selectAllCheckbox.checked) {
@@ -202,8 +146,63 @@ function initEventListeners() {
   document.getElementById("cancelRemove").addEventListener("click", closeRemoveModal);
   document.getElementById("confirmRemove").addEventListener("click", confirmRemoveItem);
 }
+function renderCartItem(item) {
+  const product = item._product;
+  const variation = item._variation;
 
-// Render cart
+  const image =
+    product?.images?.[0]?.imageUrl ||
+    product?.img ||
+    "assets/images/no-image.jpg";
+
+  const productName = product?.title || "Sản phẩm";
+  const variantName = variation?.options
+    ?.map(o => o.value)
+    .join(" - ") || "Mặc định";
+
+  const unitPrice = item.price; 
+  const total = unitPrice * item.quantity;
+
+  const isSelected = selectedItems.has(item.cartItemId);
+
+  return `
+    <div class="cart-item ${isSelected ? "selected" : ""}" data-item-id="${item.cartItemId}">
+      <div class="cart-item-checkbox">
+        <input type="checkbox" ${isSelected ? "checked" : ""} data-item-id="${item.cartItemId}" />
+      </div>
+
+      <img src="${image}" class="cart-item-image"/>
+
+      <div class="cart-item-details">
+        <div class="cart-item-name">${productName}</div>
+        <div class="cart-item-variant">${variantName}</div>
+        <div class="cart-item-price">${formatCurrency(unitPrice)}</div>
+
+        <div class="cart-item-actions">
+          <div class="quantity-control">
+            <button class="quantity-btn minus"
+              data-variation-id="${item.variationId}"
+              ${item.quantity <= 1 ? "disabled" : ""}>-</button>
+
+            <span>${item.quantity}</span>
+
+            <button class="quantity-btn plus"
+              data-variation-id="${item.variationId}">+</button>
+          </div>
+
+          <button class="remove-btn"
+            data-item-id="${item.cartItemId}"
+            data-variation-id="${item.variationId}">
+            Xóa
+          </button>
+
+          <div class="item-total">${formatCurrency(total)}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderCart() {
   if (!cart || !cart.items || cart.items.length === 0) {
     showEmptyCart();
@@ -214,7 +213,6 @@ function renderCart() {
   updateCartSummary();
 }
 
-// Update cart summary
 function updateCartSummary() {
   if (!cart || !cart.items || cart.items.length === 0) return;
 
@@ -249,7 +247,6 @@ function updateCartSummary() {
   }
 }
 
-// Show empty cart
 function showEmptyCart() {
   cartItemsList.style.display = "none";
   emptyCart.style.display = "flex";
@@ -259,7 +256,6 @@ function showEmptyCart() {
   cartItemCount.textContent = "0 sản phẩm";
 }
 
-// Show cart items
 function showCartItems() {
   cartItemsList.style.display = "flex";
   emptyCart.style.display = "none";
@@ -315,7 +311,6 @@ function showCartItems() {
   updateSelectionUI();
 }
 
-// Update selection UI
 function updateSelectionUI() {
   const totalItems = cart?.items?.length || 0;
   const selectedCountValue = selectedItems.size;
@@ -343,7 +338,6 @@ function updateSelectionUI() {
   updateSelectedSummary();
 }
 
-// Update summary with selected items
 function updateSelectedSummary() {
   const selectedCartItems = cart.items.filter((item) => selectedItems.has(item.cartItemId));
   const selectedTotalItems = selectedCartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -366,51 +360,8 @@ function updateSelectedSummary() {
   document.getElementById("summaryTotal").textContent = formatCurrency(total);
 }
 
-// Render single cart item
-function renderCartItem(item) {
-  const variation = item.variation;
-  const product = variation?.product;
-  const image = product?.productImages?.[0]?.imageUrl || "assets/images/no-image.jpg";
-  const productName = product?.productName || "Sản phẩm";
-  const variantName = variation?.variantName || 
-    (variation?.color ? `${variation.color}${variation.storage ? ` - ${variation.storage}` : ""}` : "Mặc định");
 
-  const unitPrice = variation?.price || 0;
-  const total = unitPrice * item.quantity;
-  const isSelected = selectedItems.has(item.cartItemId);
-  const variationId = variation?.variationId || item.variationId;
 
-  return `
-    <div class="cart-item ${isSelected ? "selected" : ""}" data-item-id="${item.cartItemId}" data-variation-id="${variationId}">
-      <div class="cart-item-checkbox">
-        <input type="checkbox" data-item-id="${item.cartItemId}" ${isSelected ? "checked" : ""} />
-      </div>
-      <img src="${image}" alt="${productName}" class="cart-item-image" />
-      <div class="cart-item-details">
-        <div class="cart-item-name">${productName}</div>
-        <div class="cart-item-variant">${variantName}</div>
-        <div class="cart-item-price">${formatCurrency(unitPrice)}</div>
-        <div class="cart-item-actions">
-          <div class="quantity-control">
-            <button class="quantity-btn minus" data-item-id="${item.cartItemId}" data-variation-id="${variationId}" ${item.quantity <= 1 ? "disabled" : ""}>
-              <i class="bx bx-minus"></i>
-            </button>
-            <span class="quantity-value">${item.quantity}</span>
-            <button class="quantity-btn plus" data-item-id="${item.cartItemId}" data-variation-id="${variationId}">
-              <i class="bx bx-plus"></i>
-            </button>
-          </div>
-          <button class="remove-btn" data-item-id="${item.cartItemId}" data-variation-id="${variationId}">
-            <i class="bx bx-trash"></i> Xóa
-          </button>
-          <div class="item-total">${formatCurrency(total)}</div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-// Update quantity
 async function updateQuantity(variationId, change) {
   if (!isLoggedIn()) {
     showToast("Vui lòng đăng nhập để thực hiện thao tác này", "warning");
@@ -435,21 +386,18 @@ async function updateQuantity(variationId, change) {
   }
 }
 
-// Open remove modal
 function openRemoveModal(itemId, variationId) {
   pendingRemoveItemId = itemId;
   pendingRemoveVariationId = variationId;
   removeModal.style.display = "flex";
 }
 
-// Close remove modal
 function closeRemoveModal() {
   pendingRemoveItemId = null;
   pendingRemoveVariationId = null;
   removeModal.style.display = "none";
 }
 
-// Confirm remove item
 async function confirmRemoveItem() {
   if (!isLoggedIn()) {
     showToast("Vui lòng đăng nhập để thực hiện thao tác này", "warning");
@@ -489,57 +437,6 @@ async function confirmRemoveItem() {
   }
 }
 
-// Apply promo code
-async function applyPromoCode() {
-  if (!isLoggedIn()) {
-    showToast("Vui lòng đăng nhập để áp dụng mã giảm giá", "warning");
-    setTimeout(() => {
-      window.location.href = "logIn.html";
-    }, 1500);
-    return;
-  }
-
-  const promoInput = document.getElementById("promoCode");
-  const promoMessage = document.getElementById("promoMessage");
-  const code = promoInput.value.trim().toUpperCase();
-
-  if (!code) {
-    promoMessage.textContent = "Vui lòng nhập mã giảm giá";
-    promoMessage.className = "promo-message error";
-    return;
-  }
-
-  const promoCodes = {
-    "DISCOUNT10": { discountPercent: 10, description: "Giảm 10%" },
-    "DISCOUNT20": { discountPercent: 20, description: "Giảm 20%" },
-    "DISCOUNT50": { discountPercent: 50, description: "Giảm 50%" },
-    "VIP100": { discountPercent: 15, description: "VIP: Giảm 15%" }
-  };
-
-  const promoConfig = promoCodes[code];
-  
-  if (promoConfig) {
-    const subTotal = cart.items.reduce((sum, item) => {
-      const price = item.variation?.price || 0;
-      return sum + price * item.quantity;
-    }, 0);
-    
-    discount = Math.floor(subTotal * (promoConfig.discountPercent / 100));
-    appliedPromoCode = code;
-    
-    promoMessage.textContent = `Áp dụng thành công! ${promoConfig.description} (-${formatCurrency(discount)})`;
-    promoMessage.className = "promo-message success";
-    promoInput.disabled = true;
-    document.getElementById("applyPromoBtn").disabled = true;
-    
-    renderCart();
-  } else {
-    promoMessage.textContent = "Mã giảm giá không hợp lệ hoặc đã hết hạn";
-    promoMessage.className = "promo-message error";
-  }
-}
-
-// Handle checkout
 function handleCheckout(selectedCartItems) {
   if (selectedCartItems.length === 0) {
     showToast("Vui lòng chọn sản phẩm để thanh toán", "info");
@@ -591,14 +488,15 @@ function showToast(message, type = "info") {
 
 // Export functions for use in other modules
 export function updateCartCount() {
-  const countElements = document.querySelectorAll("#cartCount");
-  if (!cart || !cart.items) {
-    countElements.forEach((el) => (el.textContent = "0"));
+  const els = document.querySelectorAll("#cartCount");
+
+  if (!isLoggedIn() || !cart?.items) {
+    els.forEach(el => el.textContent = "0");
     return;
   }
 
-  const totalItems = cart.items.reduce((sum, item) => sum + item.quantity, 0);
-  countElements.forEach((el) => (el.textContent = totalItems));
+  const total = cart.items.reduce((s, i) => s + i.quantity, 0);
+  els.forEach(el => el.textContent = total);
 }
 
 // Update cart count on page load

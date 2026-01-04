@@ -19,15 +19,10 @@ let currentProduct = null;
 let selectedVariation = null;
 let selectedOptions = {};
 let quantity = 1;
-let variationAttributes = []; // Store attributes from API for proper ordering
+let variationAttributes = []; 
 
-/**
- * Helper: Get attribute info from optionTypeId and optionTypeName
- * Uses the API-provided optionTypeId and optionTypeName directly
- * Falls back to pattern matching only if API data is missing
- */
+
 function getAttributeInfo(option) {
-  // Primary: Use API-provided optionTypeId and optionTypeName
   if (option.optionTypeId && option.optionTypeName) {
     return {
       attributeId: option.optionTypeId,
@@ -35,7 +30,6 @@ function getAttributeInfo(option) {
     };
   }
   
-  // Fallback: If optionTypeId is missing, try to detect from value
   if (option.value) {
     const detected = detectAttributeTypeFromValue(option.value);
     if (detected) {
@@ -43,18 +37,13 @@ function getAttributeInfo(option) {
     }
   }
   
-  // Last resort: Use generic name with index-based ID
   return {
     attributeId: 99,
     name: 'Phiên bản'
   };
 }
 
-/**
- * Helper: Get attribute name from option value
- * Uses consistent logic across renderVariations, selectFirstVariation, and findMatchingVariation
- * Similar to QuickModal.js implementation
- */
+
 function getAttributeName(value, fallbackName = 'Phiên bản') {
   if (!value) return fallbackName;
   

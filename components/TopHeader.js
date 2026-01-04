@@ -1,8 +1,7 @@
 import { doLogout } from "../JS/API/logoutAPI.js";
 import { getCartItemCount } from "../JS/API/cartApi.js";
 
-/* ========= AUTH STATE (FE-ONLY) ========= */
-// Không đọc cookie HttpOnly
+
 function isLoggedIn() {
   return !!localStorage.getItem("username");
 }
@@ -67,7 +66,7 @@ class TopHeader extends HTMLElement {
     });
   }
 
-  /* ================= AUTH UI ================= */
+
   renderAuthState() {
     const loggedIn = isLoggedIn();
 
@@ -119,7 +118,6 @@ class TopHeader extends HTMLElement {
     }
   }
 
-  /* ================= CART COUNT ================= */
   async updateCartCount() {
     const cartCountEl = this.querySelector("#cartCount");
     if (!cartCountEl) return;
@@ -138,7 +136,6 @@ class TopHeader extends HTMLElement {
     }
   }
 
-  /* ================= EVENTS ================= */
   initUIEvents() {
     const tkBtn = this.querySelector("#taikhoan");
     const accountMenu = this.querySelector("#accountMenu");

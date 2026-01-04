@@ -25,7 +25,7 @@ export async function getCart() {
   try {
     const response = await fetch(CART_API_BASE, {
       method: "GET",
-      credentials: "include", // 🔥 BẮT BUỘC
+      credentials: "include", 
       headers: {
         "Content-Type": "application/json"
       }
@@ -45,7 +45,7 @@ export async function addToCart(variationId, quantity = 1) {
   try {
     const response = await fetch(`${CART_API_BASE}/items`, {
       method: "POST",
-      credentials: "include", // 🔥
+      credentials: "include", 
       headers: {
         "Content-Type": "application/json"
       },
@@ -64,7 +64,7 @@ export async function updateCartItem(variationId, quantity) {
   try {
     const response = await fetch(`${CART_API_BASE}/items/${variationId}`, {
       method: "PUT",
-      credentials: "include", // 🔥
+      credentials: "include", 
       headers: {
         "Content-Type": "application/json"
       },
@@ -83,7 +83,7 @@ export async function removeFromCart(variationId) {
   try {
     const response = await fetch(`${CART_API_BASE}/items/${variationId}`, {
       method: "DELETE",
-      credentials: "include", // 🔥
+      credentials: "include", 
       headers: {
         "Content-Type": "application/json"
       }
@@ -101,7 +101,7 @@ export async function clearCart() {
   try {
     const response = await fetch(`${CART_API_BASE}/clear`, {
       method: "DELETE",
-      credentials: "include", // 🔥
+      credentials: "include", 
       headers: {
         "Content-Type": "application/json"
       }
@@ -119,7 +119,7 @@ export async function syncGuestCart(guestCartItems) {
   try {
     const response = await fetch(`${CART_API_BASE}/sync`, {
       method: "POST",
-      credentials: "include", // 🔥
+      credentials: "include",
       headers: {
         "Content-Type": "application/json"
       },

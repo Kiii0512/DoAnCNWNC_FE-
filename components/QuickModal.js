@@ -194,11 +194,7 @@ class QuickModal extends HTMLElement {
     });
   }
 
-  /**
-   * Helper: Get attribute info from optionTypeId and optionTypeName
-   * Uses the API-provided optionTypeId and optionTypeName directly
-   * Falls back to pattern matching only if API data is missing
-   */
+  
   getAttributeInfo(option) {
     // Primary: Use API-provided optionTypeId and optionTypeName
     if (option.optionTypeId && option.optionTypeName) {
@@ -271,10 +267,7 @@ class QuickModal extends HTMLElement {
     return fallbackName;
   }
 
-  /**
-   * Helper: Detect attribute type from option value (returns both id and name)
-   * Since API doesn't return optionTypeName, we infer from the value
-   */
+  
   detectAttributeTypeFromValue(value) {
     if (!value) return null;
     
@@ -296,12 +289,7 @@ class QuickModal extends HTMLElement {
     };
   }
 
-  /**
-   * Render attribute options as separate groups
-   * Uses optionTypeId and optionTypeName from the API response
-   * Falls back to pattern matching only if API data is missing
-   * Uses getAllAttributes() only for sorting by attributeId
-   */
+  
   renderAttributeOptions() {
     const container = this.querySelector("#attributeOptions");
     const variations = this.product.variations || [];
@@ -313,24 +301,20 @@ class QuickModal extends HTMLElement {
       return;
     }
 
-    // Get attribute list from API for sorting purposes
     const attributesMap = {};
     (this.variationAttributes || []).forEach(attr => {
       attributesMap[attr.attributeId] = attr.name;
     });
 
-    // Build option groups keyed by attributeId
-    const optionGroups = {}; // { attributeId: { name, options: [] } }
+    const optionGroups = {}; 
 
     variations.forEach((variation) => {
       variation.options.forEach((option) => {
-        // Get attribute info from API-provided optionTypeId and optionTypeName
-        // Falls back to pattern matching if not available
+        
         const attrInfo = this.getAttributeInfo(option);
 
         const attrId = attrInfo.attributeId;
 
-        // If attribute name from API is generic fallback, try to get better name from attributes API
         let attrName = attrInfo.name;
         if ((attrName === 'Phiên bản' || attrName === 'Thuộc tính') && attributesMap[attrId]) {
           attrName = attributesMap[attrId];
@@ -407,9 +391,7 @@ class QuickModal extends HTMLElement {
     });
   }
 
-  /**
-   * Handle attribute option selection
-   */
+  
   handleAttributeSelect(btn) {
     const attribute = btn.dataset.attribute;
     const value = btn.dataset.value;
@@ -428,9 +410,7 @@ class QuickModal extends HTMLElement {
     this.findMatchingVariation();
   }
 
-  /**
-   * Select first available options for each attribute
-   */
+  
   selectFirstOptions() {
     const variations = this.product.variations;
     if (!variations || variations.length === 0) return;
@@ -440,8 +420,7 @@ class QuickModal extends HTMLElement {
     // Set selected options from first variation
     this.selectedOptions = {};
     firstVariation.options.forEach((opt, index) => {
-      // Use getAttributeName to consistently determine attribute name
-      // This matches the logic used in renderAttributeOptions
+      
       const attrName = this.getAttributeName(opt.value, `Thuộc tính ${index + 1}`);
       this.selectedOptions[attrName] = opt.value;
     });
@@ -460,9 +439,7 @@ class QuickModal extends HTMLElement {
     this.onVariationSelect();
   }
 
-  /**
-   * Update UI to show selected options
-   */
+  
   updateSelectedOptionsUI() {
     const container = this.querySelector("#attributeOptions");
     if (!container) return;
@@ -480,17 +457,14 @@ class QuickModal extends HTMLElement {
     });
   }
 
-  /**
-   * Find matching variation based on selected options
-   */
+  
   findMatchingVariation() {
     const variations = this.product.variations;
 
     // Find variation that matches all selected options
     const match = variations.find((variation) => {
       return variation.options.every((opt, index) => {
-        // Use getAttributeName to consistently determine attribute name
-        // This matches the logic used in renderAttributeOptions and selectFirstOptions
+        
         const attrName = this.getAttributeName(opt.value, `Thuộc tính ${index + 1}`);
         return this.selectedOptions[attrName] === opt.value;
       });
@@ -511,7 +485,6 @@ class QuickModal extends HTMLElement {
 
   onVariationSelect() {
     if (!this.selectedVariation) {
-      // Reset to default state
       const priceEl = this.querySelector("#modalPrice");
       if (priceEl) priceEl.textContent = "Liên hệ";
 
@@ -592,65 +565,50 @@ class QuickModal extends HTMLElement {
   }
 
   async add() {
-    if (!this.product) return;
+  if (!this.product) return;
 
-    const quantity = parseInt(this.quantityInput?.value) || 1;
-    
-    if (!this.selectedVariation) {
-      alert("Vui lòng chọn phiên bản sản phẩm");
-      return;
-    }
+  const quantity = parseInt(this.quantityInput?.value) || 1;
 
-    // Helper function to check if user is logged in (by cookie)
-    const isLoggedIn = () => {
-      const name = "access_token=";
-      const decodedCookie = decodeURIComponent(document.cookie);
-      const ca = decodedCookie.split(';');
-      for(let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') {
-          c = c.substring(1);
-        }
-        if (c.indexOf(name) === 0) {
-          return true;
-        }
-      }
-      return false;
-    };
+  if (!this.selectedVariation) {
+    document.dispatchEvent(new CustomEvent("toast:show", {
+      detail: { message: "Vui lòng chọn phiên bản sản phẩm", type: "warning" }
+    }));
+    return;
+  }
 
-    // Check if user is logged in via cookie
-    if (!isLoggedIn()) {
-      document.dispatchEvent(new CustomEvent("toast:show", { 
-        detail: { message: "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng", type: "warning" } 
+  try {
+    await addToCart(this.selectedVariation.variationId, quantity);
+
+    document.dispatchEvent(new Event("cart:update"));
+    document.dispatchEvent(new CustomEvent("toast:show", {
+      detail: { message: "Đã thêm vào giỏ hàng", type: "success" }
+    }));
+
+    this.close();
+  } catch (error) {
+    console.error("Add to cart error:", error);
+
+    // 🔥 CHUẨN: backend trả 401 thì redirect login
+    if (error.message?.includes("401") ||
+        error.message?.includes("đăng nhập") ||
+        error.message?.includes("Unauthorized")) {
+
+      document.dispatchEvent(new CustomEvent("toast:show", {
+        detail: { message: "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng", type: "warning" }
       }));
-      
+
       setTimeout(() => {
-        window.location.href = "logIn.html";
+        window.location.href = "login.html?mode=login";
       }, 1500);
       return;
     }
 
-    try {
-      await addToCart(this.selectedVariation.variationId, quantity);
-      document.dispatchEvent(new Event("cart:update"));
-      document.dispatchEvent(new CustomEvent("toast:show", { 
-        detail: { message: "Đã thêm vào giỏ hàng", type: "success" } 
-      }));
-      this.close();
-    } catch (error) {
-      console.error("Add to cart error:", error);
-      
-      document.dispatchEvent(new CustomEvent("toast:show", { 
-        detail: { message: error.message || "Không thể thêm vào giỏ hàng", type: "error" } 
-      }));
-
-      if (error.message.includes("hết hạn") || error.message.includes("đăng nhập")) {
-        setTimeout(() => {
-          window.location.href = "logIn.html";
-        }, 2000);
-      }
-    }
+    document.dispatchEvent(new CustomEvent("toast:show", {
+      detail: { message: error.message || "Không thể thêm vào giỏ hàng", type: "error" }
+    }));
   }
+}
+
 }
 
 customElements.define("quick-modal", QuickModal);

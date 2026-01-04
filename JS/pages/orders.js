@@ -1,41 +1,36 @@
+import {
+  getOrdersByCustomer,
+  cancelOrder,
+  reorder
+} from "../API/orderApi.js";
 
-import { getOrdersByCustomer, getOrderDetails, cancelOrder, reorder } from "../API/orderApi.js";
-
-// Helper function to get accountId from cookie
-function getAccountId() {
-  const name = "account_id=";
-  const decodedCookie = decodeURIComponent(document.cookie);
-  const ca = decodedCookie.split(';');
-  for(let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) === 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
-
-// Helper function to check if user is logged in (by cookie)
+/* =========================
+   AUTH
+========================= */
 function isLoggedIn() {
-  const name = "access_token=";
-  const decodedCookie = decodeURIComponent(document.cookie);
-  const ca = decodedCookie.split(';');
-  for(let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) === 0) {
-      return true;
-    }
-  }
-  return false;
+  return !!localStorage.getItem("username");
 }
 
-// DOM Elements
+/* =========================
+   ENUM NORMALIZER (QUAN TRỌNG)
+========================= */
+function normalizeStatus(status) {
+  if (typeof status === "string") return status.toLowerCase();
+
+  // EnumOrderStatus từ BE
+  const map = {
+    0: "pending",
+    1: "shipped",
+    2: "delivered",
+    3: "cancelled"
+  };
+
+  return map[status] || "pending";
+}
+
+/* =========================
+   DOM
+========================= */
 const ordersList = document.getElementById("ordersList");
 const emptyState = document.getElementById("emptyState");
 const orderDetailPanel = document.getElementById("orderDetailPanel");
@@ -43,34 +38,27 @@ const closePanelBtn = document.getElementById("closePanel");
 const toast = document.getElementById("toast");
 const orderTabs = document.querySelectorAll(".tab-btn");
 
-// State
+/* =========================
+   STATE
+========================= */
 let allOrders = [];
 let currentFilter = "all";
 
-// Initialize page
+/* =========================
+   INIT
+========================= */
 document.addEventListener("DOMContentLoaded", async () => {
   await loadOrders();
   initEventListeners();
 });
 
-// Load orders
+/* =========================
+   LOAD ORDERS (JWT HttpOnly)
+========================= */
 async function loadOrders() {
-  // Check if user is logged in via cookie
   if (!isLoggedIn()) {
     showToast("Vui lòng đăng nhập để xem đơn hàng", "error");
-    setTimeout(() => {
-      window.location.href = "logIn.html?mode=login";
-    }, 2000);
-    return;
-  }
-
-  const accountId = getAccountId();
-
-  if (!accountId) {
-    showToast("Vui lòng đăng nhập để xem đơn hàng", "error");
-    setTimeout(() => {
-      window.location.href = "logIn.html?mode=login";
-    }, 2000);
+    setTimeout(() => window.location.href = "logIn.html", 1500);
     return;
   }
 
@@ -82,30 +70,26 @@ async function loadOrders() {
       </div>
     `;
 
-    allOrders = await getOrdersByCustomer(accountId);
-    
-    // Sort by date descending (newest first)
-    allOrders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    
+    allOrders = await getOrdersByCustomer();
+
+    allOrders.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
     renderOrders();
-  } catch (error) {
+  } catch (err) {
+    console.error(err);
     showToast("Không thể tải đơn hàng", "error");
-    ordersList.innerHTML = `
-      <div class="empty-state">
-        <i class="bx bx-error"></i>
-        <h3>Lỗi tải dữ liệu</h3>
-        <p>Vui lòng thử lại sau</p>
-      </div>
-    `;
-    console.error("Error loading orders:", error);
   }
 }
 
-// Initialize event listeners
+/* =========================
+   EVENTS
+========================= */
 function initEventListeners() {
-  orderTabs.forEach((tab) => {
+  orderTabs.forEach(tab => {
     tab.addEventListener("click", () => {
-      orderTabs.forEach((t) => t.classList.remove("active"));
+      orderTabs.forEach(t => t.classList.remove("active"));
       tab.classList.add("active");
       currentFilter = tab.dataset.status;
       renderOrders();
@@ -113,106 +97,93 @@ function initEventListeners() {
   });
 
   closePanelBtn.addEventListener("click", closePanel);
-  
-  orderDetailPanel.querySelector(".panel-overlay").addEventListener("click", closePanel);
-  
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && orderDetailPanel.classList.contains("show")) {
-      closePanel();
-    }
-  });
 }
 
-// Render orders based on filter
+/* =========================
+   RENDER LIST
+========================= */
 function renderOrders() {
-  const filteredOrders =
+  const filtered =
     currentFilter === "all"
       ? allOrders
-      : allOrders.filter((order) => order.orderStatus.toLowerCase() === currentFilter);
+      : allOrders.filter(
+          o => normalizeStatus(o.orderStatus) === currentFilter
+        );
 
-  if (filteredOrders.length === 0) {
+  if (!filtered.length) {
     ordersList.style.display = "none";
     emptyState.style.display = "flex";
     return;
   }
 
-  ordersList.style.display = "flex";
   emptyState.style.display = "none";
+  ordersList.style.display = "flex";
 
-  ordersList.innerHTML = filteredOrders
-    .map((order) => renderOrderCard(order))
+  ordersList.innerHTML = filtered
+    .map(renderOrderCard)
     .join("");
 
-  ordersList.querySelectorAll(".order-card").forEach((card) => {
-    card.addEventListener("click", () => openOrderDetail(card.dataset.orderId));
+  ordersList.querySelectorAll(".order-card").forEach(card => {
+    card.addEventListener("click", () =>
+      openOrderDetail(card.dataset.orderId)
+    );
   });
 }
 
-// Render single order card
+/* =========================
+   ORDER CARD
+========================= */
 function renderOrderCard(order) {
-  const statusClass = getStatusClass(order.orderStatus);
-  const statusText = getStatusText(order.orderStatus);
-  const formattedDate = formatDate(order.createdAt);
-  const formattedTotal = formatCurrency(order.total);
-
-  const firstImage = order.orderDetails?.[0]?.variation?.product?.productImages?.[0]?.imageUrl 
-    || "assets/images/no-image.jpg";
-  
-  const itemsCount = order.orderDetails?.length || 0;
-
   return `
     <div class="order-card" data-order-id="${order.orderId}">
       <div class="order-card-header">
         <div>
           <div class="order-id">ĐH-${order.orderId}</div>
-          <div class="order-date">${formattedDate}</div>
+          <div class="order-date">${formatDate(order.createdAt)}</div>
         </div>
-        <span class="order-status ${statusClass}">
-          <i class="bx ${getStatusIcon(order.orderStatus)}"></i>
-          ${statusText}
+        <span class="order-status ${getStatusClass(order.orderStatus)}">
+          ${getStatusText(order.orderStatus)}
         </span>
       </div>
+
       <div class="order-card-body">
-        <div class="order-items-preview">
-          <img src="${firstImage}" alt="Product" class="order-item-thumb" />
-          <span class="order-items-count">${itemsCount} sản phẩm</span>
-        </div>
-        <div class="order-total">${formattedTotal}</div>
+        <div>${order.items.length} sản phẩm</div>
+        <div class="order-total">${formatCurrency(order.total)}</div>
       </div>
     </div>
   `;
 }
 
-// Open order detail panel
-async function openOrderDetail(orderId) {
-  const order = allOrders.find((o) => o.orderId === orderId);
+/* =========================
+   DETAIL PANEL
+========================= */
+function openOrderDetail(orderId) {
+  const order = allOrders.find(o => o.orderId === orderId);
   if (!order) return;
 
   showPanel();
   renderOrderBasicInfo(order);
-  
-  try {
-    const orderDetails = await getOrderDetails(orderId);
-    renderOrderItems(orderDetails.orderDetails || []);
-    renderOrderSummary(orderDetails);
-    renderOrderActions(order, orderDetails);
-  } catch (error) {
-    console.error("Error loading order details:", error);
-  }
+  renderOrderItems(order.items);
+  renderOrderSummary(order);
+  renderOrderActions(order);
 }
 
-// Render basic order info
+/* =========================
+   DETAIL INFO
+========================= */
 function renderOrderBasicInfo(order) {
-  document.getElementById("detailOrderId").textContent = `ĐH-${order.orderId}`;
-  document.getElementById("detailCreatedAt").textContent = formatDate(order.createdAt);
-  document.getElementById("detailStatus").innerHTML = `
-    <span class="order-status ${getStatusClass(order.orderStatus)}">
-      <i class="bx ${getStatusIcon(order.orderStatus)}"></i>
-      ${getStatusText(order.orderStatus)}
-    </span>
-  `;
-  document.getElementById("detailAddress").textContent = order.shippingAddress || "--";
-  
+  document.getElementById("detailOrderId").textContent =
+    `ĐH-${order.orderId}`;
+
+  document.getElementById("detailCreatedAt").textContent =
+    formatDate(order.createdAt);
+
+  document.getElementById("detailStatus").textContent =
+    getStatusText(order.orderStatus);
+
+  document.getElementById("detailAddress").textContent =
+    order.shippingAddress;
+
   if (order.note) {
     document.getElementById("noteRow").style.display = "flex";
     document.getElementById("detailNote").textContent = order.note;
@@ -221,190 +192,140 @@ function renderOrderBasicInfo(order) {
   }
 }
 
-// Render order items
-function renderOrderItems(orderDetails) {
+/* =========================
+   DETAIL ITEMS (DTO CHUẨN)
+========================= */
+function renderOrderItems(items) {
   const container = document.getElementById("detailItems");
-  
-  if (!orderDetails || orderDetails.length === 0) {
-    container.innerHTML = `
-      <div class="empty-state" style="padding: 20px;">
-        <p>Không có thông tin sản phẩm</p>
-      </div>
-    `;
+
+  if (!items || !items.length) {
+    container.innerHTML = "<p>Không có sản phẩm</p>";
     return;
   }
 
-  container.innerHTML = orderDetails
-    .map((item) => {
-      const image = item.variation?.product?.productImages?.[0]?.imageUrl 
-        || "assets/images/no-image.jpg";
-      const productName = item.variation?.product?.productName || "Sản phẩm";
-      const variantName = item.variation?.color 
-        ? `${item.variation.color}${item.variation.storage ? `, ${item.variation.storage}` : ""}`
-        : "Mặc định";
-
-      return `
-        <div class="detail-item">
-          <img src="${image}" alt="${productName}" class="detail-item-image" />
-          <div class="detail-item-info">
-            <div class="detail-item-name">${productName}</div>
-            <div class="detail-item-variant">${variantName}</div>
-            <div class="detail-item-price">
-              <span class="detail-item-qty">x${item.quantity}</span>
-              <span class="detail-item-total">${formatCurrency(item.total)}</span>
-            </div>
-          </div>
+  container.innerHTML = items.map(i => `
+    <div class="detail-item">
+      <div class="detail-item-info">
+        <div class="detail-item-name">${i.productName}</div>
+        <div class="detail-item-variant">
+          Mã biến thể: ${i.variationId}
         </div>
-      `;
-    })
-    .join("");
+        <div class="detail-item-price">
+          <span>x${i.quantity}</span>
+          <span>${formatCurrency(i.total)}</span>
+        </div>
+      </div>
+    </div>
+  `).join("");
 }
 
-// Render order summary
+/* =========================
+   SUMMARY
+========================= */
 function renderOrderSummary(order) {
-  document.getElementById("detailSubTotal").textContent = formatCurrency(order.subTotal);
-  
-  if (order.discountAmount && order.discountAmount > 0) {
+  document.getElementById("detailSubTotal").textContent =
+    formatCurrency(order.subTotal);
+
+  if (order.discountAmount > 0) {
     document.getElementById("discountRow").style.display = "flex";
-    document.getElementById("detailDiscount").textContent = `-${formatCurrency(order.discountAmount)}`;
+    document.getElementById("detailDiscount").textContent =
+      `-${formatCurrency(order.discountAmount)}`;
   } else {
     document.getElementById("discountRow").style.display = "none";
   }
-  
-  document.getElementById("detailTotal").textContent = formatCurrency(order.total);
+
+  document.getElementById("detailTotal").textContent =
+    formatCurrency(order.total);
 }
 
-// Render order actions based on status
-function renderOrderActions(order, orderDetails) {
-  const container = document.getElementById("orderActions");
-  const status = order.orderStatus.toLowerCase();
-  
-  let actionsHTML = "";
-  
-  if (status === "pending" || status === "confirmed") {
-    actionsHTML += `
-      <button class="btn-cancel-order" onclick="handleCancelOrder('${order.orderId}')">
-        <i class="bx bx-x-circle"></i> Hủy đơn
+/* =========================
+   ACTIONS
+========================= */
+function renderOrderActions(order) {
+  const box = document.getElementById("orderActions");
+  const status = normalizeStatus(order.orderStatus);
+
+  let html = "";
+
+  if (status === "pending") {
+    html = `
+      <button onclick="handleCancelOrder('${order.orderId}')">
+        Hủy đơn
       </button>
     `;
   }
-  
+
   if (status === "delivered" || status === "cancelled") {
-    actionsHTML += `
-      <button class="btn-reorder" onclick="handleReorder('${order.orderId}')">
-        <i class="bx bx-refresh"></i> Mua lại
+    html = `
+      <button onclick="handleReorder('${order.orderId}')">
+        Mua lại
       </button>
     `;
   }
-  
-  if (!actionsHTML) {
-    actionsHTML = `
-      <p style="color: #6b7280; font-size: 13px; text-align: center; width: 100%;">
-        <i class="bx bx-info-circle"></i> Liên hệ hotline 1900 1009 nếu cần hỗ trợ
-      </p>
-    `;
-  }
-  
-  container.innerHTML = actionsHTML;
+
+  box.innerHTML = html || "<p>Không có thao tác</p>";
 }
 
-// Show panel
+/* =========================
+   PANEL
+========================= */
 function showPanel() {
   orderDetailPanel.classList.add("show");
   document.body.style.overflow = "hidden";
 }
 
-// Close panel
 function closePanel() {
   orderDetailPanel.classList.remove("show");
   document.body.style.overflow = "";
 }
 
-// Handle cancel order
+/* =========================
+   ACTION HANDLERS
+========================= */
 window.handleCancelOrder = async function (orderId) {
-  if (!confirm("Bạn có chắc muốn hủy đơn hàng này?")) {
-    return;
-  }
+  if (!confirm("Hủy đơn hàng?")) return;
 
-  try {
-    await cancelOrder(orderId);
-    showToast("Hủy đơn hàng thành công", "success");
-    closePanel();
-    await loadOrders();
-  } catch (error) {
-    showToast(error.message || "Hủy đơn hàng thất bại", "error");
-  }
+  await cancelOrder(orderId);
+  showToast("Hủy đơn thành công", "success");
+  closePanel();
+  await loadOrders();
 };
 
-// Handle reorder
 window.handleReorder = async function (orderId) {
-  try {
-    await reorder(orderId);
-    showToast("Đã thêm sản phẩm vào giỏ hàng", "success");
-    closePanel();
-  } catch (error) {
-    showToast(error.message || "Mua lại thất bại", "error");
-  }
+  await reorder(orderId);
+  showToast("Đã thêm vào giỏ hàng", "success");
 };
 
-// Helper functions
+/* =========================
+   HELPERS
+========================= */
 function getStatusClass(status) {
-  const statusMap = {
-    pending: "pending",
-    confirmed: "confirmed",
-    shipping: "shipping",
-    delivered: "delivered",
-    cancelled: "cancelled",
-  };
-  return statusMap[status.toLowerCase()] || "pending";
+  return normalizeStatus(status);
 }
 
 function getStatusText(status) {
-  const statusMap = {
+  const map = {
     pending: "Chờ xác nhận",
-    confirmed: "Đã xác nhận",
-    shipping: "Đang giao",
+    shipped: "Đang giao",
     delivered: "Đã giao",
-    cancelled: "Đã hủy",
+    cancelled: "Đã hủy"
   };
-  return statusMap[status.toLowerCase()] || status;
+  return map[normalizeStatus(status)] || status;
 }
 
-function getStatusIcon(status) {
-  const iconMap = {
-    pending: "bx-time",
-    confirmed: "bx-check-circle",
-    shipping: "bx-package",
-    delivered: "bx-check-double",
-    cancelled: "bx-x-circle",
-  };
-  return iconMap[status.toLowerCase()] || "bx-help-circle";
+function formatDate(d) {
+  return new Date(d).toLocaleDateString("vi-VN");
 }
 
-function formatDate(dateString) {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
-function formatCurrency(amount) {
+function formatCurrency(v) {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
-    currency: "VND",
-  }).format(amount);
+    currency: "VND"
+  }).format(v);
 }
 
-function showToast(message, type = "info") {
-  toast.textContent = message;
+function showToast(msg, type = "info") {
+  toast.textContent = msg;
   toast.className = `toast ${type} show`;
-
-  setTimeout(() => {
-    toast.classList.remove("show");
-  }, 3000);
+  setTimeout(() => toast.classList.remove("show"), 3000);
 }
-

@@ -2,13 +2,9 @@ const API_URL = "https://localhost:7155/api/products";
 
 export let products = [];
 
-const DEFAULT_IMAGE = "/assets/images/no-image.jpg";
 
 
 
-/**
- * LOAD THEO CATEGORY (TRANG CATEGORY)
- */
 export async function loadProductsFromAPI(categoryId) {
   try {
     let url;
@@ -32,7 +28,7 @@ export async function loadProductsFromAPI(categoryId) {
       title: p.productName,
       price: Number(p.productPrice),
       old: Math.round(Number(p.productPrice) * 1.2),
-      img: p.imageUrl || p.images?.find(i => i.isMain)?.imageUrl || p.thumbnailUrl || DEFAULT_IMAGE,
+      img: p.imageUrl || p.images?.find(i => i.isMain)?.imageUrl ,
       stock: p.stockQuantity ?? 0,
       category: p.categoryName ?? "",
       brand: p.brandName ?? "",
