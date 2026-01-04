@@ -7,10 +7,13 @@ export const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-
 // Vietnamese phone regex: 10 digits starting with 0
 export const PHONE_REGEX = /^0\d{9}$/;
 
+// Email regex: standard email format
+export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // Register new account
-export async function registerAccount(phone, password, role = 0) {
+export async function registerAccount(phone, email, password, role = 0) {
   try {
-    console.log("Registering account with phone:", phone);
+    console.log("Registering account with phone:", phone, "email:", email);
     console.log("API URL:", REGISTER_API_URL);
     
     const response = await fetch(REGISTER_API_URL, {
@@ -20,7 +23,11 @@ export async function registerAccount(phone, password, role = 0) {
       },
       body: JSON.stringify({
         phone: phone,
+        email: email,
         password: password,
+        confirmPassword: password,
+        confirmEmail: email,
+        confirmPhone: phone,
         role: role
       })
     });
@@ -49,15 +56,16 @@ export async function registerAccount(phone, password, role = 0) {
     const data = await response.json();
     console.log("Register API response:", data);
     
-    // Store accountId and phone for customer info completion
+    // Store accountId, phone and email for customer info completion
     if (data.data && data.data.accountId) {
       localStorage.setItem("pendingAccountId", data.data.accountId);
     } else if (data.accountId) {
       localStorage.setItem("pendingAccountId", data.accountId);
     }
     
-    // Also store phone for pre-fill on userInfo page
+    // Store phone and email for pre-fill on userInfo page
     localStorage.setItem("pendingPhone", phone);
+    localStorage.setItem("pendingEmail", email);
     
     return data;
   } catch (error) {
@@ -84,5 +92,15 @@ export function getPasswordValidationMessage() {
 // Get phone validation message
 export function getPhoneValidationMessage() {
   return "Số điện thoại không hợp lệ (phải là số điện thoại Việt Nam, 10 chữ số bắt đầu bằng 0)";
+}
+
+// Validate email format
+export function validateEmail(email) {
+  return EMAIL_REGEX.test(email);
+}
+
+// Get email validation message
+export function getEmailValidationMessage() {
+  return "Email không hợp lệ (ví dụ: example@domain.com)";
 }
 

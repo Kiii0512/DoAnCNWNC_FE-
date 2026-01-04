@@ -1,14 +1,13 @@
-import { registerAccount, validatePassword, validatePhone, getPasswordValidationMessage, getPhoneValidationMessage } from '../API/registerApi.js';
+import { registerAccount, validatePassword, validatePhone, validateEmail, getPasswordValidationMessage, getPhoneValidationMessage, getEmailValidationMessage } from '../API/registerApi.js';
+import { forgotPassword, resetPassword } from '../API/forgotPasswordApi.js';
 
-const container = document.querySelector('.container'); 
-const registerBtn = document.querySelector('.register-btn');
-const loginBtn = document.querySelector('.login-btn');
+const container = document.querySelector('.container');
 const registerForm = document.getElementById('registerForm');
 
-// ====== TẮT TRANSITION KHI LOAD ======
-container.classList.add('no-transition');
+// State for forgot password flow
+let forgotPasswordEmail = '';
 
-// ====== ĐỌC MODE TỪ URL ======
+// ====== ĐỌC MODE TỪ URL =====
 const params = new URLSearchParams(window.location.search);
 const mode = params.get("mode");
 
@@ -18,28 +17,243 @@ if (mode === "register") {
     container.classList.remove('active');
 }
 
-// ====== BẬT LẠI TRANSITION SAU 1 FRAME ======
-requestAnimationFrame(() => {
-    container.classList.remove('no-transition');
+// ====== TOGGLE GIỮA ĐĂNG NHẬP VÀ ĐĂNG KÝ =====
+const showRegisterBtn = document.getElementById('showRegister');
+const showLoginBtn = document.getElementById('showLogin');
+
+if (showRegisterBtn) {
+    showRegisterBtn.addEventListener('click', () => {
+        container.classList.add('active');
+        history.replaceState(null, "", "?mode=register");
+    });
+}
+
+if (showLoginBtn) {
+    showLoginBtn.addEventListener('click', () => {
+        container.classList.remove('active');
+        history.replaceState(null, "", "?mode=login");
+    });
+}
+
+// ====== FORGOT PASSWORD FUNCTIONALITY =====
+const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+const otpResetForm = document.getElementById('otpResetForm');
+const backToLoginFromForgot = document.getElementById('backToLoginFromForgot');
+const backToLoginFromOTP = document.getElementById('backToLoginFromOTP');
+
+// Show forgot password form
+forgotPasswordLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    container.classList.add('forgot-mode');
 });
 
-// ====== TOGGLE TRONG TRANG (CÓ TRANSITION) ======
-registerBtn.addEventListener('click', () => {
-    container.classList.add('active');
-    history.replaceState(null, "", "?mode=register");
+// Back to login from forgot password form
+backToLoginFromForgot.addEventListener('click', (e) => {
+    e.preventDefault();
+    resetToLogin();
 });
 
-loginBtn.addEventListener('click', () => {
+// Back to login from OTP form
+backToLoginFromOTP.addEventListener('click', (e) => {
+    e.preventDefault();
+    resetToLogin();
+});
+
+// Reset to login state
+function resetToLogin() {
     container.classList.remove('active');
-    history.replaceState(null, "", "?mode=login");
-});
+    container.classList.remove('forgot-mode');
+    container.classList.remove('otp-mode');
+    
+    // Clear forms
+    forgotPasswordForm?.reset();
+    otpResetForm?.reset();
+    clearErrorMessages();
+}
 
-// ====== REGISTER FORM HANDLING ======
+// Handle forgot password form submission
+if (forgotPasswordForm) {
+    forgotPasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('forgotEmail').value.trim();
+        clearErrorMessages();
+        
+        // Validate email format
+        if (!validateEmail(email)) {
+            showError('forgotEmail', 'Vui lòng nhập đúng định dạng email');
+            return;
+        }
+        
+        try {
+            const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đang gửi...';
+            
+            // Call forgot password API
+            const response = await forgotPassword(email);
+            
+            console.log("Forgot password response:", response);
+            
+            // Store email for next step
+            forgotPasswordEmail = email;
+            
+            // Show success message
+            alert('Mã OTP đã được gửi về email của bạn!');
+            
+            // Switch to OTP form
+            container.classList.remove('forgot-mode');
+            container.classList.add('otp-mode');
+            
+            // Update instructions with email
+            const otpInstructions = document.getElementById('otpInstructions');
+            if (otpInstructions) {
+                otpInstructions.textContent = `Mã OTP đã được gửi về: ${email}`;
+            }
+            
+            // Focus on OTP input
+            setTimeout(() => {
+                document.getElementById('otpCode')?.focus();
+            }, 300);
+            
+        } catch (error) {
+            console.error("Forgot password error:", error);
+            alert(error.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
+        } finally {
+            const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Gửi OTP';
+            }
+        }
+    });
+    
+    // Real-time validation for email
+    const forgotEmail = document.getElementById('forgotEmail');
+    if (forgotEmail) {
+        forgotEmail.addEventListener('blur', () => {
+            const email = forgotEmail.value.trim();
+            if (email && !validateEmail(email)) {
+                showError('forgotEmail', 'Vui lòng nhập đúng định dạng email');
+            } else {
+                clearError('forgotEmail');
+            }
+        });
+    }
+}
+
+// Handle OTP reset form submission
+if (otpResetForm) {
+    otpResetForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const otp = document.getElementById('otpCode').value.trim();
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+        
+        clearErrorMessages();
+        
+        let isValid = true;
+        
+        // Validate OTP
+        if (!otp || otp.length < 4) {
+            showError('otpCode', 'Mã OTP phải có ít nhất 4 ký tự');
+            isValid = false;
+        }
+        
+        // Validate new password
+        if (!validatePassword(newPassword)) {
+            showError('newPassword', getPasswordValidationMessage());
+            isValid = false;
+        }
+        
+        // Validate confirm password
+        if (newPassword !== confirmNewPassword) {
+            showError('confirmNewPassword', 'Mật khẩu xác nhận không khớp');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            return;
+        }
+        
+        try {
+            const submitBtn = otpResetForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Đang xử lý...';
+            
+            // Call reset password API
+            const response = await resetPassword(forgotPasswordEmail, otp, newPassword);
+            
+            console.log("Reset password response:", response);
+            
+            // Show success message
+            alert('Đặt lại mật khẩu thành công! Vui lòng đăng nhập với mật khẩu mới.');
+            
+            // Reset to login
+            resetToLogin();
+            
+        } catch (error) {
+            console.error("Reset password error:", error);
+            alert(error.message || 'Có lỗi xảy ra. Vui lòng thử lại.');
+        } finally {
+            const submitBtn = otpResetForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Đặt lại mật khẩu';
+            }
+        }
+    });
+    
+    // Real-time validation for OTP
+    const otpCode = document.getElementById('otpCode');
+    if (otpCode) {
+        otpCode.addEventListener('blur', () => {
+            const otp = otpCode.value.trim();
+            if (otp && otp.length < 4) {
+                showError('otpCode', 'Mã OTP phải có ít nhất 4 ký tự');
+            } else {
+                clearError('otpCode');
+            }
+        });
+    }
+    
+    // Real-time validation for new password
+    const newPassword = document.getElementById('newPassword');
+    if (newPassword) {
+        newPassword.addEventListener('blur', () => {
+            const password = newPassword.value;
+            if (password && !validatePassword(password)) {
+                showError('newPassword', getPasswordValidationMessage());
+            } else {
+                clearError('newPassword');
+            }
+        });
+    }
+    
+    // Real-time validation for confirm password
+    const confirmNewPassword = document.getElementById('confirmNewPassword');
+    if (confirmNewPassword) {
+        confirmNewPassword.addEventListener('blur', () => {
+            const password = document.getElementById('newPassword').value;
+            const confirmPassword = confirmNewPassword.value;
+            if (confirmPassword && password !== confirmPassword) {
+                showError('confirmNewPassword', 'Mật khẩu xác nhận không khớp');
+            } else {
+                clearError('confirmNewPassword');
+            }
+        });
+    }
+}
+
+// ====== REGISTER FORM HANDLING =====
 if (registerForm) {
     registerForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const phone = document.getElementById('regPhone').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
         const password = document.getElementById('regPassword').value;
         const confirmPassword = document.getElementById('regConfirmPassword').value;
         
@@ -51,6 +265,12 @@ if (registerForm) {
         // Validate phone format
         if (!validatePhone(phone)) {
             showError('regPhone', getPhoneValidationMessage());
+            isValid = false;
+        }
+        
+        // Validate email format
+        if (!validateEmail(email)) {
+            showError('regEmail', getEmailValidationMessage());
             isValid = false;
         }
         
@@ -73,12 +293,11 @@ if (registerForm) {
         try {
             // Disable submit button during API call
             const submitBtn = registerForm.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
             submitBtn.disabled = true;
             submitBtn.textContent = 'Đang đăng ký...';
             
-            // Step 1: Register the account
-            const response = await registerAccount(phone, password, 0); // 0 = Customer role
+            // Step 1: Register the account with email
+            const response = await registerAccount(phone, email, password, 0); // 0 = Customer role
             
             console.log("Register successful:", response);
             
@@ -113,9 +332,9 @@ if (registerForm) {
             // Dispatch auth changed event to update UI
             window.dispatchEvent(new Event("authChanged"));
             
-            // Store phone for pre-fill on userInfo page - use the phone from registration form
-            // This is critical for ensuring phone is pre-filled on userInfo page
+            // Store phone and email for pre-fill on userInfo page
             localStorage.setItem("pendingPhone", phone);
+            localStorage.setItem("pendingEmail", email);
             localStorage.setItem("justRegistered", "true");
             
             alert('Đăng ký thành công! Vui lòng hoàn thiện thông tin cá nhân.');
@@ -146,6 +365,19 @@ if (registerForm) {
                 showError('regPhone', getPhoneValidationMessage());
             } else {
                 clearError('regPhone');
+            }
+        });
+    }
+    
+    // Real-time validation for email
+    const regEmail = document.getElementById('regEmail');
+    if (regEmail) {
+        regEmail.addEventListener('blur', () => {
+            const email = regEmail.value.trim();
+            if (email && !validateEmail(email)) {
+                showError('regEmail', getEmailValidationMessage());
+            } else {
+                clearError('regEmail');
             }
         });
     }
@@ -223,3 +455,4 @@ function clearErrorMessages() {
     const errorInputs = document.querySelectorAll('.error-input');
     errorInputs.forEach(el => el.classList.remove('error-input'));
 }
+
