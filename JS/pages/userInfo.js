@@ -8,11 +8,16 @@ import {
 /* ================= DOM ================= */
 const userInfoForm = document.getElementById("userInfoForm");
 const changePasswordForm = document.getElementById("changePasswordForm");
+const changePasswordSection = document.getElementById("changePasswordSection");
+const newCustomerBanner = document.getElementById("newCustomerBanner");
 const toast = document.getElementById("toast");
 const btnCancel = document.getElementById("btnCancel");
+const btnSave = document.querySelector(".btn-save");
+const userInfoHeader = document.querySelector(".user-info-header");
 
 /* ================= STATE ================= */
 let originalData = {};
+let isNewCustomer = false;
 const justRegistered = localStorage.getItem("justRegistered");
 
 /* ================= INIT ================= */
@@ -32,6 +37,7 @@ async function loadCustomerInfo() {
       return;
     }
 
+    isNewCustomer = false;
     fillForm(customerData);
     storeOriginalData(customerData);
 
@@ -42,7 +48,7 @@ async function loadCustomerInfo() {
     if (error.message?.includes("401")) {
       showToast("Vui lòng đăng nhập để tiếp tục", "error");
       setTimeout(() => {
-        window.location.href = "login.html?mode=login";
+        window.location.href = "logIn.html?mode=login";
       }, 1500);
       return;
     }
@@ -58,9 +64,41 @@ async function loadCustomerInfo() {
 
 /* ================= NEW CUSTOMER ================= */
 function handleNewCustomer() {
+  isNewCustomer = true;
+  
+  // Clear customerId field for new customer
+  document.getElementById("customerId").value = "";
+  
+  // Show new customer banner
+  if (newCustomerBanner) {
+    newCustomerBanner.classList.remove("hidden");
+  }
+  
+  // Hide change password section for new customers
+  if (changePasswordSection) {
+    changePasswordSection.classList.add("hidden");
+  }
+  
+  // Disable cancel button (nothing to reset for new customers)
+  if (btnCancel) {
+    btnCancel.disabled = true;
+  }
+  
+  // Change save button text
+  if (btnSave) {
+    btnSave.innerHTML = '<i class="bx bxs-user-plus"></i> Tạo thông tin';
+  }
+  
+  // Update form header styling
+  if (userInfoHeader) {
+    userInfoHeader.classList.add("new-customer");
+  }
+
   if (justRegistered === "true") {
     localStorage.removeItem("justRegistered");
     showToast("Vui lòng hoàn thiện thông tin cá nhân", "info");
+  } else {
+    showToast("Vui lòng nhập thông tin cá nhân của bạn", "info");
   }
 
   const pendingPhone = localStorage.getItem("pendingPhone");

@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const response = await fetch("https://localhost:7155/api/auth/login", {
         method: "POST",
-        credentials: "include", // 🔥 BẮT BUỘC để cookie HttpOnly được lưu
+        credentials: "include", 
         headers: {
           "Content-Type": "application/json"
         },
