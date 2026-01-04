@@ -36,6 +36,11 @@ class EmployeeDrawer extends HTMLElement {
               </div>
 
               <div class="od-field">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" required />
+              </div>
+
+              <div class="od-field">
                 <label for="phone">Số điện thoại *</label>
                 <input id="phone" name="phone" required />
               </div>
@@ -148,6 +153,7 @@ class EmployeeDrawer extends HTMLElement {
 
   populateForm() {
     this.querySelector('#staffName').value = this.employee.staffName || '';
+    this.querySelector('#email').value = this.employee.email || '';
     this.querySelector('#phone').value = this.employee.phone || '';
     this.querySelector('#staffDOB').value =
       this.employee.staffDOB?.split('T')[0] || '';
@@ -197,6 +203,14 @@ class EmployeeDrawer extends HTMLElement {
 
     if (!data.staffName?.trim()) {
       this.showError('staffName', 'Tên nhân viên bắt buộc');
+      ok = false;
+    }
+
+    if (!data.email?.trim()) {
+      this.showError('email', 'Email bắt buộc');
+      ok = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+      this.showError('email', 'Email không hợp lệ');
       ok = false;
     }
 

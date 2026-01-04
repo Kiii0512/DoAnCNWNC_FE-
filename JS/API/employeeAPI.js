@@ -81,6 +81,11 @@ class EmployeeAPI {
      ✏️ CREATE / UPDATE
      ========================= */
 
+  /**
+   * Create new staff
+   * Backend: POST /admin/accounts/create-staff
+   * Request: { Phone, Email, StaffName, StaffDOB }
+   */
   async create(employeeData) {
     const response = await fetch(`${this.baseURL}/create-staff`, {
       method: 'POST',
@@ -88,16 +93,31 @@ class EmployeeAPI {
         'Content-Type': 'application/json',
         ...authHeaders()
       },
-      body: JSON.stringify(employeeData)
+      body: JSON.stringify({
+        Phone: employeeData.phone,
+        Email: employeeData.email,
+        StaffName: employeeData.staffName,
+        StaffDOB: employeeData.staffDOB
+      })
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error ${response.status}`);
+      let message = 'Tạo nhân viên thất bại';
+      try {
+        const err = await response.json();
+        message = err.message || message;
+      } catch {}
+      throw new Error(message);
     }
 
     return response.json();
   }
 
+  /**
+   * Update existing staff
+   * Backend: PUT /admin/accounts/{id}
+   * Request: { StaffId, StaffName, Phone, StaffDOB, IsActive }
+   */
   async update(id, employeeData) {
     const response = await fetch(`${this.baseURL}/${id}`, {
       method: 'PUT',
@@ -105,11 +125,22 @@ class EmployeeAPI {
         'Content-Type': 'application/json',
         ...authHeaders()
       },
-      body: JSON.stringify(employeeData)
+      body: JSON.stringify({
+        StaffId: id,
+        StaffName: employeeData.staffName,
+        Phone: employeeData.phone,
+        StaffDOB: employeeData.staffDOB,
+        IsActive: employeeData.isActive
+      })
     });
 
     if (!response.ok) {
-      throw new Error(`HTTP error ${response.status}`);
+      let message = 'Cập nhật nhân viên thất bại';
+      try {
+        const err = await response.json();
+        message = err.message || message;
+      } catch {}
+      throw new Error(message);
     }
 
     return response.json();

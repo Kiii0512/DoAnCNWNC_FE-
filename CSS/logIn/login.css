@@ -1,0 +1,424 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+    text-decoration: none;
+    list-style: none;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+}
+
+.container {
+    width: 900px;
+    max-width: 100%;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.form-box {
+    padding: 40px;
+    text-align: center;
+}
+
+.form-box.login {
+    display: block;
+}
+
+.form-box.register {
+    display: none;
+}
+
+.form-box.forgot-password {
+    display: none;
+}
+
+.form-box.otp-reset {
+    display: none;
+}
+
+.container.active .form-box.login {
+    display: none;
+}
+
+.container.active .form-box.register {
+    display: block;
+}
+
+.container.forgot-mode .form-box.login {
+    display: none;
+}
+
+.container.forgot-mode .form-box.register {
+    display: none;
+}
+
+.container.forgot-mode .form-box.forgot-password {
+    display: block;
+}
+
+.container.otp-mode .form-box.login {
+    display: none;
+}
+
+.container.otp-mode .form-box.register {
+    display: none;
+}
+
+.container.otp-mode .form-box.forgot-password {
+    display: none;
+}
+
+.container.otp-mode .form-box.otp-reset {
+    display: block;
+}
+
+.container h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.container p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+form {
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto;
+}
+
+.input-box {
+    position: relative;
+    margin: 25px 0;
+    width: 100%;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 15px 50px 15px 20px;
+    background: #f5f5f5;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    outline: none;
+    font-size: 15px;
+    color: #333;
+    font-weight: 500;
+}
+
+.input-box input::placeholder {
+    color: #999;
+    font-weight: 400;
+}
+
+.input-box input:focus {
+    border-color: #667eea;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+.input-box i {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: #999;
+}
+
+.validation-hint {
+    display: block;
+    color: #888;
+    font-size: 11px;
+    margin-top: 8px;
+    text-align: left;
+    padding-left: 5px;
+    line-height: 1.4;
+}
+
+.forgot-link {
+    margin: -15px 0 20px;
+    text-align: right;
+}
+
+.forgot-link a {
+    font-size: 13px;
+    color: #667eea;
+    font-weight: 500;
+}
+
+.forgot-link a:hover {
+    color: #764ba2;
+    text-decoration: underline;
+}
+
+.btn {
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn.toggle-btn {
+    width: 160px;
+    height: 48px;
+    background: transparent;
+    border: 2px solid #667eea;
+    color: #667eea;
+    box-shadow: none;
+    margin-top: 20px;
+}
+
+.btn.toggle-btn:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.btn.secondary-btn {
+    background: transparent;
+    border: 2px solid #fff;
+    color: #fff;
+    box-shadow: none;
+}
+
+.btn.secondary-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.back-btn {
+    width: 180px !important;
+}
+
+.back-to-login {
+    margin-top: 25px;
+}
+
+.back-to-login a {
+    color: #667eea;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.back-to-login a:hover {
+    color: #764ba2;
+    text-decoration: underline;
+}
+
+#otpInstructions {
+    color: #28a745;
+    font-weight: 500;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: rgba(40, 167, 69, 0.1);
+    border-radius: 8px;
+}
+
+.otp-reset #otpCode {
+    letter-spacing: 8px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 600;
+    color: #667eea;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 12px;
+    margin-top: 8px;
+    text-align: left;
+    padding-left: 5px;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.error-input {
+    border: 2px solid #dc3545 !important;
+    background-color: #fff8f8 !important;
+}
+
+.success-message {
+    background-color: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #c3e6cb;
+}
+
+.success-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+/* Toggle buttons below form */
+.form-toggle {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.form-toggle p {
+    margin-bottom: 15px;
+    color: #666;
+}
+
+.form-toggle .btn {
+    margin: 0 auto;
+}
+
+/* Mobile Responsive */
+@media screen and (max-width: 768px) {
+    .container {
+        height: auto;
+        max-height: 90vh;
+    }
+
+    .form-box {
+        padding: 30px 20px;
+    }
+
+    .container h1 {
+        font-size: 26px;
+    }
+
+    .input-box {
+        margin: 20px 0;
+    }
+
+    .input-box input {
+        padding: 12px 45px 12px 15px;
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        border-radius: 15px;
+    }
+
+    .form-box {
+        padding: 25px 15px;
+    }
+
+    .container h1 {
+        font-size: 24px;
+    }
+
+    .btn {
+        height: 45px;
+        font-size: 15px;
+    }
+
+    .btn.toggle-btn {
+        width: 140px;
+        height: 42px;
+        font-size: 14px;
+    }
+
+    .input-box input {
+        padding: 12px 40px 12px 15px;
+    }
+
+    .input-box i {
+        right: 15px;
+        font-size: 18px;
+    }
+}
+
+/* Custom Scrollbar */
+.form-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.form-box::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.form-box::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.form-box::-webkit-scrollbar-thumb:hover {
+    background: #667eea;
+}
+
+/* Password toggle cursor */
+.input-box input[type="password"] + i,
+.input-box input[type="text"] + i {
+    cursor: pointer;
+}
+
+/* Loading state */
+.btn.loading {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.btn.loading::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 50%;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    border: 2px solid transparent;
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

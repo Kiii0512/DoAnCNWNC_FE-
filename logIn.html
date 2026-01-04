@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập / Đăng ký</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="CSS/logIn/login.css">
+  <link
+    href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- JS -->
+  <script type="module" src="js/pages/logIn.js" defer></script>
+  <script src="js/API/loginApi.js" defer></script>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- ========== ĐĂNG NHẬP ========== -->
+    <div class="form-box login">
+      <form id="loginForm">
+        <h1>Đăng nhập</h1>
+
+        <div class="input-box">
+          <input
+            type="text"
+            id="loginUsername"
+            name="username"
+            placeholder="Tên đăng nhập"
+            required
+          />
+          <i class="bx bxs-user"></i>
+        </div>
+
+        <div class="input-box">
+          <input
+            type="password"
+            id="loginPassword"
+            name="password"
+            placeholder="Mật khẩu"
+            required
+          />
+          <i class="bx bxs-lock-alt"></i>
+        </div>
+
+        <div class="forgot-link">
+          <a href="#" id="forgotPasswordLink">Quên mật khẩu?</a>
+        </div>
+
+        <button type="submit" class="btn">Đăng nhập</button>
+
+        <div class="form-toggle">
+          <p>Bạn chưa có tài khoản?</p>
+          <button type="button" class="btn toggle-btn" id="showRegister">Đăng ký</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ========== QUÊN MẬT KHẨU ========== -->
+    <div class="form-box forgot-password">
+      <form id="forgotPasswordForm">
+        <h1>Quên mật khẩu</h1>
+        <p>Vui lòng nhập email để nhận mã OTP</p>
+
+        <div class="input-box">
+          <input
+            type="email"
+            id="forgotEmail"
+            placeholder="Email"
+            required
+          />
+          <i class="bx bx-envelope"></i>
+        </div>
+
+        <button type="submit" class="btn">Gửi OTP</button>
+
+        <div class="back-to-login">
+          <a href="#" id="backToLoginFromForgot">← Quay lại đăng nhập</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- ========== OTP / ĐẶT LẠI MẬT KHẨU ========== -->
+    <div class="form-box otp-reset">
+      <form id="otpResetForm">
+        <h1>Đặt lại mật khẩu</h1>
+        <p id="otpInstructions">Mã OTP đã được gửi về email của bạn</p>
+
+        <div class="input-box">
+          <input
+            type="text"
+            id="otpCode"
+            placeholder="Nhập mã OTP"
+            maxlength="6"
+            required
+          />
+          <i class="bx bx-key"></i>
+        </div>
+
+        <div class="input-box">
+          <input
+            type="password"
+            id="newPassword"
+            placeholder="Mật khẩu mới"
+            required
+          />
+          <i class="bx bxs-lock-alt"></i>
+          <small class="validation-hint">Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt</small>
+        </div>
+
+        <div class="input-box">
+          <input
+            type="password"
+            id="confirmNewPassword"
+            placeholder="Xác nhận mật khẩu mới"
+            required
+          />
+          <i class="bx bxs-lock-alt"></i>
+        </div>
+
+        <button type="submit" class="btn">Đặt lại mật khẩu</button>
+
+        <div class="back-to-login">
+          <a href="#" id="backToLoginFromOTP">← Quay lại đăng nhập</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- ========== ĐĂNG KÝ ========== -->
+    <div class="form-box register">
+      <form id="registerForm">
+        <h1>Đăng ký tài khoản</h1>
+
+        <div class="input-box">
+          <input
+            type="tel"
+            id="regPhone"
+            placeholder="Số điện thoại"
+            required
+          />
+          <i class="bx bx-phone"></i>
+        </div>
+
+        <div class="input-box">
+          <input
+            type="email"
+            id="regEmail"
+            placeholder="Email (Gmail)"
+            required
+          />
+          <i class="bx bx-envelope"></i>
+        </div>
+
+        <div class="input-box">
+          <input
+            type="password"
+            id="regPassword"
+            placeholder="Mật khẩu (ít nhất 8 ký tự, gồm chữ hoa, thường, số và ký tự đặc biệt)"
+            required
+          />
+          <i class="bx bxs-lock-alt"></i>
+          <small class="validation-hint">Mật khẩu phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường, số và ký tự đặc biệt</small>
+        </div>
+
+        <div class="input-box">
+          <input
+            type="password"
+            id="regConfirmPassword"
+            placeholder="Xác nhận mật khẩu"
+            required
+          />
+          <i class="bx bxs-lock-alt"></i>
+        </div>
+
+        <button type="submit" class="btn">Đăng ký</button>
+
+        <div class="form-toggle">
+          <p>Bạn đã có tài khoản?</p>
+          <button type="button" class="btn toggle-btn" id="showLogin">Đăng nhập</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</body>
+</html>
