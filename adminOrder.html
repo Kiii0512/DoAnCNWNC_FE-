@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin — Quản lý đơn hàng</title>
+
+  <!-- CSS chung -->
+  <link rel="stylesheet" href="./CSS/global.css" />
+  <link rel="stylesheet" href="./CSS/header.css" />
+  <link rel="stylesheet" href="./CSS/menu.css" />
+  <link rel="stylesheet" href="./CSS/footer.css" />
+
+  <!-- CSS riêng cho order  -->
+  <link rel="stylesheet" href="./CSS/order/order-page.css" />
+  <link rel="stylesheet" href="./CSS/order/order-table.css" />
+  <link rel="stylesheet" href="./CSS/order/order-detail-drawer.css" />
+
+</head>
+
+<body>
+  <app-header></app-header>
+  <app-menu></app-menu>
+
+  <main class="container" style="max-width:1200px;margin:18px auto;padding:0 18px">
+  <order-page></order-page>
+  
+</main>
+
+
+  <app-footer></app-footer>
+
+  <script type="module">
+    // components chung
+    import './components/app-header.js';
+    import './components/app-menu.js';
+    import './components/app-footer.js';
+
+    // order page
+    import './components/order/order-page.js';
+    import './components/order/order-table.js';
+    import './components/order/order-detail-drawer.js';
+
+  </script>
+  <order-detail-drawer></order-detail-drawer>
+</body>
+</html>

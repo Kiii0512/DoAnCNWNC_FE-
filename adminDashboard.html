@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — Quản lý sản phẩm</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./CSS/header.css">
+  <link rel="stylesheet" href="./CSS/menu.css">
+  <link rel="stylesheet" href="./CSS/global.css">
+  <link rel="stylesheet" href="./CSS/product/product-table.css">
+  <link rel="stylesheet" href="./CSS/product/product-page.css">
+  <link rel="stylesheet" href="./CSS/product/product-drawer.css">
+  <link rel="stylesheet" href="./CSS/footer.css">
+  <link rel="stylesheet" href="./CSS/product/detail-drawer.css">
+  <link rel="stylesheet" href="./CSS/product/filter-panel.css">
+</head>
+
+<body>
+
+  <!-- Header -->
+  <app-header></app-header>
+
+  <!-- Menu -->
+  <app-menu></app-menu>
+
+  <!-- Page -->
+  <main id="app">
+  </main>
+  <product-detail-drawer></product-detail-drawer>
+  <product-drawer></product-drawer>
+  <filter-panel></filter-panel>
+  <!-- Footer -->
+  <app-footer></app-footer>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script type="module" src="./components/app-header.js"></script>
+  <script type="module" src="./components/app-menu.js"></script>
+  <script type="module" src="./JS/router/admin-router.js"></script>
+
+  <!-- ✅ PRODUCT COMPONENTS (ĐƯỜNG DẪN ĐÚNG) -->
+  <script type="module" src="./components/product/product-page.js"></script>
+  <script type="module" src="./components/product/product-table.js"></script>
+  <script type="module" src="./components/product/product-detail-drawer.js"></script>
+
+  <script type="module" src="./components/app-footer.js"></script>
+
+</body>
+</html>
