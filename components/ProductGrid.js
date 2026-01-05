@@ -4,7 +4,7 @@ import {
   loadProductsByCategoryAndBrand,
   searchProducts,
   products
-} from "../JS/API/productApi.js";
+} from "../JS/API/productAPI.js";
 
 import { addToCart } from "../JS/service/cartService.js";
 
