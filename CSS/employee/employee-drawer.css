@@ -1,0 +1,194 @@
+/* ======= Employee Drawer ======= */
+.drawerSubtitle{
+  font-weight: bold;
+}
+
+.od-overlay{
+  position: fixed; inset: 0;
+  background: rgba(17,24,39,.35);
+  z-index: 1050;
+}
+.od-overlay[hidden]{ display:none; }
+
+.od-drawer{
+  position: fixed;
+  top: 0; right: 0;
+  width: 420px; max-width: 92vw;
+  height: 100vh;
+  background: #fff;
+  border-left: 1px solid #eef2f7;
+  box-shadow: 0 20px 60px rgba(15,23,42,.18);
+  transform: translateX(100%);
+  transition: transform .18s ease;
+  z-index: 1060;
+  display: flex;
+  flex-direction: column;
+}
+
+.od-drawer[aria-hidden="false"]{
+  transform: translateX(0);
+}
+
+.od-head{
+  padding: 12px;
+  border-bottom: 1px solid #eef2f7;
+  display:flex; justify-content:space-between; align-items:center;
+}
+
+.drawer-subtitle {
+  color: #3b82f6;
+  font-weight: 500;
+  font-size: 14px;
+  margin: 4px 0 0 0;
+}
+
+.od-body{ padding:12px; overflow:auto; }
+.no-scroll{ overflow:hidden; }
+
+/* Form styles */
+.od-form { display: flex; flex-direction: column; gap: 16px; }
+.od-field { display: flex; flex-direction: column; gap: 6px; }
+.od-field label { font-size: 13px; font-weight: 600; color: #374151; }
+.od-field input, .od-field select, .od-field textarea {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  background: #fff;
+}
+.od-field textarea { resize: vertical; min-height: 80px; }
+.od-field--error input, .od-field--error select, .od-field--error textarea { border-color: #ef4444; }
+.od-error { color: #ef4444; font-size: 12px; margin-top: 4px; }
+
+.od-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.btn--secondary {
+  background: white;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Status Toggle in Form */
+.status-toggle-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-toggle-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+  cursor: pointer;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .3s ease;
+  border-radius: 24px;
+  border: 1px solid #d1d5db;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .3s ease;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .slider {
+  background-color: #10b981;
+  border-color: #10b981;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.switch:hover .slider {
+  background-color: #b3b3b3;
+}
+
+input:checked + .slider:hover {
+  background-color: #059669;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .employee-drawer__panel {
+    max-width: 100%;
+  }
+
+  .employee-drawer__header,
+  .employee-drawer__body,
+  .employee-drawer__actions {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

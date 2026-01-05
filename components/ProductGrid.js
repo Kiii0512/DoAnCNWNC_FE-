@@ -14,120 +14,158 @@ class ProductGrid extends HTMLElement {
     super();
     this._loaded = false;
   }
+filterActiveProducts(list) {
+  return list.filter(p =>
+    p.isActive !== false &&
+    (!p.brand || p.brand.isActive !== false) &&
+    (!p.category || p.category.isActive !== false)
+  );
+} 
 
   async connectedCallback() {
-    if (this._loaded) return;
-    this._loaded = true;
+  if (this._loaded) return;
+  this._loaded = true;
 
-    const mode = this.getAttribute("mode") || "category";
-    const title = this.getAttribute("title") || "Sản phẩm";
-    const brandId = this.getAttribute("brand-id");
-    this.limit = Number(this.getAttribute('limit')) || 5;
+  const mode = this.getAttribute("mode") || "category";
+  const title = this.getAttribute("title") || "Sản phẩm";
+  const brandIdAttr = this.getAttribute("brand-id");
+  this.limit = Number(this.getAttribute("limit")) || 5;
 
-    this.innerHTML = `
-      <section class="product-section">
-        <div class="products-header">
-          <h2>${title}</h2>
+  this.innerHTML = `
+    <section class="product-section">
+      <div class="products-header">
+        <h2>${title}</h2>
 
-          ${
-            mode === "category"
-              ? `
-            <div class="sort-box">
-              <label>Sắp xếp</label>
-              <select id="sort">
-                <option value="default">Mặc định</option>
-                <option value="price-asc">Giá ↑</option>
-                <option value="price-desc">Giá ↓</option>
-              </select>
-            </div>
-          `
-              : `<a class="view-all" data-view-all>Xem tất cả</a>`
-          }
-        </div>
-        
-        <div class="grid"></div>
-        <div class="grid-pagination"></div>
-      </section>
-    `;
-
-    this.grid = this.querySelector(".grid");
-    this.sortSelect = this.querySelector("#sort");  
-    this.pager = this.querySelector('.grid-pagination');
-
-    // paging
-    this.page = 1;
-    this.pageSize = 20;
-
-    /* ===== LOAD DATA ===== */
-
-   if (mode === "home") {
-      if (!brandId) return;
-
-      await loadProductsByBrand(brandId);
-
-      // 👇 chỉ lấy tối đa limit sản phẩm
-      this.currentList = products.slice(0, this.limit);
-
-      // 👇 home không cần pagination
-      this.pageSize = this.limit;
-    }
-
-    if (mode === "category") {
-      const categoryId = localStorage.getItem("categoryId");
-      const categoryName = localStorage.getItem("categoryName");
-      const brandId = localStorage.getItem("brandId");
-      const brandName = localStorage.getItem("brandName");
-      const keyword = new URLSearchParams(window.location.search).get("keyword");
-
-      // Build title based on category, brand, or keyword
-      let titleText = 'Tất cả sản phẩm';
-      if (keyword) {
-        titleText = `Kết quả tìm kiếm: "${keyword}"`;
-      } else if (categoryName) {
-        titleText = categoryName;
-        if (brandName) {
-          titleText += ` - ${brandName}`;
+        ${
+          mode === "category"
+            ? `
+          <div class="sort-box">
+            <label>Sắp xếp</label>
+            <select id="sort">
+              <option value="default">Mặc định</option>
+              <option value="price-asc">Giá ↑</option>
+              <option value="price-desc">Giá ↓</option>
+            </select>
+          </div>
+        `
+            : `
+          <div class="sort-box">
+            <label>Sắp xếp</label>
+            <select id="sort">
+              <option value="default">Mặc định</option>
+              <option value="price-asc">Giá ↑</option>
+              <option value="price-desc">Giá ↓</option>
+            </select>
+          </div>
+          <a class="view-all" data-view-all>Xem tất cả</a>
+        `
         }
-      } else if (brandName) {
-        titleText = brandName;
-      }
-      
-      // Update the title
-      this.querySelector("h2").textContent = titleText;
+      </div>
 
-      // If keyword is present, call searchProducts directly
-      if (keyword) {
-        await searchProducts({ keyword: keyword, status: "active" });
-        this.currentList = [...products];
-      } else {
-        // Normal mode - load by category and/or brand
-        await loadProductsByCategoryAndBrand(categoryId || undefined, brandId);
-        this.currentList = [...products];
-      }
+      <div class="grid"></div>
+      <div class="grid-pagination"></div>
+    </section>
+  `;
 
-      this.sortSelect && this.sortSelect.addEventListener("change", () => this.sortProducts());
-    }
+  this.grid = this.querySelector(".grid");
+  this.sortSelect = this.querySelector("#sort");
+  this.pager = this.querySelector(".grid-pagination");
 
-    // render first page
-    this.renderPage();
-    this.addEventListener("click", e => this.handleClick(e));
+  this.page = 1;
+  this.pageSize = 20;
 
-    const viewAllBtn = this.querySelector('[data-view-all]');
-    if (viewAllBtn && brandId) {
-      viewAllBtn.addEventListener('click', () => {
-        // set brand filter cho trang category
-        localStorage.setItem('brandId', brandId);
-        localStorage.setItem('brandName', title);
+  /* ================= LOAD DATA ================= */
 
-        // clear category nếu đang có
-        localStorage.removeItem('categoryId');
-        localStorage.removeItem('categoryName');
+  /* ===== HOME MODE ===== */
+  if (mode === "home") {
+    if (!brandIdAttr) return;
 
-        window.location.href = 'categoryPage.html';
-      });
-    }
+    await loadProductsByBrand(brandIdAttr);
 
+    // ✅ FILTER isActive product + brand + category
+    const filteredList = this
+      .filterActiveProducts(products)
+      .slice(0, this.limit);
+    
+    // Lưu danh sách gốc để reset khi chọn "Mặc định"
+    this.originalList = [...filteredList];
+    this.currentList = filteredList;
+
+    this.pageSize = this.limit;
+
+    // Thêm event listener cho sort
+    this.sortSelect &&
+      this.sortSelect.addEventListener("change", () =>
+        this.sortProducts()
+      );
   }
+
+  /* ===== CATEGORY MODE ===== */
+  if (mode === "category") {
+    const categoryId = localStorage.getItem("categoryId");
+    const categoryName = localStorage.getItem("categoryName");
+    const brandId = localStorage.getItem("brandId");
+    const brandName = localStorage.getItem("brandName");
+    const keyword = new URLSearchParams(window.location.search).get("keyword");
+
+    let titleText = "Tất cả sản phẩm";
+
+    if (keyword) {
+      titleText = `Kết quả tìm kiếm: "${keyword}"`;
+    } else if (categoryName) {
+      titleText = categoryName;
+      if (brandName) titleText += ` - ${brandName}`;
+    } else if (brandName) {
+      titleText = brandName;
+    }
+
+    this.querySelector("h2").textContent = titleText;
+
+    if (keyword) {
+      await searchProducts({ keyword, status: "active" });
+
+      // ✅ FILTER
+      const filteredList = this.filterActiveProducts(products);
+      this.originalList = [...filteredList];
+      this.currentList = filteredList;
+    } else {
+      await loadProductsByCategoryAndBrand(
+        categoryId || undefined,
+        brandId || undefined
+      );
+
+      // ✅ FILTER
+      const filteredList = this.filterActiveProducts(products);
+      this.originalList = [...filteredList];
+      this.currentList = filteredList;
+    }
+
+    this.sortSelect &&
+      this.sortSelect.addEventListener("change", () =>
+        this.sortProducts()
+      );
+  }
+
+  /* ================= RENDER ================= */
+
+  this.renderPage();
+  this.addEventListener("click", e => this.handleClick(e));
+
+  /* ===== VIEW ALL (HOME → CATEGORY) ===== */
+  const viewAllBtn = this.querySelector("[data-view-all]");
+  if (viewAllBtn && brandIdAttr) {
+    viewAllBtn.addEventListener("click", () => {
+      localStorage.setItem("brandId", brandIdAttr);
+      localStorage.setItem("brandName", title);
+
+      localStorage.removeItem("categoryId");
+      localStorage.removeItem("categoryName");
+
+      window.location.href = "categoryPage.html";
+    });
+  }
+}
+
 
   handleClick(e) {
     // Stop propagation for elements with data-link-stop (e.g., quick view button)
@@ -158,8 +196,16 @@ class ProductGrid extends HTMLElement {
 
   sortProducts() {
     const type = this.sortSelect.value;
-    if (type === "price-asc") this.currentList.sort((a,b)=>a.price-b.price);
-    if (type === "price-desc") this.currentList.sort((a,b)=>b.price-a.price);
+    if (type === "default") {
+      // Reset về danh sách gốc
+      this.currentList = [...this.originalList];
+    } else if (type === "price-asc") {
+      this.currentList.sort((a,b)=>a.price-b.price);
+    } else if (type === "price-desc") {
+      this.currentList.sort((a,b)=>b.price-a.price);
+    }
+    // Reset về trang 1 khi sắp xếp
+    this.page = 1;
     this.renderPage();
   }
 

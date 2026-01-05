@@ -1,0 +1,128 @@
+/* ===== MENU WRAPPER ===== */
+.menu {
+  position: sticky;
+  top: 56px;
+  z-index: 90;
+
+  width: 100%;           /* 🔥 full chiều ngang */
+  background: #0f172a;   /* nền đen phủ hết */
+  border-bottom: 1px solid #1e293b;
+
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+/* ===== NAV CONTAINER (GIỮ CĂN GIỮA) ===== */
+.menu-nav {
+  max-width: 1280px;     /* container thôi */
+  margin: 0 auto;
+  padding: 0 16px;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== SCROLL AREA ===== */
+.scroll-wrap {
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+}
+.scroll-wrap::-webkit-scrollbar {
+  display: none;
+}
+
+.scroll-inner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 0;
+  white-space: nowrap;
+}
+
+/* ===== MENU ITEM ===== */
+.menu-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 10px 14px;
+  border-radius: 999px;
+
+  color: #e5e7eb; /* gray-200 */
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.menu-item:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+/* ACTIVE */
+.menu-item.active {
+  background: #4f46e5; /* indigo-600 */
+  color: #ffffff;
+}
+
+.menu-item.active .tag {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
+}
+
+/* ===== TAG ===== */
+.tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #1e293b;
+  color: #c7d2fe; /* indigo-200 */
+  letter-spacing: 0.3px;
+}
+
+/* ===== ARROWS ===== */
+.nav-arrow {
+  border: none;
+  background: transparent;
+  color: #cbd5f5;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.nav-arrow:hover {
+  background: #1e293b;
+  color: #ffffff;
+}
+
+.nav-arrow[aria-hidden="true"] {
+  visibility: hidden;
+}
+
+/* ===== FOCUS ACCESSIBILITY ===== */
+.menu-item:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #6366f1;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .menu {
+    top: 52px;
+  }
+
+  .menu-item {
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .tag {
+    font-size: 9px;
+  }
+}

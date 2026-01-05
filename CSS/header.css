@@ -1,0 +1,193 @@
+/* ===== HEADER ===== */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.thanh-tren {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ===== LOGO ===== */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: #111827;
+}
+
+.logo .vuong {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #4f46e5;
+  color: #fff;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ===== SEARCH ===== */
+.tim-kiem {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.search-wrap {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 520px;
+  background: #f3f4f6;
+  border-radius: 999px;
+  padding: 4px;
+}
+
+.search-wrap input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  font-size: 14px;
+  outline: none;
+}
+
+.nut-gio {
+  border: none;
+  background: #4f46e5;
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.nut-gio:hover {
+  background: #4338ca;
+}
+
+/* ===== ACCOUNT ===== */
+.account {
+  position: relative;
+  margin-left: 12px;
+}
+
+.nut-tk {
+  border: none;
+  background: #f3f4f6;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.nut-tk:hover {
+  background: #e5e7eb;
+}
+
+/* ===== ACCOUNT MENU ===== */
+.account-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  min-width: 180px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+
+.account-menu[aria-hidden="true"] {
+  display: none;
+}
+
+.account-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.account-item:hover,
+.account-item:focus {
+  background: #f3f4f6;
+  outline: none;
+}
+
+/* ===== SEARCH OVERLAY (MOBILE) ===== */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 200;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-inner {
+  background: #fff;
+  width: 90%;
+  max-width: 420px;
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.search-inner input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+}
+
+.search-inner button {
+  border-radius: 8px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .search-wrap input {
+    display: none;
+  }
+
+  .search-wrap {
+    max-width: 44px;
+    justify-content: center;
+  }
+
+  .btn-label {
+    display: none;
+  }
+}
+/* ===== FIX HOVER GAP ACCOUNT MENU ===== */
+.account {
+  position: relative;
+}
+
+/* tạo vùng đệm vô hình để chuột không bị rớt */
+.account::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 100%;
+  height: 10px;      /* vùng đệm */
+}

@@ -50,7 +50,7 @@ function getAttributeName(value, fallbackName = 'Phiên bản') {
   const v = value.toString().toLowerCase();
   
   // Màu sắc patterns
-  const colorPatterns = ['xanh', 'đen', 'trắng', 'vàng', 'đỏ', 'tím', 'hồng', 'cam', 'titan', 'gray', 'silver', 'gold', 'blue', 'black', 'white', 'red', 'purple', 'pink', 'orange', 'natural'];
+  const colorPatterns = ['xanh', 'đen', 'trắng', 'vàng', 'đỏ', 'tím', 'hồng', 'cam', 'titan', 'gray', 'silver', 'gold', 'blue', 'black', 'white', 'red', 'purple', 'pink', 'orange', 'natural','bạc'];
   if (colorPatterns.some(p => v.includes(p))) {
     return 'Màu sắc';
   }
@@ -185,6 +185,17 @@ function renderProduct(product) {
   document.getElementById("product-brand").textContent = product.brand ? `Thương hiệu: ${product.brand}` : "";
   document.getElementById("product-description").textContent =
     product.description || "Chưa có mô tả cho sản phẩm này.";
+
+  // Show discontinued note for inactive products
+  const productStatusEl = document.getElementById("product-status");
+  if (productStatusEl) {
+    if (product.isActive === false) {
+      productStatusEl.innerHTML = '<span class="discontinued-badge">Ngừng kinh doanh</span>';
+      productStatusEl.style.display = 'block';
+    } else {
+      productStatusEl.style.display = 'none';
+    }
+  }
 
   // Update description content
   const descContent = document.getElementById("description-content");

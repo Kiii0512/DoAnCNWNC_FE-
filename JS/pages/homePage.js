@@ -6,8 +6,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     const brands = await getBrands(); // lấy từ DB
+    
+    // Filter only active brands (client-side fallback)
+    const activeBrands = Array.isArray(brands) ? brands.filter(b => b.isActive !== false) : [];
 
-    brands.forEach(brand => {
+    activeBrands.forEach(brand => {
       const grid = document.createElement('product-grid');
 
       grid.setAttribute('mode', 'home');

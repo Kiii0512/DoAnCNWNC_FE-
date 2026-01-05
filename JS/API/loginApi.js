@@ -1,13 +1,37 @@
 document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("loginForm");
-
   if (!loginForm) return;
+
+  /* =========================
+     HELPERS
+  ========================= */
+
+  function normalizeRole(role) {
+    const r = String(role || "").trim().toLowerCase();
+    if (r === "admin") return "Admin";
+    if (r === "staff" || r === "employee") return "Staff";
+    if (r === "customer" || r === "user") return "Customer";
+    return "Customer"; // fallback
+  }
+
+  function redirectByRole(role) {
+    const map = {
+      Admin: "adminDashboard.html",
+      Staff: "staffDashboard.html",
+      Customer: "homePage.html"
+    };
+    window.location.href = map[role] || "homePage.html";
+  }
+
+  /* =========================
+     SUBMIT
+  ========================= */
 
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const username = document.getElementById("loginUsername").value.trim();
-    const password = document.getElementById("loginPassword").value;
+    const username = document.getElementById("loginUsername")?.value.trim();
+    const password = document.getElementById("loginPassword")?.value;
 
     if (!username || !password) {
       alert("Vui lòng nhập đầy đủ tài khoản và mật khẩu");
@@ -17,10 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const response = await fetch("https://localhost:7155/api/auth/login", {
         method: "POST",
-        credentials: "include", 
-        headers: {
-          "Content-Type": "application/json"
-        },
+        credentials: "include", // HttpOnly cookie
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           phone: username,
           password: password
@@ -32,27 +54,22 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const responseData = await response.json();
-      console.log("Login API response:", responseData);
+      const data = responseData?.data || responseData;
 
-      const data = responseData.data || responseData;
+      const role = normalizeRole(data?.role);
 
-      // ✅ CHỈ LƯU THÔNG TIN PHỤC VỤ UI (KHÔNG TOKEN, KHÔNG accountId)
+      // ✅ Chỉ lưu thông tin phục vụ UI
       localStorage.setItem(
         "username",
-        data.name || data.userName || data.username || username
+        data?.name || data?.userName || data?.username || username
       );
-      localStorage.setItem("role", data.role || data.roles || "user");
+      localStorage.setItem("role", role);
 
-      console.log("localStorage after login:", {
-        username: localStorage.getItem("username"),
-        role: localStorage.getItem("role")
-      });
-
-      // Thông báo cho header / app biết đã login
+      // Báo cho header / app
       window.dispatchEvent(new Event("authChanged"));
 
       alert("Đăng nhập thành công!");
-      window.location.href = "homePage.html";
+      redirectByRole(role);
 
     } catch (error) {
       console.error("Login error:", error);

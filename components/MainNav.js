@@ -1,23 +1,5 @@
-
 import { getCategories } from '../JS/API/categoryApi.js';
 import { getBrands } from '../JS/API/brandApi.js';
-
-// Helper function to check if user is logged in (by cookie)
-function isLoggedIn() {
-  const name = "access_token=";
-  const decodedCookie = decodeURIComponent(document.cookie);
-  const ca = decodedCookie.split(';');
-  for(let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) === ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) === 0) {
-      return true;
-    }
-  }
-  return false;
-}
 
 class MainNav extends HTMLElement {
   constructor() {
@@ -47,11 +29,12 @@ class MainNav extends HTMLElement {
       </nav>
     `;
 
-    this.adjustPosition();
-    window.addEventListener("authChanged", () => this.adjustPosition());
-
     this.cache();
     this.bindEvents();
+
+    // ✅ FIXED POSITION – KHÔNG DÙNG access token
+    const nav = this.querySelector('.main-nav');
+    nav.style.top = '110px';
   }
 
   cache() {
@@ -76,13 +59,8 @@ class MainNav extends HTMLElement {
     });
 
     /* ========== CATEGORY ========== */
-    this.catWrap.addEventListener('mouseenter', () => {
-      this.showCategories();
-    });
-
-    this.catWrap.addEventListener('mouseleave', () => {
-      this.hideCategories();
-    });
+    this.catWrap.addEventListener('mouseenter', () => this.showCategories());
+    this.catWrap.addEventListener('mouseleave', () => this.hideCategories());
 
     this.catBtn.addEventListener('click', e => {
       e.preventDefault();
@@ -91,13 +69,8 @@ class MainNav extends HTMLElement {
     });
 
     /* ========== BRAND ========== */
-    this.brandWrap.addEventListener('mouseenter', () => {
-      this.showBrands();
-    });
-
-    this.brandWrap.addEventListener('mouseleave', () => {
-      this.hideBrands();
-    });
+    this.brandWrap.addEventListener('mouseenter', () => this.showBrands());
+    this.brandWrap.addEventListener('mouseleave', () => this.hideBrands());
 
     this.brandBtn.addEventListener('click', e => {
       e.preventDefault();
@@ -126,7 +99,9 @@ class MainNav extends HTMLElement {
       }
     }
 
-    this.catDropdown.innerHTML = this._cats.map(c => `
+    const activeCats = this._cats.filter(c => c.isActive !== false);
+
+    this.catDropdown.innerHTML = activeCats.map(c => `
       <a href="#" class="item"
          data-id="${c.categoryId}"
          data-name="${c.categoryName}">
@@ -174,7 +149,9 @@ class MainNav extends HTMLElement {
       }
     }
 
-    this.brandDropdown.innerHTML = this._brands.map(b => `
+    const activeBrands = this._brands.filter(b => b.isActive !== false);
+
+    this.brandDropdown.innerHTML = activeBrands.map(b => `
       <a href="#" class="item"
          data-id="${b.brandId}"
          data-name="${b.brandName}">
@@ -207,13 +184,6 @@ class MainNav extends HTMLElement {
       ? this.hideBrands()
       : this.showBrands();
   }
-
-  /* ================= POSITION ================= */
-  adjustPosition() {
-    const nav = this.querySelector('.main-nav');
-    nav.style.top = isLoggedIn() ? "72px" : "110px";
-  }
 }
 
 customElements.define('main-nav', MainNav);
-

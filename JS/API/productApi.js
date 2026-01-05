@@ -9,10 +9,10 @@ export async function loadProductsFromAPI(categoryId) {
   try {
     let url;
     if (!categoryId) {
-      // load all products
-      url = `${API_URL}`;
+      // load all products - filter by isActive=true
+      url = `${API_URL}?isActive=true`;
     } else {
-      url = `${API_URL}/category/${categoryId}`;
+      url = `${API_URL}/category/${categoryId}?isActive=true`;
     }
 
     console.log("CALL API:", url);
@@ -32,7 +32,8 @@ export async function loadProductsFromAPI(categoryId) {
       stock: p.stockQuantity ?? 0,
       category: p.categoryName ?? "",
       brand: p.brandName ?? "",
-      description: p.productDescription ?? ""
+      description: p.productDescription ?? "",
+      isActive: p.isActive
     }));
 
   } catch (e) {
@@ -51,7 +52,7 @@ export async function loadProductsByBrand(brandId) {
   }
 
   try {
-    const url = `${API_URL}/brand/${brandId}`;
+    const url = `${API_URL}/brand/${brandId}?isActive=true`;
     console.log("CALL API:", url);
 
     const res = await fetch(url);
@@ -69,7 +70,8 @@ export async function loadProductsByBrand(brandId) {
       stock: p.stockQuantity ?? 0,
       category: p.categoryName ?? "",
       brand: p.brandName ?? "",
-      description: p.productDescription ?? ""
+      description: p.productDescription ?? "",
+      isActive: p.isActive
     }));
 
   } catch (e) {
@@ -85,15 +87,15 @@ export async function loadProductsByCategoryAndBrand(categoryId, brandId) {
   try {
     let url;
     if (!categoryId && !brandId) {
-      // load all products
-      url = `${API_URL}`;
+      // load all products - filter by isActive=true
+      url = `${API_URL}?isActive=true`;
     } else if (categoryId && !brandId) {
-      url = `${API_URL}/category/${categoryId}`;
+      url = `${API_URL}/category/${categoryId}?isActive=true`;
     } else if (!categoryId && brandId) {
-      url = `${API_URL}/brand/${brandId}`;
+      url = `${API_URL}/brand/${brandId}?isActive=true`;
     } else {
       // Both category and brand - need to filter client-side
-      url = `${API_URL}`;
+      url = `${API_URL}?isActive=true`;
     }
 
     console.log("CALL API:", url);
@@ -118,7 +120,8 @@ export async function loadProductsByCategoryAndBrand(categoryId, brandId) {
       stock: p.stockQuantity ?? 0,
       category: p.categoryName ?? "",
       brand: p.brandName ?? "",
-      description: p.productDescription ?? ""
+      description: p.productDescription ?? "",
+      isActive: p.isActive
     }));
 
   } catch (e) {
@@ -223,6 +226,7 @@ export async function getProductWithVariations(productId) {
       category: data.categoryName ?? "",
       brand: data.brandName ?? "",
       description: data.productDescription ?? "",
+      isActive: data.isActive,
       specifications: data.specifications || data.productSpecifications || [],
       variations: (data.variations || []).map(v => ({
         variationId: v.variationId,
