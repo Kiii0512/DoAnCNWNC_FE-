@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Đơn hàng của tôi - Electronic Store</title>
 
-  <!-- CSS -->
   <link rel="stylesheet" href="CSS/globalStyles.css" />
   <link rel="stylesheet" href="CSS/topheader.css" />
   <link rel="stylesheet" href="CSS/mainNav.css" />
@@ -15,7 +14,6 @@
     rel="stylesheet"
   />
 
-  <!-- JS -->
   <script type="module" src="components/topHeader.js"></script>
   <script type="module" src="components/mainNav.js"></script>
   <script type="module" src="JS/pages/orders.js"></script>
@@ -34,7 +32,6 @@
         <p>Xem và theo dõi các đơn hàng của bạn</p>
       </div>
 
-      <!-- Filter Tabs -->
       <div class="order-tabs">
         <button class="tab-btn active" data-status="all">Tất cả</button>
         <button class="tab-btn" data-status="pending">Chờ xác nhận</button>
@@ -44,7 +41,6 @@
         <button class="tab-btn" data-status="cancelled">Đã hủy</button>
       </div>
 
-      <!-- Orders List -->
       <div id="ordersList" class="orders-list">
         <div class="loading-state">
           <i class="bx bx-loader-alt bx-spin"></i>
@@ -52,7 +48,6 @@
         </div>
       </div>
 
-      <!-- Empty State -->
       <div id="emptyState" class="empty-state" style="display: none;">
         <i class="bx bx-package"></i>
         <h3>Chưa có đơn hàng nào</h3>
@@ -62,7 +57,6 @@
     </div>
   </main>
 
-  <!-- Order Detail Panel -->
   <div id="orderDetailPanel" class="order-detail-panel">
     <div class="panel-overlay"></div>
     <div class="panel-content">
@@ -74,7 +68,6 @@
       </div>
 
       <div id="orderDetailContent" class="panel-body">
-        <!-- Order Info -->
         <div class="detail-section">
           <div class="detail-row">
             <span class="label">Mã đơn hàng:</span>
@@ -98,15 +91,12 @@
           </div>
         </div>
 
-        <!-- Order Items -->
         <div class="detail-section">
           <h3>Sản phẩm</h3>
           <div id="detailItems" class="detail-items">
-            <!-- Items will be rendered here -->
           </div>
         </div>
 
-        <!-- Order Summary -->
         <div class="detail-section">
           <h3>Tổng tiền</h3>
           <div class="summary-row">
@@ -123,9 +113,7 @@
           </div>
         </div>
 
-        <!-- Order Actions -->
         <div class="detail-actions" id="orderActions">
-          <!-- Actions will be rendered based on status -->
         </div>
       </div>
     </div>
@@ -133,7 +121,6 @@
 
   <app-footer></app-footer>
 
-  <!-- Toast Notification -->
   <div id="toast" class="toast"></div>
 </body>
 </html>

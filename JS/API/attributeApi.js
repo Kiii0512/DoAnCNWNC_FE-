@@ -1,9 +1,5 @@
-// API for attributes
 const API_BASE = "https://localhost:7155/api/attributes";
 
-/**
- * Get all attributes
- */
 export async function getAllAttributes() {
   try {
     const response = await fetch(API_BASE);

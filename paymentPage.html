@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Thanh toán - Electronic Store</title>
 
-  <!-- CSS -->
   <link rel="stylesheet" href="CSS/globalStyles.css" />
   <link rel="stylesheet" href="CSS/topheader.css" />
   <link rel="stylesheet" href="CSS/mainNav.css" />
@@ -16,7 +15,6 @@
     rel="stylesheet"
   />
 
-  <!-- JS -->
   <script type="module" src="components/topHeader.js"></script>
   <script type="module" src="components/mainNav.js"></script>
   <script type="module" src="components/appFooter.js"></script>
@@ -37,7 +35,6 @@
       </div>
 
       <div class="payment-content">
-        <!-- Left Column: Shipping Address Form -->
         <div class="shipping-section">
           <div class="section-card">
             <h2><i class="bx bxs-map"></i> Địa chỉ giao hàng</h2>
@@ -100,7 +97,6 @@
             </form>
           </div>
 
-          <!-- Payment Method Section -->
           <div class="section-card">
             <h2><i class="bx bxs-wallet"></i> Phương thức thanh toán</h2>
             <div class="payment-methods">
@@ -138,12 +134,10 @@
           </div>
         </div>
 
-        <!-- Right Column: Order Summary -->
         <div class="summary-section">
           <div class="summary-card">
             <h2><i class="bx bxs-cart-alt"></i> Đơn hàng của bạn</h2>
             
-            <!-- Cart Items Preview -->
             <div id="orderItems" class="order-items">
               <div class="loading-state">
                 <i class="bx bx-loader-alt bx-spin"></i>
@@ -151,7 +145,6 @@
               </div>
             </div>
 
-            <!-- Order Summary -->
             <div class="order-summary">
               <div class="summary-row">
                 <span>Tạm tính</span>
@@ -172,12 +165,10 @@
               </div>
             </div>
 
-            <!-- Place Order Button -->
             <button id="placeOrderBtn" class="btn-place-order" disabled>
               <i class="bx bx-check-circle"></i> Đặt hàng
             </button>
 
-            <!-- Promo Code -->
             <div class="promo-section">
               <h3>Mã giảm giá</h3>
               <div class="promo-input-group">
@@ -191,7 +182,6 @@
               <p id="promoMessage" class="promo-message"></p>
             </div>
 
-            <!-- Terms Agreement -->
             <div class="terms-agreement">
               <label>
                 <input type="checkbox" id="agreeTerms" />
@@ -199,7 +189,6 @@
               </label>
             </div>
 
-            <!-- Secure Note -->
             <div class="secure-note">
               <i class="bx bx-lock-alt"></i>
               <span>Thông tin thanh toán của bạn được bảo mật</span>
@@ -212,10 +201,8 @@
 
   <app-footer></app-footer>
 
-  <!-- Toast Notification -->
   <div id="toast" class="toast"></div>
 
-  <!-- Loading Overlay -->
   <div id="loadingOverlay" class="loading-overlay" style="display: none;">
     <div class="loading-content">
       <i class="bx bx-loader-alt bx-spin bx-3x"></i>
@@ -223,7 +210,6 @@
     </div>
   </div>
 
-  <!-- Success Modal -->
   <div id="successModal" class="modal-overlay" style="display: none;">
     <div class="modal-content success">
       <div class="modal-icon success">

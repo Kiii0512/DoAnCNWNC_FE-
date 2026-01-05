@@ -1,31 +1,25 @@
 import { searchProducts } from "../API/productAPI.js";
 
-// ==========================
-// HÀM GỌI API BACKEND (SỬ DỤNG searchProducts)
-// ==========================
+
 async function fetchProducts() {
   const keyword = document.getElementById("q").value.trim();
   const category = document.getElementById("filter-category").value;
   const brand = document.getElementById("filter-brand").value;
 
-  // Build search request with CORRECT lowercase params
   const request = {
     keyword: keyword || undefined,
     status: "active"
   };
 
-  // Add category filter if selected
   if (category && category !== "all") {
     request.categoryId = category;
   }
 
-  // Add brand filter if selected
   if (brand && brand !== "all") {
     request.brandId = brand;
   }
 
   try {
-    // Call the search API
     const products = await searchProducts(request);
     renderProducts(products);
   } catch (err) {
@@ -33,9 +27,7 @@ async function fetchProducts() {
   }
 }
 
-// ==========================
-// HÀM ĐỔ SẢN PHẨM RA HTML
-// ==========================
+
 function renderProducts(products) {
   const grid = document.getElementById("grid");
   grid.innerHTML = ""; // clear trước
@@ -58,26 +50,19 @@ function renderProducts(products) {
   });
 }
 
-// ==========================
-// GỌI API KHI TÌM KIẾM
-// ==========================
 document.getElementById("searchBtn").addEventListener("click", () => {
   fetchProducts();
 });
 
-// Enter để tìm kiếm
+
 document.getElementById("q").addEventListener("keyup", (e) => {
   if (e.key === "Enter") fetchProducts();
 });
 
-// ==========================
-// GỌI API KHI FILTER
-// ==========================
+
 document.getElementById("filter-category").addEventListener("change", fetchProducts);
 document.getElementById("filter-brand").addEventListener("change", fetchProducts);
 
-// ==========================
-// LẦN ĐẦU LOAD TRANG
-// ==========================
+
 fetchProducts();
 
