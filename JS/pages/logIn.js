@@ -170,17 +170,20 @@ registerForm?.addEventListener('submit', async e => {
     }
 
     // ✅ CHỈ LƯU INFO UI
-    localStorage.setItem("username", phone);
-    localStorage.setItem("role", "user");
-    localStorage.setItem("justRegistered", "true");
-    localStorage.setItem("pendingPhone", phone);
-    localStorage.setItem("pendingEmail", email);
+   const loginJson = await loginRes.json();
+const loginData = loginJson?.data || loginJson;
 
-    window.dispatchEvent(new Event("authChanged"));
+localStorage.setItem("username", phone);
+localStorage.setItem("role", loginData?.role || "Customer");
+localStorage.setItem("justRegistered", "true");
+localStorage.setItem("pendingPhone", phone);
+localStorage.setItem("pendingEmail", email);
 
-    alert("Đăng ký thành công! Vui lòng hoàn thiện thông tin cá nhân.");
-    registerForm.reset();
-    window.location.href = "userInfoPage.html";
+window.dispatchEvent(new Event("authChanged"));
+
+alert("Đăng ký thành công! Vui lòng hoàn thiện thông tin cá nhân.");
+registerForm.reset();
+window.location.href = "userInfoPage.html";
 
   } catch (err) {
     alert(err.message || 'Có lỗi xảy ra');

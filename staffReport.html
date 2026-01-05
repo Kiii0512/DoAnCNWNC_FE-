@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin — Quản lý nhân viên</title>
+  <title>Admin — Báo cáo doanh thu</title>
 
   <!-- CSS chung -->
   <link rel="stylesheet" href="./CSS/global.css" />
@@ -11,10 +11,8 @@
   <link rel="stylesheet" href="./CSS/menu.css" />
   <link rel="stylesheet" href="./CSS/footer.css" />
 
-  <!-- CSS riêng cho employee -->
-  <link rel="stylesheet" href="./CSS/employee/employee-page.css" />
-  <link rel="stylesheet" href="./CSS/employee/employee-table.css" />
-  <link rel="stylesheet" href="./CSS/employee/employee-drawer.css" />
+  <!-- CSS riêng cho report -->
+  <link rel="stylesheet" href="./CSS/report/report-page.css" />
 </head>
 
 <body>
@@ -22,23 +20,20 @@
   <app-menu></app-menu>
 
   <main class="container" style="max-width:1200px;margin:18px auto;padding:0 18px">
-    <employee-page></employee-page>
+    <report-page></report-page>
   </main>
 
   <app-footer></app-footer>
 
+  <!-- Toast (để showToast hoạt động) -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script type="module">
-    // components chung
     import './components/app-header.js';
     import './components/app-menu.js';
     import './components/app-footer.js';
 
-    // employee page
-    import './components/employee/employee-page.js';
-    import './components/employee/employee-table.js';
-    import './components/employee/employee-drawer.js';
-  </script>
-
-  <employee-drawer></employee-drawer>
+    import './components/report/report-page.js';
+</script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-const API_BASE = 'https://localhost:7155/api';
+import { apiFetch, apiFetchData } from "./http.js";
 
 /* =========================
    PRODUCTS
@@ -6,83 +6,57 @@ const API_BASE = 'https://localhost:7155/api';
 
 // GET ALL
 export async function getProducts() {
-  const res = await fetch(`${API_BASE}/products`);
-  if (!res.ok) throw new Error('Load products failed');
-  return (await res.json()).data;
+  return apiFetchData("/products");
 }
 
 // GET BY ID
 export async function getProductById(id) {
-  const res = await fetch(`${API_BASE}/products/${id}`);
-  if (!res.ok) throw new Error('Load product failed');
-  return (await res.json()).data;
+  return apiFetchData(`/products/${encodeURIComponent(id)}`);
 }
 
 // SEARCH (DTO: ProductSearchRequest)
 export async function searchProducts({
   CategoryIds = [],
   BrandIds = [],
-  Keyword = '',
-  Status = 'all' // all | active | inactive
+  Keyword = "",
+  Status = "all", // all | active | inactive
 }) {
   const params = new URLSearchParams();
 
-  CategoryIds.forEach(id => params.append('CategoryIds', id));
-  BrandIds.forEach(id => params.append('BrandIds', id));
+  CategoryIds.forEach((id) => params.append("CategoryIds", id));
+  BrandIds.forEach((id) => params.append("BrandIds", id));
 
-  if (Keyword) params.append('Keyword', Keyword);
-  if (Status && Status !== 'all') params.append('Status', Status);
+  if (Keyword) params.append("Keyword", Keyword);
+  if (Status && Status !== "all") params.append("Status", Status);
 
-  const url = `${API_BASE}/products/search?${params.toString()}`;
-  console.log('🔍 SEARCH PRODUCTS:', url);
+  const path = `/products/search?${params.toString()}`;
+  console.log("🔍 SEARCH PRODUCTS:", path);
 
-  const res = await fetch(url);
-  if (!res.ok) throw new Error('Search products failed');
-
-  return (await res.json()).data;
+  return apiFetchData(path);
 }
 
-// CREATE 
+// CREATE
 export async function createProduct(payload) {
-  const res = await fetch(`${API_BASE}/products`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+  return apiFetchData("/products", {
+    method: "POST",
+    body: payload,
   });
-
-  if (!res.ok) throw new Error('Create product failed');
-  return (await res.json()).data;
 }
 
-// UPDATE 
+// UPDATE
 export async function updateProductFull(payload) {
-  if (!payload.productId) {
-    throw new Error('Missing productId');
-  }
+  if (!payload.productId) throw new Error("Missing productId");
 
-  const res = await fetch(
-    `${API_BASE}/products/${payload.productId}`,
-    {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    }
-  );
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(err || 'Update product failed');
-  }
-
-  return await res.json();
+  // giữ behavior: bạn đang return full json ở hàm này
+  return apiFetch(`/products/${encodeURIComponent(payload.productId)}`, {
+    method: "PUT",
+    body: payload,
+  });
 }
-
 
 // DELETE
 export async function deleteProduct(id) {
-  const res = await fetch(`${API_BASE}/products/${id}`, {
-    method: 'DELETE'
+  await apiFetch(`/products/${encodeURIComponent(id)}`, {
+    method: "DELETE",
   });
-
-  if (!res.ok) throw new Error('Delete product failed');
 }

@@ -1,7 +1,5 @@
-const API_BASE = 'https://localhost:7155/api';
+import { apiFetchData } from "./http.js";
 
 export async function getAttributes() {
-  const res = await fetch(`${API_BASE}/attributes`);
-  if (!res.ok) throw new Error('Load attributes failed');
-  return (await res.json()).data;
+  return apiFetchData("/attributes");
 }

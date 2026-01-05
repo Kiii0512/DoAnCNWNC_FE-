@@ -1,23 +1,9 @@
-const API_URL = "https://localhost:7155/api/discounts";
-
-function authHeaders() {
-  const token = localStorage.getItem("accesstoken");
-  return token
-    ? { Authorization: `Bearer ${token}` }
-    : {};
-}
+import { apiFetch, apiFetchData } from "./http.js";
 
 export async function getAllDiscounts() {
   try {
-    const res = await fetch(API_URL, {
-      headers: {
-        "Content-Type": "application/json",
-        ...authHeaders()
-      }
-    });
-    if (!res.ok) throw new Error(res.status);
-    const json = await res.json();
-    return json.data ?? [];
+    const data = await apiFetchData("/discounts");
+    return data ?? [];
   } catch (e) {
     console.error("discountApi.getAllDiscounts error", e);
     return [];
@@ -26,15 +12,8 @@ export async function getAllDiscounts() {
 
 export async function getDiscountById(id) {
   try {
-    const res = await fetch(`${API_URL}/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...authHeaders()
-      }
-    });
-    if (!res.ok) throw new Error(res.status);
-    const json = await res.json();
-    return json.data ?? null;
+    const data = await apiFetchData(`/discounts/${encodeURIComponent(id)}`);
+    return data ?? null;
   } catch (e) {
     console.error("discountApi.getDiscountById error", e);
     return null;
@@ -43,17 +22,11 @@ export async function getDiscountById(id) {
 
 export async function createDiscount(payload) {
   try {
-    const res = await fetch(API_URL, {
+    const json = await apiFetch("/discounts", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...authHeaders()
-      },
-      body: JSON.stringify(payload)
+      body: payload,
     });
-    if (!res.ok) throw new Error(await res.text());
-    const json = await res.json();
-    return json.success ?? true;
+    return json?.success ?? true;
   } catch (e) {
     console.error("discountApi.createDiscount error", e);
     throw e;
@@ -62,17 +35,11 @@ export async function createDiscount(payload) {
 
 export async function updateDiscount(payload) {
   try {
-    const res = await fetch(API_URL, {
+    const json = await apiFetch("/discounts", {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        ...authHeaders()
-      },
-      body: JSON.stringify(payload)
+      body: payload,
     });
-    if (!res.ok) throw new Error(await res.text());
-    const json = await res.json();
-    return json.success ?? true;
+    return json?.success ?? true;
   } catch (e) {
     console.error("discountApi.updateDiscount error", e);
     throw e;
@@ -81,16 +48,10 @@ export async function updateDiscount(payload) {
 
 export async function deleteDiscount(id) {
   try {
-    const res = await fetch(`${API_URL}/${id}`, {
+    const json = await apiFetch(`/discounts/${encodeURIComponent(id)}`, {
       method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        ...authHeaders()
-      }
     });
-    if (!res.ok) throw new Error(await res.text());
-    const json = await res.json();
-    return json.success ?? true;
+    return json?.success ?? true;
   } catch (e) {
     console.error("discountApi.deleteDiscount error", e);
     throw e;

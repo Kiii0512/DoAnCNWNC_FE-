@@ -85,10 +85,21 @@ class AppHeader extends HTMLElement {
       const action = item.dataset.action;
       closeMenu();
 
-      if (action === 'logout') {
-        try { localStorage.removeItem('user'); } catch {}
-        this.showToast('Bạn đã đăng xuất');
-      }
+   if (action === 'logout') {
+  try {
+    localStorage.removeItem('user');
+    localStorage.removeItem('username');
+    localStorage.removeItem('role');
+    localStorage.removeItem('justRegistered');
+    localStorage.removeItem('pendingPhone');
+    localStorage.removeItem('pendingEmail');
+  } catch {}
+
+  window.dispatchEvent(new Event("authChanged"));
+  this.showToast('Bạn đã đăng xuất');
+  setTimeout(() => { window.location.href = "logIn.html"; }, 300);
+}
+
 
       if (action === 'profile') {
         this.showToast('Mở trang thay đổi thông tin');
