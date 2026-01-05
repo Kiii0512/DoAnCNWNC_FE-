@@ -1,7 +1,7 @@
 import { getCustomerInfo } from "../API/customerApi.js";
 import { createOrder } from "../API/orderApi.js";
 import { getProductWithVariations } from "../API/productApi.js";
-import { getDiscountByCode } from "../API/discountApi.js";
+import { findDiscountsByName } from "../API/discountApi.js";
 
 /* =========================
    AUTH
@@ -254,30 +254,31 @@ function showToast(message, type = "info") {
   toast.className = `toast ${type} show`;
   setTimeout(() => toast.classList.remove("show"), 3000);
 }
-
-/* =========================
-   APPLY PROMO CODE
-========================= */
 async function applyPromoCode() {
-  const code = promoCodeInput.value.trim().toUpperCase();
-  
+  const code = promoCodeInput.value.trim();
+
   if (!code) {
     showPromoMessage("Vui lòng nhập mã giảm giá", "error");
     return;
   }
 
-  // Clear previous discount
   discount = 0;
-  
+
   try {
-    const discountData = await getDiscountByCode(code);
-    
-    if (!discountData) {
+    const discounts = await findDiscountsByName(code);
+
+    // ❗ API trả về ARRAY
+    if (!Array.isArray(discounts) || discounts.length === 0) {
       showPromoMessage("Mã giảm giá không tồn tại", "error");
       return;
     }
 
-    // Validate discount
+    // 👉 lấy discount đầu tiên (backend search theo name/code)
+    const discountData = discounts[0];
+
+    /* =========================
+       VALIDATION
+    ========================= */
     const now = new Date();
     const startDate = new Date(discountData.startDate);
     const expireDate = new Date(discountData.expireDate);
@@ -297,57 +298,75 @@ async function applyPromoCode() {
       return;
     }
 
-    if (discountData.usageCount >= discountData.usageLimit) {
+    if (
+      discountData.usageLimit > 0 &&
+      discountData.usageCount >= discountData.usageLimit
+    ) {
       showPromoMessage("Mã giảm giá đã hết lượt sử dụng", "error");
       return;
     }
 
-    // Calculate subTotal
+    /* =========================
+       CALCULATE SUBTOTAL
+    ========================= */
     const subTotal = checkoutItems.reduce(
       (s, i) => s + i.price * i.quantity,
       0
     );
 
     if (subTotal < discountData.minOrderValue) {
-      showPromoMessage(`Đơn hàng tối thiểu ${formatCurrency(discountData.minOrderValue)} để áp dụng mã này`, "error");
+      showPromoMessage(
+        `Đơn hàng tối thiểu ${formatCurrency(
+          discountData.minOrderValue
+        )} để áp dụng mã này`,
+        "error"
+      );
       return;
     }
 
-    // Calculate discount amount based on type
+    /* =========================
+       CALCULATE DISCOUNT
+       discountType:
+       0 = Percentage
+       1 = FixedAmount
+       2 = FreeShipping (ignore)
+    ========================= */
     let discountAmount = 0;
 
     if (discountData.discountType === 0) {
-      // Percentage
       discountAmount = subTotal * (discountData.discountValue / 100);
     } else if (discountData.discountType === 1) {
-      // Fixed amount
       discountAmount = discountData.discountValue;
     } else {
-      // Free shipping - not applicable for payment page discount
-      showPromoMessage("Mã giảm giá vận chuyển không áp dụng cho trang thanh toán", "error");
+      showPromoMessage("Mã freeship không áp dụng tại đây", "error");
       return;
     }
 
-    // Apply max discount cap
-    if (discountData.maxDiscountAmount > 0 && discountAmount > discountData.maxDiscountAmount) {
+    if (
+      discountData.maxDiscountAmount > 0 &&
+      discountAmount > discountData.maxDiscountAmount
+    ) {
       discountAmount = discountData.maxDiscountAmount;
     }
 
-    // Don't exceed subtotal
     if (discountAmount > subTotal) {
       discountAmount = subTotal;
     }
 
-    // Apply discount
+    /* =========================
+       APPLY
+    ========================= */
     discount = discountAmount;
-    
-    // Store discountId in checkoutData
     checkoutData.discountId = discountData.discountId;
+
     localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
 
-    // Update UI
     updateOrderSummary();
-    showPromoMessage(`Đã áp dụng mã giảm giá: ${discountData.discountName}`, "success");
+
+    showPromoMessage(
+      `Đã áp dụng mã giảm giá: ${discountData.discountName}`,
+      "success"
+    );
     showToast("Áp dụng mã giảm giá thành công", "success");
 
   } catch (e) {

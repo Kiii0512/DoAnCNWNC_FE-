@@ -76,7 +76,8 @@ class QuickModal extends HTMLElement {
     document.addEventListener("quickview:open", (e) => this.open(e.detail.id));
 
     this.modal.addEventListener("click", (e) => {
-      if (e.target.id === "modal" || e.target.id === "closeModal") {
+      // Check if clicking on modal backdrop or close button (including the <i> icon inside it)
+      if (e.target.id === "modal" || e.target.closest("#closeModal")) {
         this.close();
       }
     });

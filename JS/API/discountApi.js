@@ -1,5 +1,8 @@
 import { apiFetch, apiFetchData } from "./http.js";
 
+/* =========================
+   GET ALL
+========================= */
 export async function getAllDiscounts() {
   try {
     const data = await apiFetchData("/discounts");
@@ -10,6 +13,9 @@ export async function getAllDiscounts() {
   }
 }
 
+/* =========================
+   GET BY ID
+========================= */
 export async function getDiscountById(id) {
   try {
     const data = await apiFetchData(`/discounts/${encodeURIComponent(id)}`);
@@ -20,6 +26,24 @@ export async function getDiscountById(id) {
   }
 }
 
+export async function findDiscountsByName(name) {
+  try {
+    if (!name || !name.trim()) return [];
+
+    const data = await apiFetchData(
+      `/discounts/name?name=${encodeURIComponent(name)}`
+    );
+
+    return data ?? [];
+  } catch (e) {
+    console.error("discountApi.findDiscountsByName error", e);
+    return [];
+  }
+}
+
+/* =========================
+   CREATE
+========================= */
 export async function createDiscount(payload) {
   try {
     const json = await apiFetch("/discounts", {
@@ -33,6 +57,9 @@ export async function createDiscount(payload) {
   }
 }
 
+/* =========================
+   UPDATE
+========================= */
 export async function updateDiscount(payload) {
   try {
     const json = await apiFetch("/discounts", {
@@ -46,6 +73,9 @@ export async function updateDiscount(payload) {
   }
 }
 
+/* =========================
+   DELETE
+========================= */
 export async function deleteDiscount(id) {
   try {
     const json = await apiFetch(`/discounts/${encodeURIComponent(id)}`, {
