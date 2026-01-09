@@ -1,0 +1,17 @@
+/* main navigation component: defines <main-nav> */
+class mainNav extends HTMLElement {
+  connectedCallback() {
+    this.innerHTML = `
+      <nav class="main-nav">
+        <div class="container menu-inner">
+          <a href="#">Điện thoại</a>
+          <a href="#">Laptop</a>
+          <a href="#">PC</a>
+          <a href="#">Phụ kiện</a>
+          <a href="#">Khuyến mãi</a>
+        </div>
+      </nav>
+    `;
+  }
+}
+customElements.define('main-nav', mainNav);
